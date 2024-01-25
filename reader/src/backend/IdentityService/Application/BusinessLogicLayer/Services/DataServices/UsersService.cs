@@ -1,4 +1,5 @@
 using BusinessLogicLayer.Abstractions.Dtos;
+using BusinessLogicLayer.Abstractions.Dtos.RequestsDtos;
 using BusinessLogicLayer.Abstractions.Services;
 using BusinessLogicLayer.Abstractions.Services.DataServices;
 using BusinessLogicLayer.Common;
@@ -33,7 +34,8 @@ public class UsersService : IUsersService
             Id = Guid.NewGuid(),
             Email = request.Email,
             FirstName = string.IsNullOrEmpty(request.FirstName) ? string.Empty : request.FirstName,
-            LastName = string.IsNullOrEmpty(request.LastName) ? string.Empty : request.LastName
+            LastName = string.IsNullOrEmpty(request.LastName) ? string.Empty : request.LastName,
+            UserName = request.Username
         };
         var result = await _usersRepository.CreateUserAsync(user, request.Password);
 
@@ -41,19 +43,19 @@ public class UsersService : IUsersService
         Utilities.AggregateIdentityErrorsAndThrow(await _usersRepository.SetUserRoleAsync(user, "User"));
     }
 
-    public async Task<IEnumerable<ViewUserRequestDto>> GetAllUsersAsync(CancellationToken cancellationToken)
+    public async Task<IEnumerable<ViewUserDto>> GetAllUsersAsync(CancellationToken cancellationToken)
     {
         var users = await _usersRepository.GetAllUsersAsync().ToListAsync(cancellationToken: cancellationToken);
-        var viewUserDtos = new List<ViewUserRequestDto>();
+        var viewUserDtos = new List<ViewUserDto>();
         foreach (var user in users)
         {
-            viewUserDtos.Add(ViewUserRequestDto.MapFromModel(user, await _usersRepository.GetUserRolesAsync(user)));
+            viewUserDtos.Add(ViewUserDto.MapFromModel(user, await _usersRepository.GetUserRolesAsync(user)));
         }
 
         return viewUserDtos;
     }
 
-    public async Task<ViewUserRequestDto> GetUserByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<ViewUserDto> GetUserByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         var user = await _usersRepository.GetUserByIdAsync(id);
 
@@ -62,7 +64,7 @@ public class UsersService : IUsersService
             throw new NotFoundExceptionWithStatusCode("User not found");
         }
 
-        return ViewUserRequestDto.MapFromModel(user, await _usersRepository.GetUserRolesAsync(user));
+        return ViewUserDto.MapFromModel(user, await _usersRepository.GetUserRolesAsync(user));
     }
 
     public async Task DeleteUserByIdAsync(Guid id, CancellationToken cancellationToken)
@@ -115,14 +117,14 @@ public class UsersService : IUsersService
 
     public async Task<string> GiveRoleToUserAsync(GiveRoleToUserRequestDto giveRoleToUserRequestDto, CancellationToken cancellationToken)
     {
-        var user = await _usersRepository.GetUserByIdAsync(giveRoleToUserRequestDto.id);
+        var user = await _usersRepository.GetUserByIdAsync(giveRoleToUserRequestDto.Id);
 
         if (user is null)
         {
             throw new NotFoundExceptionWithStatusCode("User not found");
         }
 
-        await _usersRepository.SetUserRoleAsync(user, giveRoleToUserRequestDto.role.Name);
+        await _usersRepository.SetUserRoleAsync(user, giveRoleToUserRequestDto.Role.Name);
         
         var userRoles = await _usersRepository.GetUserRolesAsync(user);
         
@@ -138,10 +140,10 @@ public class UsersService : IUsersService
             throw new IncorrectEmailOrPasswordExceptionWithStatusCode();
         }
         
-        if (!user.EmailConfirmed)
-        {
-            throw new EmailNotConfirmedExceptionWithStatusCode();
-        }
+        //if (!user.EmailConfirmed)
+        //{
+            //throw new EmailNotConfirmedExceptionWithStatusCode();
+        //}
 
         return user;
     }

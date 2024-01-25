@@ -4,6 +4,8 @@ using BusinessLogicLayer.Abstractions.Services.DataServices;
 using BusinessLogicLayer.Services;
 using BusinessLogicLayer.Services.AuthServices;
 using BusinessLogicLayer.Services.DataServices;
+using BusinessLogicLayer.Validation.Validators;
+using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BusinessLogicLayer;
@@ -40,6 +42,19 @@ public static class BusinessLogicInjection
     {
         serviceCollection.UseDataServices();
         serviceCollection.UseAuthenticationServices(configuration);
+        serviceCollection.UseEmailServices();
+        serviceCollection.UseValidation();
+        
+        return serviceCollection;
+    }
+
+    public static IServiceCollection UseValidation(this IServiceCollection serviceCollection)
+    {
+        serviceCollection.AddValidatorsFromAssemblyContaining<GiveRoleToUserValidator>();
+        serviceCollection.AddValidatorsFromAssemblyContaining<LoginValidator>();
+        serviceCollection.AddValidatorsFromAssemblyContaining<RegisterUserValidator>();
+        serviceCollection.AddValidatorsFromAssemblyContaining<UpdateUserValidator>();
+        serviceCollection.AddValidatorsFromAssemblyContaining<UpdateAuthTokenValidator>();
         return serviceCollection;
     }
 }

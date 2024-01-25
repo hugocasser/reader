@@ -1,3 +1,11 @@
-namespace BusinessLogicLayer.Abstractions.Dtos;
+using System.ComponentModel.DataAnnotations;
+using BusinessLogicLayer.Validation;
 
-public record LoginUserRequestDto(string Email, string Password) : IRequestDto;
+namespace BusinessLogicLayer.Abstractions.Dtos.RequestsDtos;
+
+public class LoginUserRequestDto(string email, string password) : BaseValidationModel<LoginUserRequestDto>
+{
+    public string Email { get; } = email;
+    public string Password { get; } = password;
+    
+}

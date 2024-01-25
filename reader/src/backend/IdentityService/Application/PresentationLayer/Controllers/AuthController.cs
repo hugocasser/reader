@@ -1,21 +1,17 @@
 using BusinessLogicLayer.Abstractions.Dtos;
+using BusinessLogicLayer.Abstractions.Dtos.RequestsDtos;
 using BusinessLogicLayer.Abstractions.Services.DataServices;
+using BusinessLogicLayer.Exceptions;
 using Microsoft.AspNetCore.Mvc;
+using PresentationLayer.Abstractions;
+using PresentationLayer.Attributes;
 
 namespace PresentationLayer.Controllers;
 
-[ApiController]
-[Produces("application/json")]
+
 [Route("api/identity/auth")]
-public class AuthController : ControllerBase
+public class AuthController(IUsersService usersService) : ApiController(usersService)
 {
-    private readonly IUsersService _usersService;
-
-    public AuthController(IUsersService usersService)
-    {
-        _usersService = usersService;
-    }
-
     [HttpPost]
     [Route("login")]
     public async Task<IActionResult> LoginAsync(LoginUserRequestDto loginRequestDto, CancellationToken cancellationToken)

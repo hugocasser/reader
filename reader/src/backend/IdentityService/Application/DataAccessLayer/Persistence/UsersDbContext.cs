@@ -26,8 +26,6 @@ public class UsersDbContext : IdentityDbContext<User, UserRole, Guid>
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         
         modelBuilder.ApplyConfiguration(new AdminSeederConfiguration(_configuration));
-        modelBuilder.ApplyConfiguration(new RolesSeederConfiguration());
-        modelBuilder.ApplyConfiguration(new UserWithRolesConfiguration());
         modelBuilder.ApplyConfiguration(new RefreshTokensConfiguration());
     }
 }

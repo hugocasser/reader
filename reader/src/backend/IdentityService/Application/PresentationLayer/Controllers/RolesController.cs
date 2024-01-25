@@ -1,23 +1,24 @@
 using BusinessLogicLayer.Abstractions.Dtos;
+using BusinessLogicLayer.Abstractions.Dtos.RequestsDtos;
 using BusinessLogicLayer.Abstractions.Services.DataServices;
 using DataAccessLayer.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PresentationLayer.Abstractions;
+using PresentationLayer.Attributes;
 
 namespace PresentationLayer.Controllers;
 
-[Produces("application/json")]
+
 [Route("api/identity/roles")]
-[ApiController]
-public class RolesController : ControllerBase
+public class RolesController : ApiController
 {
     private readonly IRolesService _rolesService;
-    private readonly IUsersService _usersService;
 
-    public RolesController(IRolesService rolesService, IUsersService usersService)
+    public RolesController(IRolesService rolesService, IUsersService usersService) 
+        : base(usersService)
     {
         _rolesService = rolesService;
-        _usersService = usersService;
     }
     
     [Authorize(Roles = "Admin")]

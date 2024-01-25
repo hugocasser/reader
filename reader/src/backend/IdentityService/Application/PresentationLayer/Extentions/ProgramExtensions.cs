@@ -56,7 +56,7 @@ public static class ProgramExtensions
         try
         {
             var usersDbContext = serviceProvider.GetRequiredService<UsersDbContext>();
-            await usersDbContext.Database.EnsureDeletedAsync();
+            await usersDbContext.Database.EnsureCreatedAsync();
 
             await webApplication.RunAsync();
         }
@@ -72,6 +72,7 @@ public static class ProgramExtensions
     
     public static WebApplication ConfigureApplication(this WebApplication app)
     {
+        app.UseExceptionHandler("/error");
         app.UseSwagger();
         app.UseSwaggerUI(c =>
         {
@@ -80,11 +81,6 @@ public static class ProgramExtensions
         });
 
         app.UseExceptionHandler("/error");
-        
-        if (Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "false")
-        {
-            app.UseHttpsRedirection();
-        }
 
         app.UseAuthentication();
         app.UseAuthorization();

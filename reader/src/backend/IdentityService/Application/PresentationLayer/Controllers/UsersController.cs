@@ -1,20 +1,18 @@
-using BusinessLogicLayer.Abstractions.Dtos;
+using BusinessLogicLayer.Abstractions.Dtos.RequestsDtos;
 using BusinessLogicLayer.Abstractions.Services.DataServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PresentationLayer.Abstractions;
 
 namespace PresentationLayer.Controllers;
 
-[ApiController]
-[Produces("application/json")]
 [Route("api/identity/users")]
-public sealed class UsersController : ControllerBase
+public sealed class UsersController : ApiController
 {
     private readonly IUsersService _usersService;
-    public UsersController(IUsersService usersService)
-    {
-        _usersService = usersService;
-    }
+
+    public UsersController(IUsersService usersService) : base(usersService)
+    { }
 
     [Authorize(Roles = "Admin")]
     [HttpGet]
@@ -28,7 +26,7 @@ public sealed class UsersController : ControllerBase
     {
         return Ok(await _usersService.GetUserByIdAsync(id, cancellationToken));
     }
-    
+
     [Authorize]
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> DeleteUserByIdAsync(Guid id, CancellationToken cancellationToken)
@@ -36,7 +34,7 @@ public sealed class UsersController : ControllerBase
         await _usersService.DeleteUserByIdAsync(id, cancellationToken);
         return Ok($"User({id}) deleted");
     }
-    
+
     [Authorize]
     [HttpPut]
     public async Task<IActionResult> UpdateUserAsync(UpdateUserRequestDto userRequestViewDto,
@@ -45,5 +43,4 @@ public sealed class UsersController : ControllerBase
         await _usersService.UpdateUserAsync(userRequestViewDto, cancellationToken);
         return Ok($"User({userRequestViewDto.OldEmail}) updated");
     }
-    
 }

@@ -19,19 +19,10 @@ public class AdminSeederConfiguration : IEntityTypeConfiguration<User>
     {
         Guid id;
         string email, password;
-
-        if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("TEST_ConnectionString")))
-        {
-            id = Guid.Parse("343a57ec-6dde-47d1-95ee-34cd2362da88");
-            email = "test_identity_Admin_reader2024@gmail.com";
-            password = "test_identity_Admin_reader2024";
-        }
-        else
-        {
+        
             id = Guid.Parse(_configuration["Admin:Id"] ?? throw new UserSecretsInvalidException("setup-admin-id-secret"));
             email = _configuration["Admin:Email"] ?? throw new UserSecretsInvalidException("setup-admin-email-secret");
             password = _configuration["Admin:Password"] ?? throw new UserSecretsInvalidException("setup-admin-password-secret");
-        }
 
         var user = new User
         {
