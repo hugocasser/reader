@@ -17,7 +17,7 @@ public class JwtTokenGeneratorService : IAuthTokenGeneratorService
         _configuration = configuration;
     }
 
-    public string GenerateToken(Guid userId, string userEmail, string role)
+    public string GenerateToken(Guid userId, string userEmail, IEnumerable<string> roles)
     {
         var claims = new List<Claim>()
         {
@@ -26,12 +26,13 @@ public class JwtTokenGeneratorService : IAuthTokenGeneratorService
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString(CultureInfo.InvariantCulture))
         };
-
-        claims.Add(new Claim("role:", role));
-
+        foreach (var role in roles)
+        {
+            claims.Add(new Claim("role:", role));
+        }
         var securityToken = new JwtSecurityToken(
             claims: claims,
-            expires: DateTime.UtcNow.AddMinutes(3),
+            expires: DateTime.UtcNow.AddMinutes(10),
             issuer: _configuration.Issuer,
             audience: _configuration.Audience,
             signingCredentials: new SigningCredentials(

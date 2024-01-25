@@ -9,8 +9,6 @@ namespace PresentationLayer.Controllers;
 [Route("api/identity/users")]
 public sealed class UsersController : ApiController
 {
-    private readonly IUsersService _usersService;
-
     public UsersController(IUsersService usersService) : base(usersService)
     { }
 

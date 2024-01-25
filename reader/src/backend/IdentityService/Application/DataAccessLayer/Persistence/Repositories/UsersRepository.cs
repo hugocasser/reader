@@ -29,9 +29,9 @@ public class UsersRepository : IUsersRepository
         return await _userManager.FindByEmailAsync(email);
     }
 
-    public async Task<string> GetUserRolesAsync(User user)
+    public async Task<IEnumerable<string>> GetUserRolesAsync(User user)
     {
-        return (await _userManager.GetRolesAsync(user)).ToString();
+        return await _userManager.GetRolesAsync(user);
     }
 
     public async Task<bool> IsUserExistAsync(Guid id)

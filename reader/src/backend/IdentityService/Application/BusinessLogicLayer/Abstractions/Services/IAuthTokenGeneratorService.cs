@@ -2,5 +2,5 @@ namespace BusinessLogicLayer.Abstractions.Services;
 
 public interface IAuthTokenGeneratorService
 {
-    public string GenerateToken(Guid userId, string userEmail, string role);
+    public string GenerateToken(Guid userId, string userEmail, IEnumerable<string> roles);
 }
