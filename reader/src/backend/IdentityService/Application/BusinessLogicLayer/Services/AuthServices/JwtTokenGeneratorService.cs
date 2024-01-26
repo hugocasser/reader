@@ -4,6 +4,7 @@ using System.Security.Claims;
 using System.Text;
 using BusinessLogicLayer.Abstractions.Configurations;
 using BusinessLogicLayer.Abstractions.Services;
+using BusinessLogicLayer.Abstractions.Services.AuthServices;
 using Microsoft.IdentityModel.Tokens;
 
 namespace BusinessLogicLayer.Services.AuthServices;

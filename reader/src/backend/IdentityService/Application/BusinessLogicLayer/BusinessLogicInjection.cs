@@ -1,5 +1,6 @@
 using BusinessLogicLayer.Abstractions.Configurations;
 using BusinessLogicLayer.Abstractions.Services;
+using BusinessLogicLayer.Abstractions.Services.AuthServices;
 using BusinessLogicLayer.Abstractions.Services.DataServices;
 using BusinessLogicLayer.Services;
 using BusinessLogicLayer.Services.AuthServices;
@@ -12,7 +13,7 @@ namespace BusinessLogicLayer;
 
 public static class BusinessLogicInjection
 {
-    public static IServiceCollection UseDataServices(this IServiceCollection serviceCollection)
+    private static IServiceCollection UseDataServices(this IServiceCollection serviceCollection)
     {
         serviceCollection
             .AddScoped<IUsersService, UsersService>()
@@ -22,12 +23,16 @@ public static class BusinessLogicInjection
         return serviceCollection;
     }
 
-    public static IServiceCollection UseEmailServices(this IServiceCollection serviceCollection)
+    private static IServiceCollection UseEmailServices(this IServiceCollection serviceCollection ,IEmailMessageSenderConfiguration configuration)
     {
+        
+        serviceCollection.AddSingleton(configuration);
+        serviceCollection.AddTransient<IEmailConfirmMessageService, SendConfirmMessageEmailService>();
+        serviceCollection.AddTransient<IEmailSenderService, EmailSenderService>();
         return serviceCollection;
     }
 
-    public static IServiceCollection UseAuthenticationServices(this IServiceCollection serviceCollection,
+    private static IServiceCollection UseAuthenticationServices(this IServiceCollection serviceCollection,
         ITokenGenerationConfiguration configuration)
     {
         serviceCollection.AddSingleton(configuration);
@@ -38,17 +43,17 @@ public static class BusinessLogicInjection
     }
 
     public static IServiceCollection AddServices(this IServiceCollection serviceCollection,
-        ITokenGenerationConfiguration configuration)
+        ITokenGenerationConfiguration configuration, IEmailMessageSenderConfiguration emailConfiguration)
     {
         serviceCollection.UseDataServices();
         serviceCollection.UseAuthenticationServices(configuration);
-        serviceCollection.UseEmailServices();
+        serviceCollection.UseEmailServices(emailConfiguration);
         serviceCollection.UseValidation();
         
         return serviceCollection;
     }
 
-    public static IServiceCollection UseValidation(this IServiceCollection serviceCollection)
+    private static IServiceCollection UseValidation(this IServiceCollection serviceCollection)
     {
         serviceCollection.AddValidatorsFromAssemblyContaining<GiveRoleToUserValidator>();
         serviceCollection.AddValidatorsFromAssemblyContaining<LoginValidator>();

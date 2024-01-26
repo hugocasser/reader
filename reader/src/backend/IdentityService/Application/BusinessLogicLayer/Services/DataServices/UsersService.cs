@@ -1,31 +1,28 @@
+using BusinessLogicLayer.Abstractions.Configurations;
 using BusinessLogicLayer.Abstractions.Dtos;
 using BusinessLogicLayer.Abstractions.Dtos.RequestsDtos;
 using BusinessLogicLayer.Abstractions.Services;
+using BusinessLogicLayer.Abstractions.Services.AuthServices;
 using BusinessLogicLayer.Abstractions.Services.DataServices;
 using BusinessLogicLayer.Common;
 using BusinessLogicLayer.Exceptions;
 using DataAccessLayer.Abstractions.Repositories;
 using DataAccessLayer.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLogicLayer.Services.DataServices;
 
-public class UsersService : IUsersService
+public class UsersService(
+    IUsersRepository usersRepository,
+    IAuthTokenGeneratorService authService,
+    IRefreshTokenGeneratorService refreshTokenService,
+    IRefreshTokensRepository refreshTokensRepository,
+    IEmailConfirmMessageService emailConfirmMessageService)
+    : IUsersService
 {
-    private readonly IUsersRepository _usersRepository;
-    private readonly IAuthTokenGeneratorService _authService;
-    private readonly IRefreshTokenGeneratorService _refreshTokenService;
-    private readonly IRefreshTokensRepository _refreshTokensRepository;
     
 
-    public UsersService(IUsersRepository usersRepository, IAuthTokenGeneratorService authService,
-        IRefreshTokenGeneratorService refreshTokenService, IRefreshTokensRepository refreshTokensRepository)
-    {
-        _usersRepository = usersRepository;
-        _authService = authService;
-        _refreshTokenService = refreshTokenService;
-        _refreshTokensRepository = refreshTokensRepository;
-    }
 
     public async Task RegisterUserAsync(RegisterUserRequestDto request, CancellationToken cancellationToken)
     {
@@ -37,19 +34,21 @@ public class UsersService : IUsersService
             LastName = string.IsNullOrEmpty(request.LastName) ? string.Empty : request.LastName,
             UserName = request.Username
         };
-        var result = await _usersRepository.CreateUserAsync(user, request.Password);
-
+        var result = await usersRepository.CreateUserAsync(user, request.Password);
+        
         Utilities.AggregateIdentityErrorsAndThrow(result);
-        Utilities.AggregateIdentityErrorsAndThrow(await _usersRepository.SetUserRoleAsync(user, "User"));
+        Utilities.AggregateIdentityErrorsAndThrow(await usersRepository.SetUserRoleAsync(user, "User"));
+        
+        await emailConfirmMessageService.SendEmailConfirmMessageAsync(user);
     }
 
     public async Task<IEnumerable<ViewUserDto>> GetAllUsersAsync(CancellationToken cancellationToken)
     {
-        var users = await _usersRepository.GetAllUsersAsync().ToListAsync(cancellationToken: cancellationToken);
+        var users = await usersRepository.GetAllUsersAsync().ToListAsync(cancellationToken: cancellationToken);
         var viewUserDtos = new List<ViewUserDto>();
         foreach (var user in users)
         {
-            viewUserDtos.Add(ViewUserDto.MapFromModel(user, await _usersRepository.GetUserRolesAsync(user)));
+            viewUserDtos.Add(ViewUserDto.MapFromModel(user, await usersRepository.GetUserRolesAsync(user)));
         }
 
         return viewUserDtos;
@@ -57,26 +56,26 @@ public class UsersService : IUsersService
 
     public async Task<ViewUserDto> GetUserByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var user = await _usersRepository.GetUserByIdAsync(id);
+        var user = await usersRepository.GetUserByIdAsync(id);
 
         if (user is null)
         {
             throw new NotFoundExceptionWithStatusCode("User not found");
         }
 
-        return ViewUserDto.MapFromModel(user, await _usersRepository.GetUserRolesAsync(user));
+        return ViewUserDto.MapFromModel(user, await usersRepository.GetUserRolesAsync(user));
     }
 
     public async Task DeleteUserByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var user = await _usersRepository.GetUserByIdAsync(id);
+        var user = await usersRepository.GetUserByIdAsync(id);
 
         if (user is null)
         {
             throw new NotFoundExceptionWithStatusCode("User not found");
         }
         
-        var result = await _usersRepository.DeleteUserAsync(user);
+        var result = await usersRepository.DeleteUserAsync(user);
         Utilities.AggregateIdentityErrorsAndThrow(result);
     }
 
@@ -88,7 +87,7 @@ public class UsersService : IUsersService
             throw new BadRequestExceptionWithStatusCode("Nothing to update");
         }
         
-        var user = await _usersRepository.GetUserByEmailAsync(userRequestUserRequestDto.OldEmail);
+        var user = await usersRepository.GetUserByEmailAsync(userRequestUserRequestDto.OldEmail);
 
         if (user is null)
         {
@@ -98,52 +97,86 @@ public class UsersService : IUsersService
         user.FirstName = string.IsNullOrEmpty(userRequestUserRequestDto.FirstName) ? user.FirstName : userRequestUserRequestDto.FirstName;
         user.LastName = string.IsNullOrEmpty(userRequestUserRequestDto.LastName) ? user.LastName : userRequestUserRequestDto.LastName;
         user.Email = string.IsNullOrEmpty(userRequestUserRequestDto.NewEmail) ? user.Email : userRequestUserRequestDto.NewEmail;
-        await _usersRepository.UpdateUserAsync(user);
+        await usersRepository.UpdateUserAsync(user);
     }
 
     public async Task<AuthTokens> LoginUserAsync(LoginUserRequestDto loginUserRequestDto, CancellationToken cancellationToken)
     {
         var user = await GetUserByEmail(loginUserRequestDto);
-        var userRoles = await _usersRepository.GetUserRolesAsync(user);
+        var userRoles = await usersRepository.GetUserRolesAsync(user);
         
-        var userToken = _authService.GenerateToken(user.Id, user.Email, userRoles);
-        var refreshToken = _refreshTokenService.GenerateToken(user.Id);
+        var userToken = authService.GenerateToken(user.Id, user.Email, userRoles);
+        var refreshToken = refreshTokenService.GenerateToken(user.Id);
         
-        await _refreshTokensRepository.AddAsync(refreshToken, cancellationToken);
-        await _refreshTokensRepository.SaveChangesAsync(cancellationToken);
+        await refreshTokensRepository.AddAsync(refreshToken, cancellationToken);
+        await refreshTokensRepository.SaveChangesAsync(cancellationToken);
 
         return new AuthTokens(user.Id, userToken, refreshToken.Token);
     }
 
     public async Task<string> GiveRoleToUserAsync(GiveRoleToUserRequestDto giveRoleToUserRequestDto, CancellationToken cancellationToken)
     {
-        var user = await _usersRepository.GetUserByIdAsync(giveRoleToUserRequestDto.Id);
+        var user = await usersRepository.GetUserByIdAsync(giveRoleToUserRequestDto.Id);
 
         if (user is null)
         {
             throw new NotFoundExceptionWithStatusCode("User not found");
         }
 
-        await _usersRepository.SetUserRoleAsync(user, giveRoleToUserRequestDto.Role.Name);
+        await usersRepository.SetUserRoleAsync(user, giveRoleToUserRequestDto.Role.Name);
         
-        var userRoles = await _usersRepository.GetUserRolesAsync(user);
+        var userRoles = await usersRepository.GetUserRolesAsync(user);
         
-        return _authService.GenerateToken(user.Id, user.Email, userRoles);
+        return authService.GenerateToken(user.Id, user.Email, userRoles);
+    }
+
+    public async Task<IdentityResult> ConfirmUserEmail(Guid id, string code)
+    {
+        var user = await usersRepository.GetUserByIdAsync(id);
+
+        if (user is null)
+        {
+            throw new NotFoundExceptionWithStatusCode("User not found");
+        }
+        
+        var result = await usersRepository.ConfirmUserEmail(user, code);
+        
+        Utilities.AggregateIdentityErrorsAndThrow(result);
+
+        return result;
+    }
+
+    public async Task<IdentityResult> ResendEmailConfirmMessageAsync(string email, string password, CancellationToken cancellationToken)
+    {
+        var user = await usersRepository.GetUserByEmailAsync(email);
+        if (user is null || !await usersRepository.CheckPasswordAsync(user, password)) 
+        { 
+            throw new IncorrectEmailOrPasswordExceptionWithStatusCode();
+        }
+        
+        if (user.EmailConfirmed)
+        {
+            throw new IdentityExceptionWithStatusCode("The Email already confirmed");
+        }
+        
+        await emailConfirmMessageService.SendEmailConfirmMessageAsync(user);
+        
+        return IdentityResult.Success;
     }
 
     private async Task<User?> GetUserByEmail(LoginUserRequestDto request)
     {
-        var user = await _usersRepository.GetUserByEmailAsync(request.Email);
+        var user = await usersRepository.GetUserByEmailAsync(request.Email);
         
-        if (user is null || !await _usersRepository.CheckPasswordAsync(user, request.Password))
+        if (user is null || !await usersRepository.CheckPasswordAsync(user, request.Password))
         {
             throw new IncorrectEmailOrPasswordExceptionWithStatusCode();
         }
         
-        //if (!user.EmailConfirmed)
-        //{
-            //throw new EmailNotConfirmedExceptionWithStatusCode();
-        //}
+        if (!user.EmailConfirmed)
+        {
+            throw new EmailNotConfirmedExceptionWithStatusCode();
+        }
 
         return user;
     }

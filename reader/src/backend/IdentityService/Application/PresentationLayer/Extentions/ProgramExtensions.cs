@@ -15,12 +15,13 @@ public static class ProgramExtensions
     {
         var applicationConfiguration = new ApplicationConfiguration(builder.Configuration);
         var tokenGenerationConfiguration = new TokenGenerationConfiguration(builder.Configuration);
+        var emailMessageSenderConfiguration = new EmailMessageSenderConfiguration(builder.Configuration);
 
         builder.Services
             .AddDbContext(applicationConfiguration)
             .AddRepositories()
             .AddUsersIdentity()
-            .AddServices(tokenGenerationConfiguration)
+            .AddServices(tokenGenerationConfiguration, emailMessageSenderConfiguration)
             .AddJwtAuthentication(tokenGenerationConfiguration)
             .AddSwagger()
             .AddCors(options => options.ConfigureAllowAllCors())

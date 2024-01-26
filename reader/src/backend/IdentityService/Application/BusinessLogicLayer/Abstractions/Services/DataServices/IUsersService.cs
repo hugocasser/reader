@@ -1,5 +1,6 @@
 using BusinessLogicLayer.Abstractions.Dtos;
 using BusinessLogicLayer.Abstractions.Dtos.RequestsDtos;
+using Microsoft.AspNetCore.Identity;
 
 namespace BusinessLogicLayer.Abstractions.Services.DataServices;
 
@@ -12,4 +13,6 @@ public interface IUsersService
     Task UpdateUserAsync(UpdateUserRequestDto userRequestViewDto, CancellationToken cancellationToken);
     Task<AuthTokens> LoginUserAsync(LoginUserRequestDto loginUserRequestDto, CancellationToken cancellationToken);
     Task<string> GiveRoleToUserAsync(GiveRoleToUserRequestDto giveRoleToUserRequestDto, CancellationToken cancellationToken);
+    Task<IdentityResult> ConfirmUserEmail(Guid id, string code);
+    Task<IdentityResult> ResendEmailConfirmMessageAsync(string email, string password, CancellationToken cancellationToken);
 }

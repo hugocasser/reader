@@ -1,4 +1,4 @@
-namespace BusinessLogicLayer.Abstractions.Services;
+namespace BusinessLogicLayer.Abstractions.Services.AuthServices;
 
 public interface IAuthTokenGeneratorService
 {
