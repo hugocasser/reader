@@ -14,9 +14,9 @@ public sealed class UsersController : ApiController
 
     [Authorize(Roles = "Admin")]
     [HttpGet]
-    public async Task<IActionResult> GetAllUsersAsync(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAllUsersAsync(int page, int pageSize, CancellationToken cancellationToken)
     {
-        return Ok(await _usersService.GetAllUsersAsync(cancellationToken));
+        return Ok(await _usersService.GetAllUsersAsync(page, pageSize,cancellationToken));
     }
 
     [HttpGet("{id:guid}")]

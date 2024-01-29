@@ -43,9 +43,11 @@ public class UsersService(
         await emailConfirmMessageService.SendEmailConfirmMessageAsync(user);
     }
 
-    public async Task<IEnumerable<ViewUserDto>> GetAllUsersAsync(CancellationToken cancellationToken)
+    public async Task<IEnumerable<ViewUserDto>> GetAllUsersAsync(int page, int pageSize, CancellationToken cancellationToken)
     {
-        var users = await usersRepository.GetAllUsersAsync().ToListAsync(cancellationToken);
+        var users = await usersRepository.GetAllUsersAsync()
+            .Skip((page - 1) * pageSize).Take(pageSize).OrderBy(user => user.Email)
+            .ThenBy(user => user.LastName).ThenBy(user => user.FirstName).ToListAsync(cancellationToken);
         var viewUserDtos = new List<ViewUserDto>();
         
         foreach (var user in users)
