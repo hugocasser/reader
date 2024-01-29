@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 
-namespace PresentationLayer.Extentions;
+namespace PresentationLayer.Extensions;
 
 public static class IdentityAuthenticationProgramExtension
 {

@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.OpenApi.Models;
 using PresentationLayer.Configurations;
 
-namespace PresentationLayer.Extentions;
+namespace PresentationLayer.Extensions;
 
 public static class ProgramExtensions
 {
@@ -16,7 +16,7 @@ public static class ProgramExtensions
         var applicationConfiguration = new ApplicationConfiguration(builder.Configuration);
         var tokenGenerationConfiguration = new TokenGenerationConfiguration(builder.Configuration);
         var emailMessageSenderConfiguration = new EmailMessageSenderConfiguration(builder.Configuration);
-
+        
         builder.Services
             .AddDbContext(applicationConfiguration)
             .AddRepositories()
@@ -27,7 +27,8 @@ public static class ProgramExtensions
             .AddCors(options => options.ConfigureAllowAllCors())
             .AddEndpointsApiExplorer()
             .AddControllers();
-
+        
+        builder.AddLoggingServices(applicationConfiguration);
         return builder;
     }
     
@@ -53,19 +54,18 @@ public static class ProgramExtensions
     {
         using var scope = webApplication.Services.CreateScope();
         var serviceProvider = scope.ServiceProvider;
-
+        
         try
         {
             var usersDbContext = serviceProvider.GetRequiredService<UsersDbContext>();
             await usersDbContext.Database.EnsureCreatedAsync();
-
+            
             await webApplication.RunAsync();
         }
         catch (Exception ex)
         {
-            Debug.WriteLine("Error: " + ex.Message + "\n" + 
-                            "StackTrace: " + ex.StackTrace + "\n" +
-                            "Source: " + ex.Source);
+            var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
+            logger.LogError(ex, "Host terminated unexpectedly");
         }
 
         return webApplication;
@@ -73,13 +73,16 @@ public static class ProgramExtensions
     
     public static WebApplication ConfigureApplication(this WebApplication app)
     {
-        app.UseExceptionHandler("/error");
-        app.UseSwagger();
-        app.UseSwaggerUI(c =>
+        app.UseLoggingDependOnEnvironment();
+        if (app.Environment.IsDevelopment())
         {
-            c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebApiDemo v1");
-            c.RoutePrefix = "swagger";
-        });
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebApiDemo v1");
+                c.RoutePrefix = "swagger";
+            });
+        }
 
         app.UseExceptionHandler("/error");
 
@@ -87,7 +90,7 @@ public static class ProgramExtensions
         app.UseAuthorization();
         app.UseCors("AllowAll");
         app.MapControllers();
-
+        
         return app;
     }
     
