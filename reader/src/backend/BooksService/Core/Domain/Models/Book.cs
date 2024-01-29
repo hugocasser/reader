@@ -1,0 +1,19 @@
+using MongoDB.Bson.Serialization.Attributes;
+
+namespace Domain.Models;
+
+public class Book
+{
+    [BsonId, BsonElement("id")]
+    public Guid Id { get; set; }
+    [BsonElement ("description")]
+    public string Description { get; set; } = string.Empty;
+    [BsonElement("name")]
+    public string Name { get; set; } = string.Empty;
+    [BsonElement("text")]
+    public string Text { get; set; } = string.Empty;
+    [BsonElement("author_id")]
+    public Guid AuthorId { get; set; }
+    [BsonElement("Category_id")]
+    public Guid CategoryId { get; set; }
+}
