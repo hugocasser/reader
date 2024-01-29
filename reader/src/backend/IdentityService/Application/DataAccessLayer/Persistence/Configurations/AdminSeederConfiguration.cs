@@ -7,22 +7,27 @@ using Microsoft.Extensions.Configuration;
 
 namespace DataAccessLayer.Persistence.Configurations;
 
-public class AdminSeederConfiguration : IEntityTypeConfiguration<User>
+public class AdminSeederConfiguration(IConfiguration configuration) : IEntityTypeConfiguration<User>
 {
-    private readonly IConfiguration _configuration;
-
-    public AdminSeederConfiguration(IConfiguration configuration)
-    {
-        _configuration = configuration;
-    }
     public void Configure(EntityTypeBuilder<User> builder)
     {
         Guid id;
         string email, password;
-        
-            id = Guid.Parse(_configuration["Admin:Id"] ?? throw new UserSecretsInvalidException("setup-admin-id-secret"));
-            email = _configuration["Admin:Email"] ?? throw new UserSecretsInvalidException("setup-admin-email-secret");
-            password = _configuration["Admin:Password"] ?? throw new UserSecretsInvalidException("setup-admin-password-secret");
+        if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("TEST_ConnectionString")))
+        {
+            id = Guid.Parse("343a57ec-6dde-47d1-95ee-34cd2362da88");
+            email = "test_identity_Admin_reader2024@gmail.com";
+            password = "test_identity_Admin_reader2024@gmail.com";
+            
+            return;
+        }
+        else
+        {
+            id = Guid.Parse(configuration["Admin:Id"] ?? throw new UserSecretsInvalidException("setup-admin-id-secret"));
+            email = configuration["Admin:Email"] ?? throw new UserSecretsInvalidException("setup-admin-email-secret");
+            password = configuration["Admin:Password"] ??
+                       throw new UserSecretsInvalidException("setup-admin-password-secret");
+        }
 
         var user = new User
         {

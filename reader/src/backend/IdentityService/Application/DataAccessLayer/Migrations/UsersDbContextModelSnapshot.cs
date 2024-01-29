@@ -127,7 +127,7 @@ namespace DataAccessLayer.Migrations
                         {
                             Id = new Guid("343a57ec-6dde-47d1-95ee-34cd2362da88"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "251b2f24-47c1-4231-8f77-5356ac1f441a",
+                            ConcurrencyStamp = "e207f99a-d567-441f-b625-2eb888fa3b9d",
                             Email = "test_identity_Admin_reader2024@gmail.com",
                             EmailConfirmed = true,
                             FirstName = "First Admin",
@@ -135,9 +135,9 @@ namespace DataAccessLayer.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "TEST_IDENTITY_ADMIN_READER2024@GMAIL.COM",
                             NormalizedUserName = "FIRST ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEL+IZwtb9KX4vYtuP1otptn9uGvX7fz2H5KbQaP+sjJvJgdGYWqxlMqNfAIzBjuKGQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEHnoI8uT9f7KCQ2hB6fFf9y/9rXhTmowXx8J3ufvEaDa5wPrOrs1GgTVzVMGVAuoEA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "cfd59411-6dc7-4d67-a36e-98b4fa7aa2d1",
+                            SecurityStamp = "4d4fba84-e00f-4ed9-af6d-5123f0f593bf",
                             TwoFactorEnabled = false,
                             UserName = "FirstAdmin"
                         });
@@ -179,7 +179,7 @@ namespace DataAccessLayer.Migrations
                         },
                         new
                         {
-                            Id = new Guid("08a57977-8e6f-4c67-807e-b5b103955729"),
+                            Id = new Guid("c421d311-5221-4b3e-87b0-5cebc58a51db"),
                             Name = "User",
                             NormalizedName = "USER"
                         });

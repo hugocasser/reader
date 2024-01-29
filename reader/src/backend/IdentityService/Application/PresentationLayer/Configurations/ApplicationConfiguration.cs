@@ -5,7 +5,8 @@ namespace PresentationLayer.Configurations;
 public class ApplicationConfiguration : IApplicationConfiguration
 {
     public string DatabaseConnectionString { get; private set; }
-    
+    public bool IsDevelopmentEnvironment { get; set; }
+
     public ApplicationConfiguration(IConfiguration configuration)
     {
         

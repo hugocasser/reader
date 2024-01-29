@@ -180,14 +180,14 @@ namespace DataAccessLayer.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { new Guid("08a57977-8e6f-4c67-807e-b5b103955729"), null, "User", "USER" },
-                    { new Guid("ab665c9c-5c85-4c90-972a-706cbaa896e3"), null, "Admin", "ADMIN" }
+                    { new Guid("ab665c9c-5c85-4c90-972a-706cbaa896e3"), null, "Admin", "ADMIN" },
+                    { new Guid("c421d311-5221-4b3e-87b0-5cebc58a51db"), null, "User", "USER" }
                 });
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { new Guid("343a57ec-6dde-47d1-95ee-34cd2362da88"), 0, "251b2f24-47c1-4231-8f77-5356ac1f441a", "test_identity_Admin_reader2024@gmail.com", true, "First Admin", "First Admin", false, null, "TEST_IDENTITY_ADMIN_READER2024@GMAIL.COM", "FIRST ADMIN", "AQAAAAIAAYagAAAAEL+IZwtb9KX4vYtuP1otptn9uGvX7fz2H5KbQaP+sjJvJgdGYWqxlMqNfAIzBjuKGQ==", null, false, "cfd59411-6dc7-4d67-a36e-98b4fa7aa2d1", false, "FirstAdmin" });
+                values: new object[] { new Guid("343a57ec-6dde-47d1-95ee-34cd2362da88"), 0, "e207f99a-d567-441f-b625-2eb888fa3b9d", "test_identity_Admin_reader2024@gmail.com", true, "First Admin", "First Admin", false, null, "TEST_IDENTITY_ADMIN_READER2024@GMAIL.COM", "FIRST ADMIN", "AQAAAAIAAYagAAAAEHnoI8uT9f7KCQ2hB6fFf9y/9rXhTmowXx8J3ufvEaDa5wPrOrs1GgTVzVMGVAuoEA==", null, false, "4d4fba84-e00f-4ed9-af6d-5123f0f593bf", false, "FirstAdmin" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",
