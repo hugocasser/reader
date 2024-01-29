@@ -1,6 +1,6 @@
 using DataAccessLayer.Models;
 
-namespace BusinessLogicLayer.Abstractions.Dtos;
+namespace BusinessLogicLayer.Abstractions.Dtos.ViewDtos;
 
 public record ViewUserDto(string Email, IEnumerable<string> Roles, string FirstName, string LastName)
 {

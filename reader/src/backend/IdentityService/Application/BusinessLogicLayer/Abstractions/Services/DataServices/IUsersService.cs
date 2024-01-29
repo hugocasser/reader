@@ -1,18 +1,19 @@
 using BusinessLogicLayer.Abstractions.Dtos;
 using BusinessLogicLayer.Abstractions.Dtos.RequestsDtos;
+using BusinessLogicLayer.Abstractions.Dtos.ViewDtos;
 using Microsoft.AspNetCore.Identity;
 
 namespace BusinessLogicLayer.Abstractions.Services.DataServices;
 
 public interface IUsersService
 {
-    Task RegisterUserAsync(RegisterUserRequestDto request, CancellationToken cancellationToken);
+    Task RegisterUserAsync(RegisterUserRequestDto request);
     Task<IEnumerable<ViewUserDto>> GetAllUsersAsync(CancellationToken cancellationToken);
-    Task<ViewUserDto> GetUserByIdAsync(Guid id, CancellationToken cancellationToken);
-    Task DeleteUserByIdAsync(Guid id, CancellationToken cancellationToken);
-    Task UpdateUserAsync(UpdateUserRequestDto userRequestViewDto, CancellationToken cancellationToken);
+    Task<ViewUserDto> GetUserByIdAsync(Guid id);
+    Task DeleteUserByIdAsync(Guid id);
+    Task UpdateUserAsync(UpdateUserRequestDto userRequestViewDto);
     Task<AuthTokens> LoginUserAsync(LoginUserRequestDto loginUserRequestDto, CancellationToken cancellationToken);
-    Task<string> GiveRoleToUserAsync(GiveRoleToUserRequestDto giveRoleToUserRequestDto, CancellationToken cancellationToken);
+    Task<string> GiveRoleToUserAsync(GiveRoleToUserRequestDto giveRoleToUserRequestDto);
     Task<IdentityResult> ConfirmUserEmail(Guid id, string code);
-    Task<IdentityResult> ResendEmailConfirmMessageAsync(string email, string password, CancellationToken cancellationToken);
+    Task<IdentityResult> ResendEmailConfirmMessageAsync(string email, string password);
 }

@@ -5,11 +5,9 @@ namespace PresentationLayer.Configurations;
 public class ApplicationConfiguration : IApplicationConfiguration
 {
     public string DatabaseConnectionString { get; private set; }
-    public bool IsDevelopmentEnvironment { get; set; }
 
     public ApplicationConfiguration(IConfiguration configuration)
     {
-        
         _ = SetupDbConnectionString(configuration) ? true : throw new Exception("Database connection string not set");
     }
     
@@ -23,6 +21,7 @@ public class ApplicationConfiguration : IApplicationConfiguration
         }
 
         DatabaseConnectionString =  dbConnectionString;
+        
         return true;
     }
 }

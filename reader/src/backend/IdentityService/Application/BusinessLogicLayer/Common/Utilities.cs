@@ -1,10 +1,5 @@
 using System.Text;
-using BusinessLogicLayer.Abstractions.Dtos;
-using BusinessLogicLayer.Abstractions.Dtos.RequestsDtos;
 using BusinessLogicLayer.Exceptions;
-using BusinessLogicLayer.Validation.Validators;
-using FluentValidation;
-using FluentValidation.Results;
 using Microsoft.AspNetCore.Identity;
 
 namespace BusinessLogicLayer.Common;
@@ -16,7 +11,8 @@ public static class Utilities
     public static void AggregateIdentityErrorsAndThrow(IdentityResult result)
     {
         if (result.Succeeded) return;
-        var errors = result.Errors.Aggregate(string.Empty, (current, error) => current + (error.Description + "\n"));
+        var errors = result.Errors.Aggregate(string.Empty, (current, error) => current
+                                                                               + (error.Description + "\n"));
         throw new IdentityExceptionWithStatusCode(errors);
     }
 
@@ -24,10 +20,12 @@ public static class Utilities
     {
         var random = new Random();
         var result = new StringBuilder(length);
-        for (int i = 0; i < length; i++)
+        
+        for (var i = 0; i < length; i++)
         {
             result.Append(Chars[random.Next(Chars.Length)]);
         }
+        
         return result.ToString();
     }
 }

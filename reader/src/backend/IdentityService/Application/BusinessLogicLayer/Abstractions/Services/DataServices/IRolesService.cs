@@ -7,6 +7,5 @@ public interface IRolesService
 {
     public Task<IdentityResult> CreateRoleAsync(string role);
     public Task<IdentityResult> DeleteRoleAsync(string role);
-    public Task<bool> RoleExistsAsync(string role);
     public Task<UserRole> GetRoleInfoAsync(string role);
 }

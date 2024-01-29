@@ -22,14 +22,14 @@ public sealed class UsersController : ApiController
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetUserByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        return Ok(await _usersService.GetUserByIdAsync(id, cancellationToken));
+        return Ok(await _usersService.GetUserByIdAsync(id));
     }
 
     [Authorize]
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> DeleteUserByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        await _usersService.DeleteUserByIdAsync(id, cancellationToken);
+        await _usersService.DeleteUserByIdAsync(id);
         return Ok($"User({id}) deleted");
     }
 
@@ -38,7 +38,7 @@ public sealed class UsersController : ApiController
     public async Task<IActionResult> UpdateUserAsync(UpdateUserRequestDto userRequestViewDto,
         CancellationToken cancellationToken)
     {
-        await _usersService.UpdateUserAsync(userRequestViewDto, cancellationToken);
+        await _usersService.UpdateUserAsync(userRequestViewDto);
         return Ok($"User({userRequestViewDto.OldEmail}) updated");
     }
 }

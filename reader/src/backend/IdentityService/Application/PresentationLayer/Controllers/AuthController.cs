@@ -1,11 +1,7 @@
-using BusinessLogicLayer.Abstractions.Configurations;
-using BusinessLogicLayer.Abstractions.Dtos;
 using BusinessLogicLayer.Abstractions.Dtos.RequestsDtos;
 using BusinessLogicLayer.Abstractions.Services.DataServices;
-using BusinessLogicLayer.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using PresentationLayer.Abstractions;
-using PresentationLayer.Attributes;
 
 namespace PresentationLayer.Controllers;
 
@@ -27,8 +23,8 @@ public class AuthController(IUsersService usersService)
     public async Task<IActionResult> RegisterAsync(RegisterUserRequestDto registerUserRequestDto,
         CancellationToken cancellationToken)
     {
-        await _usersService.RegisterUserAsync(registerUserRequestDto, cancellationToken);
-        return Ok();
+        await _usersService.RegisterUserAsync(registerUserRequestDto);
+        return Created();
     }
 
     [HttpGet]
@@ -42,6 +38,6 @@ public class AuthController(IUsersService usersService)
     [Route("resend")]
     public async Task<IActionResult> ResendEmailConfirmMessageAsync(string email, string password, CancellationToken cancellationToken)
     {
-        return Ok(await _usersService.ResendEmailConfirmMessageAsync(email, password, cancellationToken));
+        return Ok(await _usersService.ResendEmailConfirmMessageAsync(email, password));
     }
 }

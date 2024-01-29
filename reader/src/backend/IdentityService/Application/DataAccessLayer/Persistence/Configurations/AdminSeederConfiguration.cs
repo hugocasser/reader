@@ -1,4 +1,4 @@
-using DataAccessLayer.Exeptions;
+using DataAccessLayer.Exceptions;
 using DataAccessLayer.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -18,8 +18,6 @@ public class AdminSeederConfiguration(IConfiguration configuration) : IEntityTyp
             id = Guid.Parse("343a57ec-6dde-47d1-95ee-34cd2362da88");
             email = "test_identity_Admin_reader2024@gmail.com";
             password = "test_identity_Admin_reader2024@gmail.com";
-            
-            return;
         }
         else
         {

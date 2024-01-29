@@ -1,6 +1,6 @@
 using DataAccessLayer.Models;
 
-namespace BusinessLogicLayer.Abstractions.Services;
+namespace BusinessLogicLayer.Abstractions.Services.AuthServices;
 
 public interface IRefreshTokenGeneratorService
 {

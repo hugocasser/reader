@@ -1,6 +1,7 @@
 using BusinessLogicLayer.Abstractions.Configurations;
 using BusinessLogicLayer.Abstractions.Dtos;
 using BusinessLogicLayer.Abstractions.Dtos.RequestsDtos;
+using BusinessLogicLayer.Abstractions.Dtos.ViewDtos;
 using BusinessLogicLayer.Abstractions.Services;
 using BusinessLogicLayer.Abstractions.Services.AuthServices;
 using BusinessLogicLayer.Abstractions.Services.DataServices;
@@ -24,7 +25,7 @@ public class UsersService(
     
 
 
-    public async Task RegisterUserAsync(RegisterUserRequestDto request, CancellationToken cancellationToken)
+    public async Task RegisterUserAsync(RegisterUserRequestDto request)
     {
         var user = new User
         {
@@ -44,8 +45,9 @@ public class UsersService(
 
     public async Task<IEnumerable<ViewUserDto>> GetAllUsersAsync(CancellationToken cancellationToken)
     {
-        var users = await usersRepository.GetAllUsersAsync().ToListAsync(cancellationToken: cancellationToken);
+        var users = await usersRepository.GetAllUsersAsync().ToListAsync(cancellationToken);
         var viewUserDtos = new List<ViewUserDto>();
+        
         foreach (var user in users)
         {
             viewUserDtos.Add(ViewUserDto.MapFromModel(user, await usersRepository.GetUserRolesAsync(user)));
@@ -54,7 +56,7 @@ public class UsersService(
         return viewUserDtos;
     }
 
-    public async Task<ViewUserDto> GetUserByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<ViewUserDto> GetUserByIdAsync(Guid id)
     {
         var user = await usersRepository.GetUserByIdAsync(id);
 
@@ -66,7 +68,7 @@ public class UsersService(
         return ViewUserDto.MapFromModel(user, await usersRepository.GetUserRolesAsync(user));
     }
 
-    public async Task DeleteUserByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task DeleteUserByIdAsync(Guid id)
     {
         var user = await usersRepository.GetUserByIdAsync(id);
 
@@ -79,7 +81,7 @@ public class UsersService(
         Utilities.AggregateIdentityErrorsAndThrow(result);
     }
 
-    public async Task UpdateUserAsync(UpdateUserRequestDto userRequestUserRequestDto, CancellationToken cancellationToken)
+    public async Task UpdateUserAsync(UpdateUserRequestDto userRequestUserRequestDto)
     {
         if (string.IsNullOrEmpty(userRequestUserRequestDto.NewEmail) && string.IsNullOrEmpty(userRequestUserRequestDto.FirstName)
                                                        && string.IsNullOrEmpty(userRequestUserRequestDto.LastName))
@@ -114,7 +116,7 @@ public class UsersService(
         return new AuthTokens(user.Id, userToken, refreshToken.Token);
     }
 
-    public async Task<string> GiveRoleToUserAsync(GiveRoleToUserRequestDto giveRoleToUserRequestDto, CancellationToken cancellationToken)
+    public async Task<string> GiveRoleToUserAsync(GiveRoleToUserRequestDto giveRoleToUserRequestDto)
     {
         var user = await usersRepository.GetUserByIdAsync(giveRoleToUserRequestDto.Id);
 
@@ -124,7 +126,6 @@ public class UsersService(
         }
 
         await usersRepository.SetUserRoleAsync(user, giveRoleToUserRequestDto.Role.Name);
-        
         var userRoles = await usersRepository.GetUserRolesAsync(user);
         
         return authService.GenerateToken(user.Id, user.Email, userRoles);
@@ -140,13 +141,12 @@ public class UsersService(
         }
         
         var result = await usersRepository.ConfirmUserEmail(user, code);
-        
         Utilities.AggregateIdentityErrorsAndThrow(result);
 
         return result;
     }
 
-    public async Task<IdentityResult> ResendEmailConfirmMessageAsync(string email, string password, CancellationToken cancellationToken)
+    public async Task<IdentityResult> ResendEmailConfirmMessageAsync(string email, string password)
     {
         var user = await usersRepository.GetUserByEmailAsync(email);
         if (user is null || !await usersRepository.CheckPasswordAsync(user, password)) 

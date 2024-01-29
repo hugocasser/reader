@@ -2,9 +2,5 @@ using Microsoft.AspNetCore.Http;
 
 namespace BusinessLogicLayer.Exceptions;
 
-public class NotFoundExceptionWithStatusCode : ExceptionWithStatusCode
-{
-    public NotFoundExceptionWithStatusCode(string message) : base(StatusCodes.Status404NotFound, message)
-    {
-    }
-}
+public class NotFoundExceptionWithStatusCode(string message)
+    : ExceptionWithStatusCode(StatusCodes.Status404NotFound, message);

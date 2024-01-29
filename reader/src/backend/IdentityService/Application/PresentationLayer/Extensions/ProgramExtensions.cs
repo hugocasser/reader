@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Reflection;
 using BusinessLogicLayer;
 using DataAccessLayer;
@@ -29,6 +28,7 @@ public static class ProgramExtensions
             .AddControllers();
         
         builder.AddLoggingServices(applicationConfiguration);
+        
         return builder;
     }
     
@@ -85,7 +85,6 @@ public static class ProgramExtensions
         }
 
         app.UseExceptionHandler("/error");
-
         app.UseAuthentication();
         app.UseAuthorization();
         app.UseCors("AllowAll");

@@ -1,5 +1,5 @@
 using BusinessLogicLayer.Abstractions.Configurations;
-using DataAccessLayer.Exeptions;
+using DataAccessLayer.Exceptions;
 
 namespace PresentationLayer.Configurations;
 

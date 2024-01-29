@@ -21,11 +21,10 @@ public static class DataAccessInjection
 
     public static IServiceCollection AddDbContext(this IServiceCollection serviceCollection, IApplicationConfiguration configuration)
     {
-        serviceCollection.AddSqlServerDatabase(configuration.DatabaseConnectionString);
-        return serviceCollection;
+        return serviceCollection.AddSqlServerDatabase(configuration.DatabaseConnectionString);
     }
 
-    public static IServiceCollection AddSqlServerDatabase(this IServiceCollection serviceCollection,
+    private static IServiceCollection AddSqlServerDatabase(this IServiceCollection serviceCollection,
         string connectionString)
     {
         serviceCollection.AddDbContext<UsersDbContext>(options =>

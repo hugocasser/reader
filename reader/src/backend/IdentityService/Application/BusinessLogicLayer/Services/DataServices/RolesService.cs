@@ -1,4 +1,3 @@
-using BusinessLogicLayer.Abstractions.Services;
 using BusinessLogicLayer.Abstractions.Services.DataServices;
 using BusinessLogicLayer.Exceptions;
 using DataAccessLayer.Abstractions.Repositories;
@@ -7,15 +6,8 @@ using Microsoft.AspNetCore.Identity;
 
 namespace BusinessLogicLayer.Services.DataServices;
 
-public class RolesService : IRolesService
+public class RolesService(IUserRolesRepository rolesRepository) : IRolesService
 {
-    private readonly IUserRolesRepository _rolesRepository;
-
-    public RolesService(IUserRolesRepository rolesRepository)
-    {
-        _rolesRepository = rolesRepository;
-    }
-    
     public async Task<IdentityResult> CreateRoleAsync(string? role)
     {
         if (string.IsNullOrEmpty(role))
@@ -23,7 +15,7 @@ public class RolesService : IRolesService
             throw new BadRequestExceptionWithStatusCode("Role cannot be null or empty");
         }
         
-        return await _rolesRepository.CreateRoleAsync(role);
+        return await rolesRepository.CreateRoleAsync(role);
     }
     
 
@@ -34,33 +26,24 @@ public class RolesService : IRolesService
             throw new BadRequestExceptionWithStatusCode("Role cannot be null or empty");
         }
         
-        var roleToDelete = await _rolesRepository.GetRoleInfoAsync(role);
+        var roleToDelete = await rolesRepository.GetRoleInfoAsync(role);
 
         if (roleToDelete == null)
         {
             throw new NotFoundExceptionWithStatusCode("Role not found");    
         }
         
-        return await _rolesRepository.DeleteRoleAsync(roleToDelete);
-    }
-
-    public async Task<bool> RoleExistsAsync(string? role)
-    {
-        if (string.IsNullOrEmpty(role))
-        {
-            throw new BadRequestExceptionWithStatusCode("Role cannot be null or empty");
-        }
-        
-        return await _rolesRepository.RoleExistsAsync(role);
+        return await rolesRepository.DeleteRoleAsync(roleToDelete);
     }
 
     public async Task<UserRole> GetRoleInfoAsync(string role)
     {
-        var roleInfo = await _rolesRepository.GetRoleInfoAsync(role);
+        var roleInfo = await rolesRepository.GetRoleInfoAsync(role);
         if (roleInfo is null)
         {
             throw new NotFoundExceptionWithStatusCode("Role not found");
         }
+        
         return roleInfo;
     }
 }

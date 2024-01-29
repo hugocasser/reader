@@ -1,11 +1,8 @@
-using BusinessLogicLayer.Abstractions.Dtos;
 using BusinessLogicLayer.Abstractions.Dtos.RequestsDtos;
 using BusinessLogicLayer.Abstractions.Services.DataServices;
-using DataAccessLayer.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PresentationLayer.Abstractions;
-using PresentationLayer.Attributes;
 
 namespace PresentationLayer.Controllers;
 
@@ -46,6 +43,6 @@ public class RolesController : ApiController
     public async Task<IActionResult> GiveRoleToUserAsync(GiveRoleToUserRequestDto giveRoleToUserRequestDto, 
         CancellationToken cancellationToken)
     {
-        return Ok(await _usersService.GiveRoleToUserAsync(giveRoleToUserRequestDto, cancellationToken));
+        return Ok(await _usersService.GiveRoleToUserAsync(giveRoleToUserRequestDto));
     }
 }

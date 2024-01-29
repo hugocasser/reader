@@ -1,20 +1,12 @@
 using BusinessLogicLayer.Abstractions.Configurations;
 using BusinessLogicLayer.Abstractions.Dtos;
-using BusinessLogicLayer.Abstractions.Services;
-using BusinessLogicLayer.Abstractions.Services.AuthServices;
 using MailKit.Net.Smtp;
 using MimeKit;
 
 namespace BusinessLogicLayer.Services.AuthServices;
 
-public class EmailSenderService : IEmailSenderService
+public class EmailSenderService(IEmailMessageSenderConfiguration configuration) : IEmailSenderService
 {
-    private readonly IEmailMessageSenderConfiguration _configuration;
-
-    public EmailSenderService(IEmailMessageSenderConfiguration configuration)
-    {
-        _configuration = configuration;
-    }
     public async Task SendEmailAsync(EmailMessage message)
     {
         await SendAsync(CreateEmailMessage(message));
@@ -23,16 +15,17 @@ public class EmailSenderService : IEmailSenderService
     private MimeMessage CreateEmailMessage(EmailMessage message)
     {
         var emailMessage = new MimeMessage();
-        emailMessage.From.Add(new MailboxAddress("Identity", _configuration.Sender));
+        emailMessage.From.Add(new MailboxAddress("Identity", configuration.Sender));
         emailMessage.To.Add(new MailboxAddress(message.AddresseeName, message.Addressee));
         emailMessage.Subject = message.Subject;
 
         var bodyBuilder = new BodyBuilder 
         { 
-            HtmlBody = $"<h2 style='color:red;'>{message.Content}</h2>" 
+            HtmlBody = message.Content
         };
 
         emailMessage.Body = bodyBuilder.ToMessageBody();
+        
         return emailMessage;
     }
     
@@ -42,21 +35,20 @@ public class EmailSenderService : IEmailSenderService
         try
         {
             await client.ConnectAsync(
-                _configuration.SmtpServer,
-                _configuration.Port,
+                configuration.SmtpServer,
+                configuration.Port,
                 true);
             client.AuthenticationMechanisms
                 .Remove("XOAUTH2");
             await client.AuthenticateAsync(
-                _configuration.UserName,
-                _configuration.Password);
+                configuration.UserName,
+                configuration.Password);
 
             await client.SendAsync(mailMessage);
         }
-        catch
+        catch(Exception exception)
         {
-            // TODO: throw an exception
-            throw;
+            throw new Exception(exception.Message);
         }
         finally
         {

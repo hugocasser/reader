@@ -9,5 +9,4 @@ public class UpdateUserRequestDto(string oldEmail, string? newEmail, string? fir
     public string? NewEmail { get; init; } = newEmail;
     public string? FirstName { get; init; } = firstName;
     public string LastName { get; init; } = lastName;
-    
 }

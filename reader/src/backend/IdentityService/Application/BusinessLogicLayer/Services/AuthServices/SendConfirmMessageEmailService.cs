@@ -5,7 +5,7 @@ using DataAccessLayer.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 
-namespace BusinessLogicLayer.Abstractions.Services.AuthServices;
+namespace BusinessLogicLayer.Services.AuthServices;
 
 public class SendConfirmMessageEmailService(
     UserManager<User> userManager,
