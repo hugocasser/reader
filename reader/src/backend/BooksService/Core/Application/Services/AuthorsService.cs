@@ -1,7 +1,6 @@
 using Application.Abstractions.Repositories;
 using Application.Abstractions.Services;
 using Application.Common;
-using Application.Dtos.Requests;
 using Application.Dtos.Requests.Authors;
 using Application.Dtos.Views.Authors;
 using Application.Exceptions;
@@ -9,11 +8,11 @@ using Domain.Models;
 
 namespace Application.Services;
 
-public class AuthorsService(IAuthorRepository authorRepository): IAuthorsService
+public class AuthorsService(IAuthorsRepository authorsRepository): IAuthorsService
 {
-    public async Task CreateAuthorAsync(CreateAuthorRequest request)
+    public async Task CreateAuthorAsync(CreateAuthorRequest request, CancellationToken cancellationToken)
     {
-        await authorRepository.AddAuthorAsync(new Author
+        await authorsRepository.AddAuthorAsync(new Author
         {
             Id = Guid.NewGuid(),
             FirstName = request.FirstName,
@@ -21,12 +20,15 @@ public class AuthorsService(IAuthorRepository authorRepository): IAuthorsService
             BirthDate = request.BirthDate,
             DeathDate = request.DeathDate,
             Biography = request.Biography
-        });
+        }, cancellationToken);
     }
 
-    public async Task<IEnumerable<AuthorShortView>> GetAllAuthorsAsync(PageSettings pageSettings)
+    public async Task<IEnumerable<AuthorShortView>> GetAllAuthorsAsync(PageSettings pageSettings,
+        CancellationToken cancellationToken)
     {
-        var authors = await authorRepository.GetAuthorsAsync();
+        var authors = await authorsRepository
+            .GetAuthorsAsync(pageSettings.PageSize,
+                pageSettings.PageNumber*(pageSettings.PageSize-1), cancellationToken);
         var orderedAuthors = authors.OrderBy(author => author.LastName)
             .ThenBy(author => author.FirstName).ThenBy(author => author.BirthDate)
             .Skip(pageSettings.PageNumber-1*pageSettings.PageSize).Take(pageSettings.PageSize);
@@ -35,9 +37,9 @@ public class AuthorsService(IAuthorRepository authorRepository): IAuthorsService
             AuthorShortView.MapFromModel(author, pageSettings)).ToList();
     }
 
-    public async Task<Author> GetAuthorByIdAsync(Guid id)
+    public async Task<Author> GetAuthorByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var author = await authorRepository.GetAuthorByIdAsync(id);
+        var author = await authorsRepository.GetAuthorByIdAsync(id, cancellationToken);
         
         if (author is null)
         {
@@ -47,19 +49,19 @@ public class AuthorsService(IAuthorRepository authorRepository): IAuthorsService
         return author;
     }
 
-    public async Task DeleteByIdAuthorAsync(Guid id)
+    public async Task DeleteByIdAuthorAsync(Guid id, CancellationToken cancellationToken)
     {
-        if (!await authorRepository.AuthorExistsAsync(id))
+        if (!await authorsRepository.AuthorExistsAsync(id, cancellationToken))
         {
             throw new NotFoundExceptionWithStatusCode("Author with this id not found");
         }
         
-        await authorRepository.DeleteByIdAuthorAsync(id);
+        await authorsRepository.DeleteByIdAuthorAsync(id, cancellationToken);
     }
 
-    public async Task UpdateAuthorAsync(UpdateAuthorsRequest request)
+    public async Task UpdateAuthorAsync(UpdateAuthorRequest request, CancellationToken cancellationToken)
     {
-        var author = await GetAuthorByIdAsync(request.Id);
+        var author = await GetAuthorByIdAsync(request.Id, cancellationToken);
 
         if (author is null)
         {
@@ -72,6 +74,6 @@ public class AuthorsService(IAuthorRepository authorRepository): IAuthorsService
         author.DeathDate = request.DeathDate;
         author.Biography = request.Biography;
         
-        await authorRepository.UpdateAuthorAsync(author);
+        await authorsRepository.UpdateAuthorAsync(author, cancellationToken);
     }
 }
