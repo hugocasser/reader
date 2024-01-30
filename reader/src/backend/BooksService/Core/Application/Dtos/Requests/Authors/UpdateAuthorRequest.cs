@@ -2,7 +2,7 @@ using Application.Abstractions;
 
 namespace Application.Dtos.Requests.Authors;
 
-public class UpdateAuthorsRequest : IRequest
+public class UpdateAuthorRequest : IRequest
 {
     public Guid Id { get; set; }
     public string FirstName { get; set; }

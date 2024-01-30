@@ -12,8 +12,8 @@ public class Book
     public string Name { get; set; } = string.Empty;
     [BsonElement("text")]
     public string Text { get; set; } = string.Empty;
+    [BsonElement("category_id")]
+    public Guid CategoryId { get; set; }
     [BsonElement("author_id")]
     public Guid AuthorId { get; set; }
-    [BsonElement("Category_id")]
-    public Guid CategoryId { get; set; }
 }

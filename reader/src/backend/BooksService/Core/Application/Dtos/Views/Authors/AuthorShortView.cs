@@ -1,5 +1,4 @@
 using Application.Common;
-using Application.Dtos.Views.Books;
 using Domain.Models;
 
 namespace Application.Dtos.Views.Authors;

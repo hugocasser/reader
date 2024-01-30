@@ -11,8 +11,6 @@ public class Author
     public string FirstName { get; set; } = string.Empty;
     [BsonElement("last_name")]
     public string LastName { get; set; } = string.Empty;
-    [BsonElement("books")]
-    public ICollection<Book> Books { get; set; } = [];
     [BsonElement("birth_date"), BsonRepresentation(BsonType.DateTime)]
     public DateTime BirthDate { get; set; }
     [BsonElement("death_date"), BsonRepresentation(BsonType.DateTime)]

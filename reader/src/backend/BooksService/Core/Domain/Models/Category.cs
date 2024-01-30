@@ -8,6 +8,4 @@ public class Category
     public Guid Id { get; set; }
     [BsonElement("name")]
     public string Name { get; set; } = string.Empty;
-    [BsonElement("books")]
-    public ICollection<Book> Books { get; set; } = [];
 }
