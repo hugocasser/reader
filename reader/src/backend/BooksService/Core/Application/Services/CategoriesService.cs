@@ -1,6 +1,6 @@
 using Application.Abstractions.Repositories;
 using Application.Abstractions.Services;
-using Application.Common;
+using Application.Dtos.Requests;
 using Application.Dtos.Requests.Category;
 using Application.Exceptions;
 using Domain.Models;
@@ -26,7 +26,7 @@ public class CategoriesService(ICategoriesRepository categoriesRepository) : ICa
     }
     
 
-    public async Task<IEnumerable<Category>> GetAllCategoriesAsync(PageSettings pageSettings, CancellationToken cancellationToken)
+    public async Task<IEnumerable<Category>> GetAllCategoriesAsync(PageSetting pageSettings, CancellationToken cancellationToken)
     {
         var categories = await categoriesRepository
             .GetCategoriesAsync(pageSettings.PageSize,

@@ -1,5 +1,4 @@
 using Application.Abstractions.Repositories;
-using Application.Common;
 using Domain.Models;
 using Infrastructure.Abstractions;
 using MongoDB.Driver;

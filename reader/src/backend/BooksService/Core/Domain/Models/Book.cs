@@ -5,7 +5,7 @@ namespace Domain.Models;
 public class Book
 {
     [BsonId, BsonElement("id")]
-    public Guid Id { get; set; }
+    public Guid Id { get; init; }
     [BsonElement ("description")]
     public string Description { get; set; } = string.Empty;
     [BsonElement("name")]

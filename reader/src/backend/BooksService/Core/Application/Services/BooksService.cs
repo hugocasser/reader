@@ -1,6 +1,6 @@
 using Application.Abstractions.Repositories;
 using Application.Abstractions.Services;
-using Application.Common;
+using Application.Dtos.Requests;
 using Application.Dtos.Requests.Books;
 using Application.Dtos.Views.Books;
 using Application.Exceptions;
@@ -39,7 +39,7 @@ public class BooksService(
     }
 
     public async Task<IEnumerable<BookShortInfoView>> GetAllBooksAsync
-        (PageSettings pageSettings, CancellationToken cancellationToken)
+        (PageSetting pageSettings, CancellationToken cancellationToken)
     {
         var books = await booksRepository
             .GetBooksAsync(pageSettings.PageSize, pageSettings.PageSize * (pageSettings.PageNumber - 1),
@@ -88,29 +88,29 @@ public class BooksService(
         await booksRepository.DeleteByIdBookAsync(id, cancellationToken);
     }
 
-    public async Task UpdateBookInfoAsync(UpdateBookRequest request, CancellationToken cancellationToken)
+    public async Task UpdateBookInfoAsync(UpdateBookInfoRequest infoRequest, CancellationToken cancellationToken)
     {
-        var book = await booksRepository.GetBookByIdAsync(request.Id, cancellationToken);
+        var book = await booksRepository.GetBookByIdAsync(infoRequest.Id, cancellationToken);
         
         if (book is null)
         {
             throw new NotFoundExceptionWithStatusCode("Book with this id not found");
         }
         
-        if (!await authorsRepository.AuthorExistsAsync(request.AuthorId, cancellationToken))
+        if (!await authorsRepository.AuthorExistsAsync(infoRequest.AuthorId, cancellationToken))
         {
             throw new BadRequestExceptionWithStatusCode("Author with this id not found");
         }
         
-        if (await categoriesRepository.CategoryExistsAsync(request.CategoryId, cancellationToken))
+        if (await categoriesRepository.CategoryExistsAsync(infoRequest.CategoryId, cancellationToken))
         {
             throw new BadRequestExceptionWithStatusCode("Category with this id not found");
         }
         
-        book.Name = request.Name;
-        book.Description = request.Description;
-        book.AuthorId = request.AuthorId;
-        book.CategoryId = request.CategoryId;
+        book.Name = infoRequest.Name;
+        book.Description = infoRequest.Description;
+        book.AuthorId = infoRequest.AuthorId;
+        book.CategoryId = infoRequest.CategoryId;
         
         await booksRepository.UpdateBookAsync(book, cancellationToken);
     }
@@ -130,7 +130,7 @@ public class BooksService(
     }
 
     public async Task<IEnumerable<BookShortInfoView>>
-        GetAllAuthorBooksAsync(Guid authorId, PageSettings pageSettings, CancellationToken cancellationToken)
+        GetAllAuthorBooksAsync(Guid authorId, PageSetting pageSettings, CancellationToken cancellationToken)
     {
         var author = await authorsRepository.GetAuthorByIdAsync(authorId, cancellationToken);
         
@@ -150,7 +150,7 @@ public class BooksService(
     }
 
     public async Task<IEnumerable<BookShortInfoView>> GetAllCategoryBooksAsync(Guid categoryId,
-        PageSettings pageSettings, CancellationToken cancellationToken)
+        PageSetting pageSettings, CancellationToken cancellationToken)
     {
         var category = await categoriesRepository.GetCategoryByIdAsync(categoryId, cancellationToken);
 

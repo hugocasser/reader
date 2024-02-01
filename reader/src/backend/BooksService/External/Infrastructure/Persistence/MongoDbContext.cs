@@ -1,5 +1,5 @@
 using Domain.Models;
-using Infrastructure.Persistence.Configurations;
+using Infrastructure.Abstractions;
 using MongoDB.Driver;
 
 namespace Infrastructure.Persistence;
@@ -10,7 +10,7 @@ public class MongoDbContext
     public IMongoCollection<Author> AuthorsCollection { get; set; }
     public IMongoCollection<Category> CategoriesCollection { get; set; }
 
-    public MongoDbContext(MongoConfiguration configuration)
+    public MongoDbContext(IMongoConfiguration configuration)
     {
         var client = new MongoClient(configuration.ConnectionUri);
         var database = client.GetDatabase(configuration.DatabaseName);
@@ -18,4 +18,5 @@ public class MongoDbContext
         AuthorsCollection = database.GetCollection<Author>(configuration.CollectionsNames.ElementAt(1));
         CategoriesCollection = database.GetCollection<Category>(configuration.CollectionsNames.ElementAt(2));
     }
+    
 }

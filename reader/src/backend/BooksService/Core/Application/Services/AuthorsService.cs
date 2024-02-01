@@ -1,6 +1,6 @@
 using Application.Abstractions.Repositories;
 using Application.Abstractions.Services;
-using Application.Common;
+using Application.Dtos.Requests;
 using Application.Dtos.Requests.Authors;
 using Application.Dtos.Views.Authors;
 using Application.Exceptions;
@@ -23,7 +23,7 @@ public class AuthorsService(IAuthorsRepository authorsRepository): IAuthorsServi
         }, cancellationToken);
     }
 
-    public async Task<IEnumerable<AuthorShortView>> GetAllAuthorsAsync(PageSettings pageSettings,
+    public async Task<IEnumerable<AuthorShortView>> GetAllAuthorsAsync(PageSetting pageSettings,
         CancellationToken cancellationToken)
     {
         var authors = await authorsRepository
