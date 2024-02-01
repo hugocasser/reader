@@ -1,12 +1,17 @@
-using BusinessLogicLayer.Abstractions.Configurations;
 using BusinessLogicLayer.Abstractions.Dtos;
+using BusinessLogicLayer.Abstractions.Services.AuthServices;
+using BusinessLogicLayer.Exceptions;
+using BusinessLogicLayer.Options;
 using MailKit.Net.Smtp;
+using Microsoft.Extensions.Options;
 using MimeKit;
 
 namespace BusinessLogicLayer.Services.AuthServices;
 
-public class EmailSenderService(IEmailMessageSenderConfiguration configuration) : IEmailSenderService
+public class EmailSenderService(IOptions<EmailMessageSenderOptions> options) : IEmailSenderService
 {
+    private readonly EmailMessageSenderOptions _options = options.Value;
+    
     public async Task SendEmailAsync(EmailMessage message)
     {
         await SendAsync(CreateEmailMessage(message));
@@ -15,7 +20,7 @@ public class EmailSenderService(IEmailMessageSenderConfiguration configuration) 
     private MimeMessage CreateEmailMessage(EmailMessage message)
     {
         var emailMessage = new MimeMessage();
-        emailMessage.From.Add(new MailboxAddress("Identity", configuration.Sender));
+        emailMessage.From.Add(new MailboxAddress("Identity", _options.Sender));
         emailMessage.To.Add(new MailboxAddress(message.AddresseeName, message.Addressee));
         emailMessage.Subject = message.Subject;
 
@@ -35,20 +40,20 @@ public class EmailSenderService(IEmailMessageSenderConfiguration configuration) 
         try
         {
             await client.ConnectAsync(
-                configuration.SmtpServer,
-                configuration.Port,
+                _options.SmtpServer,
+                _options.Port,
                 true);
             client.AuthenticationMechanisms
                 .Remove("XOAUTH2");
             await client.AuthenticateAsync(
-                configuration.UserName,
-                configuration.Password);
+                _options.UserName,
+                _options.Password);
 
             await client.SendAsync(mailMessage);
         }
-        catch(Exception exception)
+        catch(Exception ex)
         {
-            throw new Exception(exception.Message);
+            throw new EmailNotSentException(ex.Message);
         }
         finally
         {

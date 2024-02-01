@@ -1,23 +1,24 @@
 using System.Text;
-using BusinessLogicLayer.Abstractions.Configurations;
 using BusinessLogicLayer.Abstractions.Dtos;
+using BusinessLogicLayer.Abstractions.Services.AuthServices;
+using BusinessLogicLayer.Options;
 using DataAccessLayer.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Options;
 
 namespace BusinessLogicLayer.Services.AuthServices;
 
 public class SendConfirmMessageEmailService(
     UserManager<User> userManager,
     IEmailSenderService emailSenderService,
-    IEmailMessageSenderConfiguration configuration)
-    : IEmailConfirmMessageService
+    IOptions<EmailMessageSenderOptions> emailMessageSenderOptions) : IEmailConfirmMessageService
 {
     public async Task SendEmailConfirmMessageAsync(User user)
     {
         var token = await GenerateConfirmationToken(user);
 
-        var confirmUrl = configuration.ConfirmUrl + $"{user.Id}/{token}";
+        var confirmUrl = emailMessageSenderOptions.Value.ConfirmUrl + $"{user.Id}/{token}";
         var emailBody = GenerateEmailBody(user, confirmUrl);
         var message = await GenerateEmailMessage(user, "Email confirmation", emailBody);
         await emailSenderService.SendEmailAsync(message);

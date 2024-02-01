@@ -1,5 +1,4 @@
 using System.Reflection;
-using DataAccessLayer.Abstractions.Configurations;
 using Serilog;
 using Serilog.Exceptions;
 using Serilog.Sinks.Elasticsearch;
@@ -19,12 +18,11 @@ public static class LoggingOrElasticSerilogProgramExtension
     }
     
     public static WebApplicationBuilder AddLoggingServices(
-        this WebApplicationBuilder builder,
-        IApplicationConfiguration applicationConfiguration)
+        this WebApplicationBuilder builder)
     {
         if (Environment.GetEnvironmentVariable("ElasticConfiguration:Uri") != "no_set")
         {
-            return builder.AddElasticAndSerilog(applicationConfiguration);
+            return builder.AddElasticAndSerilog();
         }
         
         builder.Logging.ClearProviders();
@@ -34,8 +32,7 @@ public static class LoggingOrElasticSerilogProgramExtension
     }
 
     private static WebApplicationBuilder AddElasticAndSerilog(
-        this WebApplicationBuilder builder,
-        IApplicationConfiguration applicationConfiguration)
+        this WebApplicationBuilder builder)
     {
         builder.Host.UseSerilog((context, configuration) =>
         {

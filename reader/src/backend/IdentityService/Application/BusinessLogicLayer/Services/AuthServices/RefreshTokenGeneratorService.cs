@@ -28,14 +28,15 @@ public class RefreshTokenGeneratorService(IRefreshTokensRepository refreshTokens
         
         if (refreshToken is null)
         {
-            throw new IdentityExceptionWithStatusCode("The refresh token was not generated.");
+            throw new IdentityException("The refresh token was not generated.");
         }
 
-        if (refreshToken.ExpiryTime < DateTime.UtcNow)
+        if (refreshToken.ExpiryTime >= DateTime.UtcNow)
         {
-            throw new IdentityExceptionWithStatusCode("The refresh token was expired or revoked. Please login again");
+            return refreshToken;
         }
 
-        return refreshToken;
+        refreshTokensRepository.RemoveToken(refreshToken, cancellationToken);
+        throw new IdentityException("The refresh token was expired or revoked. Please login again");
     }
 }

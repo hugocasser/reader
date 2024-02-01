@@ -1,6 +1,6 @@
 using BusinessLogicLayer.Abstractions.Dtos;
 
-namespace BusinessLogicLayer.Abstractions.Configurations;
+namespace BusinessLogicLayer.Abstractions.Services.AuthServices;
 
 public interface IEmailSenderService
 {

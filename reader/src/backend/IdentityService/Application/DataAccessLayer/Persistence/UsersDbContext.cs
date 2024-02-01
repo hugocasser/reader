@@ -1,5 +1,5 @@
+using System.Reflection;
 using DataAccessLayer.Models;
-using DataAccessLayer.Persistence.Configurations;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -15,10 +15,6 @@ public class UsersDbContext(
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        
-        modelBuilder.ApplyConfiguration(new AdminSeederConfiguration(configuration));
-        modelBuilder.ApplyConfiguration(new RolesSeederConfiguration());
-        modelBuilder.ApplyConfiguration(new UserWithRolesConfiguration());
-        modelBuilder.ApplyConfiguration(new RefreshTokensConfiguration());
+        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
     }
 }

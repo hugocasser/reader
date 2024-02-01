@@ -1,10 +1,14 @@
 using System.Reflection;
 using BusinessLogicLayer;
 using DataAccessLayer;
+using DataAccessLayer.Options;
 using DataAccessLayer.Persistence;
 using Microsoft.AspNetCore.Cors.Infrastructure;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
-using PresentationLayer.Configurations;
+using PresentationLayer.Common;
+using PresentationLayer.Middleware;
 
 namespace PresentationLayer.Extensions;
 
@@ -12,22 +16,18 @@ public static class ProgramExtensions
 {
     public static WebApplicationBuilder ConfigureBuilder(this WebApplicationBuilder builder)
     {
-        var applicationConfiguration = new ApplicationConfiguration(builder.Configuration);
-        var tokenGenerationConfiguration = new TokenGenerationConfiguration(builder.Configuration);
-        var emailMessageSenderConfiguration = new EmailMessageSenderConfiguration(builder.Configuration);
-        
         builder.Services
-            .AddDbContext(applicationConfiguration)
+            .AddDbContext(builder.Configuration)
             .AddRepositories()
             .AddUsersIdentity()
-            .AddServices(tokenGenerationConfiguration, emailMessageSenderConfiguration)
-            .AddJwtAuthentication(tokenGenerationConfiguration)
+            .AddServices(builder.Configuration)
+            .AddJwtAuthentication(builder.Configuration)
             .AddSwagger()
             .AddCors(options => options.ConfigureAllowAllCors())
             .AddEndpointsApiExplorer()
             .AddControllers();
         
-        builder.AddLoggingServices(applicationConfiguration);
+        builder.AddLoggingServices();
         
         return builder;
     }
@@ -49,7 +49,13 @@ public static class ProgramExtensions
 
         return serviceCollection;
     }
-    
+
+    private static IApplicationBuilder UseCustomExceptionHandler(this IApplicationBuilder webApplication)
+    {
+        webApplication.UseMiddleware<CustomExceptionHandler>();
+        
+        return webApplication;
+    }
     public static async Task<WebApplication> RunApplicationAsync(this WebApplication webApplication)
     {
         using var scope = webApplication.Services.CreateScope();
@@ -58,14 +64,23 @@ public static class ProgramExtensions
         try
         {
             var usersDbContext = serviceProvider.GetRequiredService<UsersDbContext>();
-            await usersDbContext.Database.EnsureCreatedAsync();
-            
+            await usersDbContext.Database.MigrateAsync();
+            if (!usersDbContext.Users.Any())
+            {
+                var adminOptions = serviceProvider.GetRequiredService<IOptions<AdminSeederOptions>>();
+                await usersDbContext.AddAsync(DataSeeder.SeedAdmin(adminOptions));
+                await usersDbContext.AddRangeAsync(DataSeeder.SeedUserRoles(adminOptions));
+                await usersDbContext.AddAsync(DataSeeder.SeedAdminWithRoles(adminOptions));
+            }
             await webApplication.RunAsync();
         }
         catch (Exception ex)
         {
             var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
             logger.LogError(ex, "Host terminated unexpectedly");
+            Console.WriteLine("Error: " + ex.Message + "\n" + 
+                            "StackTrace: " + ex.StackTrace + "\n" +
+                            "Source: " + ex.Source);
         }
 
         return webApplication;
@@ -74,6 +89,7 @@ public static class ProgramExtensions
     public static WebApplication ConfigureApplication(this WebApplication app)
     {
         app.UseLoggingDependOnEnvironment();
+        
         if (app.Environment.IsDevelopment())
         {
             app.UseSwagger();
@@ -84,7 +100,13 @@ public static class ProgramExtensions
             });
         }
 
-        app.UseExceptionHandler("/error");
+        app.UseCustomExceptionHandler();
+        app.UseSwagger();
+        app.UseSwaggerUI(c =>
+        {
+            c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebApiDemo v1");
+            c.RoutePrefix = "swagger";
+        });
         app.UseAuthentication();
         app.UseAuthorization();
         app.UseCors("AllowAll");
@@ -104,5 +126,4 @@ public static class ProgramExtensions
 
         return options;
     }
-
 }

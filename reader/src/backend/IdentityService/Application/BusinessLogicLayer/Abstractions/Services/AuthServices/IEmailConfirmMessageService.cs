@@ -1,6 +1,6 @@
 using DataAccessLayer.Models;
 
-namespace BusinessLogicLayer.Abstractions.Configurations;
+namespace BusinessLogicLayer.Abstractions.Services.AuthServices;
 
 public interface IEmailConfirmMessageService
 {

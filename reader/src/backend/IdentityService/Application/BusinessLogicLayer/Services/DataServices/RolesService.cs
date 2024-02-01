@@ -6,16 +6,20 @@ using Microsoft.AspNetCore.Identity;
 
 namespace BusinessLogicLayer.Services.DataServices;
 
-public class RolesService(IUserRolesRepository rolesRepository) : IRolesService
+public class RolesService(RoleManager<UserRole> rolesManager) : IRolesService
 {
     public async Task<IdentityResult> CreateRoleAsync(string? role)
     {
         if (string.IsNullOrEmpty(role))
         {
-            throw new BadRequestExceptionWithStatusCode("Role cannot be null or empty");
+            throw new BadRequestException("Role cannot be null or empty");
         }
-        
-        return await rolesRepository.CreateRoleAsync(role);
+
+        return await rolesManager.CreateAsync(new UserRole()
+        {
+            Id = Guid.NewGuid(),
+            Name = role,
+        });
     }
     
 
@@ -23,25 +27,36 @@ public class RolesService(IUserRolesRepository rolesRepository) : IRolesService
     {
         if (string.IsNullOrEmpty(role))
         {
-            throw new BadRequestExceptionWithStatusCode("Role cannot be null or empty");
+            throw new BadRequestException("Role cannot be null or empty");
         }
         
-        var roleToDelete = await rolesRepository.GetRoleInfoAsync(role);
+        var roleToDelete = await rolesManager.FindByNameAsync(role);
 
         if (roleToDelete == null)
         {
-            throw new NotFoundExceptionWithStatusCode("Role not found");    
+            throw new NotFoundException("Role not found");    
+        }
+
+        return await rolesManager.DeleteAsync(roleToDelete);
+    }
+
+    public async Task<bool> RoleExistsAsync(string? role)
+    {
+        if (string.IsNullOrEmpty(role))
+        {
+            throw new BadRequestException("Role cannot be null or empty");
         }
         
-        return await rolesRepository.DeleteRoleAsync(roleToDelete);
+        return await rolesManager.RoleExistsAsync(role);
     }
 
     public async Task<UserRole> GetRoleInfoAsync(string role)
     {
-        var roleInfo = await rolesRepository.GetRoleInfoAsync(role);
+        var roleInfo = await rolesManager.FindByNameAsync(role);
+
         if (roleInfo is null)
         {
-            throw new NotFoundExceptionWithStatusCode("Role not found");
+            throw new NotFoundException("Role not found");
         }
         
         return roleInfo;

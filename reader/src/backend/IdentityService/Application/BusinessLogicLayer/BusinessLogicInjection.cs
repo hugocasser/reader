@@ -1,11 +1,11 @@
-using BusinessLogicLayer.Abstractions.Configurations;
-using BusinessLogicLayer.Abstractions.Services;
+using System.Reflection;
 using BusinessLogicLayer.Abstractions.Services.AuthServices;
 using BusinessLogicLayer.Abstractions.Services.DataServices;
+using BusinessLogicLayer.Options;
 using BusinessLogicLayer.Services.AuthServices;
 using BusinessLogicLayer.Services.DataServices;
-using BusinessLogicLayer.Validation.Validators;
 using FluentValidation;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BusinessLogicLayer;
@@ -18,47 +18,71 @@ public static class BusinessLogicInjection
             .AddScoped<IUsersService, UsersService>()
             .AddScoped<IRolesService, RolesService>()
             .AddScoped<IRefreshTokensService, RefreshTokensService>();
-        
+
         return serviceCollection;
     }
 
-    private static IServiceCollection UseEmailServices(this IServiceCollection serviceCollection ,IEmailMessageSenderConfiguration configuration)
+    private static IServiceCollection UseEmailServices(this IServiceCollection serviceCollection,
+        IConfiguration configuration)
     {
-        
+        serviceCollection.AddEmailSenderConfiguration(configuration);
         serviceCollection.AddSingleton(configuration);
         serviceCollection.AddTransient<IEmailConfirmMessageService, SendConfirmMessageEmailService>();
         serviceCollection.AddTransient<IEmailSenderService, EmailSenderService>();
+        
         return serviceCollection;
     }
 
-    private static IServiceCollection UseAuthenticationServices(this IServiceCollection serviceCollection,
-        ITokenGenerationConfiguration configuration)
+    private static IServiceCollection UseAuthenticationServices(this IServiceCollection serviceCollection)
     {
-        serviceCollection.AddSingleton(configuration);
         serviceCollection.AddScoped<IAuthTokenGeneratorService, JwtTokenGeneratorService>();
         serviceCollection.AddScoped<IRefreshTokenGeneratorService, RefreshTokenGeneratorService>();
-        
+
         return serviceCollection;
     }
 
-    public static IServiceCollection AddServices(this IServiceCollection serviceCollection,
-        ITokenGenerationConfiguration configuration, IEmailMessageSenderConfiguration emailConfiguration)
+    public static IServiceCollection AddServices
+        (this IServiceCollection serviceCollection, IConfiguration configuration)
     {
         serviceCollection.UseDataServices();
-        serviceCollection.UseAuthenticationServices(configuration);
-        serviceCollection.UseEmailServices(emailConfiguration);
+        serviceCollection.UseAuthenticationServices();
+        serviceCollection.UseEmailServices(configuration);
         serviceCollection.UseValidation();
-        
+
         return serviceCollection;
     }
 
     private static IServiceCollection UseValidation(this IServiceCollection serviceCollection)
     {
-        serviceCollection.AddValidatorsFromAssemblyContaining<GiveRoleToUserValidator>();
-        serviceCollection.AddValidatorsFromAssemblyContaining<LoginValidator>();
-        serviceCollection.AddValidatorsFromAssemblyContaining<RegisterUserValidator>();
-        serviceCollection.AddValidatorsFromAssemblyContaining<UpdateUserValidator>();
-        serviceCollection.AddValidatorsFromAssemblyContaining<UpdateAuthTokenValidator>();
+        serviceCollection.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+        
         return serviceCollection;
     }
+
+    private static IServiceCollection AddTokenGenerationOptions
+        (this IServiceCollection serviceCollection, IConfiguration configuration)
+    {
+        return serviceCollection.Configure<TokenGenerationOptions>(options =>
+        {
+            configuration.GetSection(nameof(TokenGenerationOptions))
+                .Bind(options);
+        });
+    }
+    
+    private static IServiceCollection AddEmailMessageSenderOptions
+        (this IServiceCollection serviceCollection, IConfiguration configuration)
+    {
+        return serviceCollection.Configure<EmailMessageSenderOptions>(
+            configuration.GetSection(nameof(EmailMessageSenderOptions))
+        );
+    }
+    
+    private static IServiceCollection AddEmailSenderConfiguration
+        (this IServiceCollection serviceCollection, IConfiguration configuration)
+    {
+        return serviceCollection
+            .AddTokenGenerationOptions(configuration)
+            .AddEmailMessageSenderOptions(configuration);
+    }
+
 }

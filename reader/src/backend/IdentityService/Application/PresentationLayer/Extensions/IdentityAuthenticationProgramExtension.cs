@@ -1,5 +1,6 @@
 using System.Text;
-using BusinessLogicLayer.Abstractions.Configurations;
+using MicrosoftOptions = Microsoft.Extensions.Options.Options;
+using BusinessLogicLayer.Options;
 using DataAccessLayer.Models;
 using DataAccessLayer.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -32,19 +33,25 @@ public static class IdentityAuthenticationProgramExtension
     
     public static IServiceCollection AddJwtAuthentication(
         this IServiceCollection serviceCollection,
-        ITokenGenerationConfiguration tokenGenerationConfiguration)
+        IConfiguration configuration)
     {
+        var tokenOptions = new TokenGenerationOptions();
+        configuration.GetSection(nameof(TokenGenerationOptions)).Bind(tokenOptions);
+        serviceCollection.AddSingleton(MicrosoftOptions.Create(tokenOptions));
+        
         serviceCollection.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
             options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        }).AddJwtBearer(options => { options.SetValidationTokenOptions(tokenGenerationConfiguration); });
+        })
+            .AddJwtBearer(options => options
+                .SetValidationTokenOptions(tokenOptions)
+            );
 
         return serviceCollection;
     }
     
-    private static JwtBearerOptions SetValidationTokenOptions(this JwtBearerOptions options,
-        ITokenGenerationConfiguration tokenGenerationConfiguration)
+    private static JwtBearerOptions SetValidationTokenOptions(this JwtBearerOptions options, TokenGenerationOptions tokenGenerationOptions)
     {
         options.TokenValidationParameters = new TokenValidationParameters()
         {
@@ -53,9 +60,9 @@ public static class IdentityAuthenticationProgramExtension
             ValidateAudience = true,
             RequireExpirationTime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = tokenGenerationConfiguration.Issuer,
-            ValidAudience = tokenGenerationConfiguration.Audience,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenGenerationConfiguration.Key))
+            ValidIssuer = tokenGenerationOptions.Issuer,
+            ValidAudience = tokenGenerationOptions.Audience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenGenerationOptions.Key))
         };
 
         return options;
