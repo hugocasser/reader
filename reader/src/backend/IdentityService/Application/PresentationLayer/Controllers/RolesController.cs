@@ -40,7 +40,7 @@ public class RolesController : ApiController
 
     [Authorize(Roles = "Admin")]
     [HttpPut]
-    public async Task<IActionResult> GiveRoleToUserAsync(GiveRoleToUserRequestDto giveRoleToUserRequestDto, 
+    public async Task<IActionResult> GiveRoleToUserAsync([FromBody]GiveRoleToUserRequestDto giveRoleToUserRequestDto, 
         CancellationToken cancellationToken)
     {
         return Ok(await _usersService.GiveRoleToUserAsync(giveRoleToUserRequestDto));

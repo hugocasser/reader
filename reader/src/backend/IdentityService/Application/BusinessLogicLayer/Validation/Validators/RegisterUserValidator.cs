@@ -1,4 +1,3 @@
-using BusinessLogicLayer.Abstractions.Dtos;
 using BusinessLogicLayer.Abstractions.Dtos.RequestsDtos;
 using FluentValidation;
 
@@ -11,6 +10,7 @@ public class RegisterUserValidator : AbstractValidator<RegisterUserRequestDto>
         RuleFor(dto => dto.Email)
             .NotNull().WithMessage("Email is required")
             .EmailAddress().WithMessage("Email is not valid");
+        
         RuleFor(dto => dto.Password)
             .NotEmpty().WithMessage("Password cannot be empty")
             .MinimumLength(8).WithMessage("Password length must be at least 8.")

@@ -6,13 +6,13 @@ using PresentationLayer.Abstractions;
 namespace PresentationLayer.Controllers;
 
 [Route("api/identity/auth")]
-public class AuthController(IUsersService usersService)
+public class AuthController(IUsersService usersService, IRefreshTokensService refreshTokensService)
     : ApiController(usersService)
 {
 
     [HttpPost]
     [Route("login")]
-    public async Task<IActionResult> LoginAsync(LoginUserRequestDto loginRequestDto,
+    public async Task<IActionResult> LoginAsync([FromBody]LoginUserRequestDto loginRequestDto,
         CancellationToken cancellationToken)
     {
         return Ok(await _usersService.LoginUserAsync(loginRequestDto, cancellationToken));
@@ -20,10 +20,11 @@ public class AuthController(IUsersService usersService)
 
     [HttpPost]
     [Route("register")]
-    public async Task<IActionResult> RegisterAsync(RegisterUserRequestDto registerUserRequestDto,
+    public async Task<IActionResult> RegisterAsync([FromBody]RegisterUserRequestDto registerUserRequestDto,
         CancellationToken cancellationToken)
     {
-        await _usersService.RegisterUserAsync(registerUserRequestDto);
+        await _usersService.RegisterUserAsync(registerUserRequestDto, cancellationToken);
+        
         return Created();
     }
 
@@ -39,5 +40,13 @@ public class AuthController(IUsersService usersService)
     public async Task<IActionResult> ResendEmailConfirmMessageAsync(string email, string password, CancellationToken cancellationToken)
     {
         return Ok(await _usersService.ResendEmailConfirmMessageAsync(email, password));
+    }
+
+    [HttpPost]
+    [Route("refreshtoken")]
+    public async Task<IActionResult> RefreshTokenAsync
+        ([FromBody]UpdateAuthTokenRequestDto updateAuthTokenRequestDto, CancellationToken cancellationToken)
+    {
+        return Ok(await refreshTokensService.RefreshTokenAsync(updateAuthTokenRequestDto, cancellationToken));
     }
 }

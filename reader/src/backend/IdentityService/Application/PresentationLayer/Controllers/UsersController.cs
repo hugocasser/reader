@@ -1,7 +1,9 @@
 using BusinessLogicLayer.Abstractions.Dtos.RequestsDtos;
 using BusinessLogicLayer.Abstractions.Services.DataServices;
+using DataAccessLayer.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.OpenApi.Extensions;
 using PresentationLayer.Abstractions;
 
 namespace PresentationLayer.Controllers;
@@ -16,7 +18,7 @@ public sealed class UsersController : ApiController
     [HttpGet]
     public async Task<IActionResult> GetAllUsersAsync(int page, int pageSize, CancellationToken cancellationToken)
     {
-        return Ok(await _usersService.GetAllUsersAsync(page, pageSize,cancellationToken));
+        return Ok(await _usersService.GetAllUsersAsync(page, pageSize, cancellationToken));
     }
 
     [HttpGet("{id:guid}")]
@@ -30,15 +32,17 @@ public sealed class UsersController : ApiController
     public async Task<IActionResult> DeleteUserByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         await _usersService.DeleteUserByIdAsync(id);
-        return Ok($"User({id}) deleted");
+        
+        return NoContent();
     }
 
     [Authorize]
     [HttpPut]
-    public async Task<IActionResult> UpdateUserAsync(UpdateUserRequestDto userRequestViewDto,
+    public async Task<IActionResult> UpdateUserAsync([FromBody]UpdateUserRequestDto userRequestViewDto,
         CancellationToken cancellationToken)
     {
-        await _usersService.UpdateUserAsync(userRequestViewDto);
-        return Ok($"User({userRequestViewDto.OldEmail}) updated");
+        await _usersService.UpdateUserAsync(userRequestViewDto, cancellationToken);
+
+        return NoContent();
     }
 }

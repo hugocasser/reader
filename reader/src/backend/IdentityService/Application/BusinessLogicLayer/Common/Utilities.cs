@@ -11,9 +11,10 @@ public static class Utilities
     public static void AggregateIdentityErrorsAndThrow(IdentityResult result)
     {
         if (result.Succeeded) return;
-        var errors = result.Errors.Aggregate(string.Empty, (current, error) => current
-                                                                               + (error.Description + "\n"));
-        throw new IdentityExceptionWithStatusCode(errors);
+        
+        var errors = result.Errors.Aggregate(string.Empty,
+            (current, error) => current + (error.Description + "\n"));
+        throw new IdentityException(errors);
     }
 
     public static string GenerateRandomString(int length)

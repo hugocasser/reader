@@ -15,6 +15,6 @@ public abstract class BaseValidationModel<T> : IBaseValidationModel
         var errorMessages = result.Errors.Select(failure =>
                 $"Property {failure.PropertyName}" + $" failed validation. Error was: {failure.ErrorMessage}\n")
             .Aggregate("", (current, errorMessage) => current + errorMessage);
-        throw new BadRequestExceptionWithStatusCode(errorMessages);
+        throw new BadRequestException(errorMessages);
     }
 }
