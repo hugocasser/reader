@@ -1,8 +1,9 @@
 using Application.Abstractions;
+using Application.Validation;
 
 namespace Application.Dtos.Requests.Books;
 
-public class CreateBookRequest : IRequest
+public class CreateBookRequest : Request<CreateBookRequest>
 {
     public string Description { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;

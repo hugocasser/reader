@@ -1,7 +1,7 @@
 using Application.Dtos.Requests.Books;
 using FluentValidation;
 
-namespace Application.Validation.Validator.Books;
+namespace Application.Validation.Validators.Books;
 
 public class UpdateBookTextValidator : AbstractValidator<UpdateBookTextRequest>
 {

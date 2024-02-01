@@ -1,8 +1,9 @@
 using Application.Abstractions;
+using Application.Validation;
 
 namespace Application.Dtos.Requests.Books;
 
-public class UpdateBookRequest : IRequest
+public class UpdateBookInfoRequest : Request<UpdateBookInfoRequest>
 {
     public Guid Id { get; set; }
     public string Name { get; set; }

@@ -1,8 +1,9 @@
 using Application.Abstractions;
+using Application.Validation;
 
 namespace Application.Dtos.Requests.Authors;
 
-public class CreateAuthorRequest : IRequest
+public class CreateAuthorRequest : Request<CreateAuthorRequest>
 {
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;

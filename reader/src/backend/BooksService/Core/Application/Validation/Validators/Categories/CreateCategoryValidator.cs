@@ -1,7 +1,7 @@
 using Application.Dtos.Requests.Category;
 using FluentValidation;
 
-namespace Application.Validation.Validator.Categories;
+namespace Application.Validation.Validators.Categories;
 
 public class CreateCategoryValidator : AbstractValidator<CreateCategoryRequest>
 {

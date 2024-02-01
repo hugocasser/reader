@@ -1,4 +1,4 @@
-using Application.Common;
+using Application.Dtos.Requests;
 using Domain.Models;
 
 namespace Application.Dtos.Views.Authors;
@@ -10,9 +10,14 @@ public record AuthorShortView(
     DateTime DeathDay,
     string Biography)
 {
-    public static AuthorShortView MapFromModel(Author author, PageSettings pageSettings)
+    public static AuthorShortView MapFromModel(Author author, PageSetting pageSettings)
     {
+        if (pageSettings.ShowDescription)
+        {
+            return new AuthorShortView(author.LastName, author.FirstName,
+                author.BirthDate, author.DeathDate, author.Biography[..pageSettings.DescriptionMaxLength]);
+        }
         return new AuthorShortView(author.LastName, author.FirstName,
-            author.BirthDate, author.DeathDate, author.Biography[..pageSettings.DescriptionMaxLength]);
+            author.BirthDate, author.DeathDate, string.Empty);
     }
 }

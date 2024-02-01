@@ -1,7 +1,7 @@
 using Application.Dtos.Requests.Authors;
 using FluentValidation;
 
-namespace Application.Validation.Validator.Authors;
+namespace Application.Validation.Validators.Authors;
 
 public class CreateAuthorValidator : AbstractValidator<CreateAuthorRequest>
 {

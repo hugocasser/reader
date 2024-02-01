@@ -1,8 +1,9 @@
 using Application.Abstractions;
+using Application.Validation;
 
 namespace Application.Dtos.Requests.Authors;
 
-public class UpdateAuthorRequest : IRequest
+public class UpdateAuthorRequest : Request<UpdateAuthorRequest>
 {
     public Guid Id { get; set; }
     public string FirstName { get; set; }
