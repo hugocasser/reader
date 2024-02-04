@@ -9,6 +9,8 @@ using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using PresentationLayer.Common;
 using PresentationLayer.Middleware;
+using PresentationLayer.Options;
+using PresentationLayer.Validators;
 
 namespace PresentationLayer.Extensions;
 
@@ -17,6 +19,7 @@ public static class ProgramExtensions
     public static WebApplicationBuilder ConfigureBuilder(this WebApplicationBuilder builder)
     {
         builder.Services
+            .AddAdminSeeder(builder.Configuration)
             .AddDbContext(builder.Configuration)
             .AddRepositories()
             .AddUsersIdentity()
@@ -78,9 +81,6 @@ public static class ProgramExtensions
         {
             var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
             logger.LogError(ex, "Host terminated unexpectedly");
-            Console.WriteLine("Error: " + ex.Message + "\n" + 
-                            "StackTrace: " + ex.StackTrace + "\n" +
-                            "Source: " + ex.Source);
         }
 
         return webApplication;
@@ -125,5 +125,22 @@ public static class ProgramExtensions
         });
 
         return options;
+    }
+    
+    private static IServiceCollection AddAdminSeeder
+        (this IServiceCollection serviceCollection, IConfiguration configuration)
+    {
+        return serviceCollection.Configure<AdminSeederOptions>(options =>
+        {
+            configuration.GetSection(nameof(AdminSeederOptions))
+                .Bind(options);
+        });
+    }
+
+    private static IServiceCollection AddValidators(this IServiceCollection serviceCollection)
+    {
+        serviceCollection.AddSingleton<IValidateOptions<AdminSeederOptions>, AdminSeederOptionsValidator>();
+        
+        return serviceCollection;
     }
 }

@@ -40,7 +40,7 @@ public class UsersService(
 
     public async Task<IEnumerable<ViewUserDto>> GetAllUsersAsync(int page, int pageSize, CancellationToken cancellationToken)
     {
-        var users = await usersManager.Users.OrderBy(user => user.Email)
+        var users = await usersManager.Users.AsNoTracking().OrderBy(user => user.Email)
             .Skip((page-1)*pageSize).Take(pageSize).ToListAsync(cancellationToken);
         var viewUserDtos = new List<ViewUserDto>();
         

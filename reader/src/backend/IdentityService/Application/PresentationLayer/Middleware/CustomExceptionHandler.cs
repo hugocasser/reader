@@ -49,6 +49,10 @@ public class CustomExceptionHandler(RequestDelegate next)
                 code = HttpStatusCode.Unauthorized;
                 result = JsonSerializer.Serialize(exception.Message);
                 break;
+            case EmailNotSentException:
+                code = HttpStatusCode.BadGateway;
+                result = JsonSerializer.Serialize(exception.Message);
+                break;
             default:
                 code = HttpStatusCode.InternalServerError;
                 result = JsonSerializer.Serialize(exception.Message);

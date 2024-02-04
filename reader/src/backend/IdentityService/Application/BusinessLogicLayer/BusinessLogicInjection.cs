@@ -4,9 +4,11 @@ using BusinessLogicLayer.Abstractions.Services.DataServices;
 using BusinessLogicLayer.Options;
 using BusinessLogicLayer.Services.AuthServices;
 using BusinessLogicLayer.Services.DataServices;
+using BusinessLogicLayer.Validation.Validators;
 using FluentValidation;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace BusinessLogicLayer;
 
@@ -55,6 +57,10 @@ public static class BusinessLogicInjection
     private static IServiceCollection UseValidation(this IServiceCollection serviceCollection)
     {
         serviceCollection.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+        serviceCollection
+            .AddSingleton<IValidateOptions<EmailMessageSenderOptions>, EmailMessageSenderOptionsValidator>();
+        serviceCollection
+            .AddSingleton<IValidateOptions<TokenGenerationOptions>,TokenGenerationOptionsValidator>();
         
         return serviceCollection;
     }
@@ -72,8 +78,11 @@ public static class BusinessLogicInjection
     private static IServiceCollection AddEmailMessageSenderOptions
         (this IServiceCollection serviceCollection, IConfiguration configuration)
     {
-        return serviceCollection.Configure<EmailMessageSenderOptions>(
-            configuration.GetSection(nameof(EmailMessageSenderOptions))
+        return serviceCollection.Configure<EmailMessageSenderOptions>(options =>
+            {
+                configuration.GetSection(nameof(EmailMessageSenderOptions))
+                    .Bind(options);
+            }
         );
     }
     

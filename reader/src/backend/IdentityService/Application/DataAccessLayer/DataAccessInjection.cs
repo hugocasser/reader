@@ -32,7 +32,6 @@ public static class DataAccessInjection
         serviceCollection.AddSingleton(MicrosoftOptions.Create(databaseOptions));
         
         serviceCollection.AddSqlServerDatabase(databaseOptions.ConnectionString);
-        serviceCollection.AddAdminSeeder(appConfiguration);
         
         return serviceCollection;
     }
@@ -54,14 +53,5 @@ public static class DataAccessInjection
 
         return serviceCollection;
     }
-
-    private static IServiceCollection AddAdminSeeder
-        (this IServiceCollection serviceCollection, IConfiguration configuration)
-    {
-        return serviceCollection.Configure<AdminSeederOptions>(options =>
-        {
-            configuration.GetSection(nameof(AdminSeederOptions))
-                .Bind(options);
-        });
-    }
+    
 }
