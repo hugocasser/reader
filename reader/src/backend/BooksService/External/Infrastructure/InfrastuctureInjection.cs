@@ -31,6 +31,7 @@ public static class InfrastuctureInjection
     private static IServiceCollection AddOptions(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddOptionsValidation();
+        
         return services.Configure<MongoOptions>(options =>
         {
             configuration.GetSection(nameof(MongoOptions)).Bind(options);

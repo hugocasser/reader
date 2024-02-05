@@ -10,13 +10,14 @@ public record AuthorShortView(
     DateTime DeathDay,
     string Biography)
 {
-    public static AuthorShortView MapFromModel(Author author, PageSetting pageSettings)
+    public static AuthorShortView MapFromModel(Domain.Models.Author author, PageSetting pageSettings)
     {
         if (pageSettings.ShowDescription)
         {
             return new AuthorShortView(author.LastName, author.FirstName,
                 author.BirthDate, author.DeathDate, author.Biography[..pageSettings.DescriptionMaxLength]);
         }
+        
         return new AuthorShortView(author.LastName, author.FirstName,
             author.BirthDate, author.DeathDate, string.Empty);
     }

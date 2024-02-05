@@ -9,7 +9,7 @@ public interface IAuthorsService
 {
     public Task CreateAuthorAsync(CreateAuthorRequest author, CancellationToken cancellationToken);
     public Task<IEnumerable<AuthorShortView>> GetAllAuthorsAsync(PageSetting pageSettings, CancellationToken cancellationToken);
-    public Task<Author> GetAuthorByIdAsync(Guid id, CancellationToken cancellationToken);
+    public Task<AuthorView> GetAuthorByIdAsync(Guid id, CancellationToken cancellationToken);
     public Task DeleteByIdAuthorAsync(Guid id, CancellationToken cancellationToken);
     public Task UpdateAuthorAsync(UpdateAuthorRequest request, CancellationToken cancellationToken);
 }

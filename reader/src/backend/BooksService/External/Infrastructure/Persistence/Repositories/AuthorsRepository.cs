@@ -10,7 +10,8 @@ public class AuthorsRepository(MongoDbContext dbContext) : AbstractRepository(db
     public async Task<IEnumerable<Author>> GetAuthorsAsync(int take, int skip,CancellationToken cancellationToken)
     {
         return await DbContext.AuthorsCollection.Find(_ => true)
-            .Skip(skip).Limit(take).SortBy(author => author.FirstName).ToListAsync(cancellationToken);
+            .Skip(skip).Limit(take).SortBy(author => author.FirstName)
+            .ThenBy(author => author.LastName).ToListAsync(cancellationToken);
     }
 
     public async Task<Author?> GetAuthorByIdAsync(Guid id, CancellationToken cancellationToken)

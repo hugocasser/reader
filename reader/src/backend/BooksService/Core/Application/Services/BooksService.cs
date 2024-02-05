@@ -17,12 +17,12 @@ public class BooksService(
     {
         if (!await authorsRepository.AuthorExistsAsync(request.AuthorId, cancellationToken))
         {
-            throw new BadRequestExceptionWithStatusCode("Author with this id not found");
+            throw new BadRequestException("Author with this id not found");
         }
 
         if (await categoriesRepository.CategoryExistsAsync(request.CategoryId, cancellationToken))
         {
-            throw new BadRequestExceptionWithStatusCode("Category with this id not found");
+            throw new BadRequestException("Category with this id not found");
         }
 
         var bookModel = new Book
@@ -57,7 +57,7 @@ public class BooksService(
         var book = await booksRepository.GetBookByIdAsync(id, cancellationToken);
         if (book is null)
         {
-            throw new NotFoundExceptionWithStatusCode("Book with this id not found");
+            throw new NotFoundException("Book with this id not found");
         }
 
         return BookView.MapFromModel(book,
@@ -70,7 +70,7 @@ public class BooksService(
         var book = await booksRepository.GetBookByIdAsync(id, cancellationToken);
         if (book is null)
         {
-            throw new NotFoundExceptionWithStatusCode("Book with this id not found");
+            throw new NotFoundException("Book with this id not found");
         }
 
         return BookInfoView.MapFromModel(book,
@@ -82,7 +82,7 @@ public class BooksService(
     {
         if (!await booksRepository.BookExistsAsync(id, cancellationToken))
         {
-            throw new NotFoundExceptionWithStatusCode("Book with this id not found");
+            throw new NotFoundException("Book with this id not found");
         }
         
         await booksRepository.DeleteByIdBookAsync(id, cancellationToken);
@@ -94,17 +94,17 @@ public class BooksService(
         
         if (book is null)
         {
-            throw new NotFoundExceptionWithStatusCode("Book with this id not found");
+            throw new NotFoundException("Book with this id not found");
         }
         
         if (!await authorsRepository.AuthorExistsAsync(infoRequest.AuthorId, cancellationToken))
         {
-            throw new BadRequestExceptionWithStatusCode("Author with this id not found");
+            throw new BadRequestException("Author with this id not found");
         }
         
         if (await categoriesRepository.CategoryExistsAsync(infoRequest.CategoryId, cancellationToken))
         {
-            throw new BadRequestExceptionWithStatusCode("Category with this id not found");
+            throw new BadRequestException("Category with this id not found");
         }
         
         book.Name = infoRequest.Name;
@@ -121,7 +121,7 @@ public class BooksService(
 
         if (book is null)
         {
-            throw new NotFoundExceptionWithStatusCode("Book with this id not found");
+            throw new NotFoundException("Book with this id not found");
         }
         
         book.Text = request.Text;
@@ -136,11 +136,11 @@ public class BooksService(
         
         if (author is null)
         {
-            throw new BadRequestExceptionWithStatusCode("Author with this id not found");
+            throw new BadRequestException("Author with this id not found");
         }
         
         var books = await authorsRepository.GetBooksByAuthorAsync(authorId, cancellationToken);
-        var booksList = books.ToList() ?? throw new NotFoundExceptionWithStatusCode("Author doesn't have books");
+        var booksList = books.ToList() ?? throw new NotFoundException("Author doesn't have books");
 
         var orderedBooksTakenBooks = books.OrderBy(book => book.Name);
         
@@ -156,7 +156,7 @@ public class BooksService(
 
         if (category is null)
         {
-            throw new BadRequestExceptionWithStatusCode("Category with this id not found");
+            throw new BadRequestException("Category with this id not found");
         }
         
         var books = await booksRepository.GetBooksByCategoryAsync(categoryId,
@@ -164,7 +164,7 @@ public class BooksService(
 
         if (!books.Any())
         {
-            throw new NotFoundExceptionWithStatusCode("No books in this category");
+            throw new NotFoundException("No books in this category");
         }
         
         return books.Select(book =>

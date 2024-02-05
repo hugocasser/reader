@@ -1,6 +1,3 @@
-using Application.Abstractions;
-using Application.Validation;
-
 namespace Application.Dtos.Requests;
 
 public class PageSetting

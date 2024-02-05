@@ -13,6 +13,7 @@ public record BookShortInfoView (string Name, string ShortDescription, string Au
                 book.Description[..pageSettings.DescriptionMaxLength],
                 author.FirstName + " " + author.LastName, category.Name);
         }
+        
         return new BookShortInfoView(book.Name, string.Empty,
             author.FirstName + " " + author.LastName, category.Name);
     }

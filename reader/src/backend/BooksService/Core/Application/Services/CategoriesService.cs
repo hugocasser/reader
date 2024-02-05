@@ -15,7 +15,7 @@ public class CategoriesService(ICategoriesRepository categoriesRepository) : ICa
 
         if (category is not null)
         {
-            throw new BadRequestExceptionWithStatusCode("Category with this name already exists");
+            throw new BadRequestException("Category with this name already exists");
         }
 
         await categoriesRepository.AddCategoryAsync(new Category
@@ -41,7 +41,7 @@ public class CategoriesService(ICategoriesRepository categoriesRepository) : ICa
 
         if (category is null)
         {
-            throw new NotFoundExceptionWithStatusCode("Category doesn't exist");
+            throw new NotFoundException("Category doesn't exist");
         }
 
         return category;
@@ -51,7 +51,7 @@ public class CategoriesService(ICategoriesRepository categoriesRepository) : ICa
     {
         if (!await categoriesRepository.CategoryExistsAsync(id, cancellationToken))
         {
-            throw new NotFoundExceptionWithStatusCode("Category not found");
+            throw new NotFoundException("Category not found");
         }
 
         await categoriesRepository.DeleteByIdCategoryAsync(id, cancellationToken);

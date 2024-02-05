@@ -95,6 +95,7 @@ public static class ProgramExtension
     private static IServiceCollection AddTokenOptions(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
         serviceCollection.AddOptionsValidators();
+        
         return serviceCollection.Configure<TokenOptions>(options =>
         {
             configuration.GetSection(nameof(TokenOptions)).Bind(options);
@@ -104,6 +105,7 @@ public static class ProgramExtension
     private static IServiceCollection AddOptionsValidators(this IServiceCollection serviceCollection)
     {
         serviceCollection.AddSingleton<IValidateOptions<TokenOptions>, TokenOptionsValidator>();
+        
         return serviceCollection;
     }
 }

@@ -4,8 +4,8 @@ namespace Application.Dtos.Views.Authors;
 
 public record AuthorView(string FirstName, string LastName, DateTime BirthDay, DateTime DeathDay, string Biography)
 {
-    public static AuthorView MapFromModel(Author author)
+    public static AuthorView MapFromModel(Author authorView)
     {
-        return new AuthorView(author.FirstName, author.LastName, author.BirthDate, author.DeathDate, author.Biography);
+        return new AuthorView(authorView.FirstName, authorView.LastName, authorView.BirthDate, authorView.DeathDate, authorView.Biography);
     }
 }

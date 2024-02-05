@@ -29,31 +29,28 @@ public class AuthorsService(IAuthorsRepository authorsRepository): IAuthorsServi
         var authors = await authorsRepository
             .GetAuthorsAsync(pageSettings.PageSize,
                 pageSettings.PageNumber*(pageSettings.PageSize-1), cancellationToken);
-        var orderedAuthors = authors.OrderBy(author => author.LastName)
-            .ThenBy(author => author.FirstName).ThenBy(author => author.BirthDate)
-            .Skip(pageSettings.PageNumber-1*pageSettings.PageSize).Take(pageSettings.PageSize);
         
-        return orderedAuthors.Select(author =>
+        return authors.Select(author =>
             AuthorShortView.MapFromModel(author, pageSettings)).ToList();
     }
 
-    public async Task<Author> GetAuthorByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<AuthorView> GetAuthorByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         var author = await authorsRepository.GetAuthorByIdAsync(id, cancellationToken);
         
         if (author is null)
         {
-            throw new NotFoundExceptionWithStatusCode("Author with this id not found");
+            throw new NotFoundException("Author with this id not found");
         }
         
-        return author;
+        return AuthorView.MapFromModel(author);
     }
 
     public async Task DeleteByIdAuthorAsync(Guid id, CancellationToken cancellationToken)
     {
         if (!await authorsRepository.AuthorExistsAsync(id, cancellationToken))
         {
-            throw new NotFoundExceptionWithStatusCode("Author with this id not found");
+            throw new NotFoundException("Author with this id not found");
         }
         
         await authorsRepository.DeleteByIdAuthorAsync(id, cancellationToken);
@@ -61,11 +58,11 @@ public class AuthorsService(IAuthorsRepository authorsRepository): IAuthorsServi
 
     public async Task UpdateAuthorAsync(UpdateAuthorRequest request, CancellationToken cancellationToken)
     {
-        var author = await GetAuthorByIdAsync(request.Id, cancellationToken);
+        var author = await authorsRepository.GetAuthorByIdAsync(request.Id, cancellationToken);
 
         if (author is null)
         {
-            throw new NotFoundExceptionWithStatusCode("Author with this id not found");
+            throw new NotFoundException("Author with this id not found");
         }
         
         author.FirstName = request.FirstName;
