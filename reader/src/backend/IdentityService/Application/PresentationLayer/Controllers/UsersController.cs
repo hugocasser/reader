@@ -9,11 +9,8 @@ using PresentationLayer.Abstractions;
 namespace PresentationLayer.Controllers;
 
 [Route("api/identity/users")]
-public sealed class UsersController : ApiController
+public sealed class UsersController(IUsersService usersService) : ApiController(usersService)
 {
-    public UsersController(IUsersService usersService) : base(usersService)
-    { }
-
     [Authorize(Roles = "Admin")]
     [HttpGet]
     public async Task<IActionResult> GetAllUsersAsync(int page, int pageSize, CancellationToken cancellationToken)
@@ -22,14 +19,14 @@ public sealed class UsersController : ApiController
     }
 
     [HttpGet("{id:guid}")]
-    public async Task<IActionResult> GetUserByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetUserByIdAsync(Guid id)
     {
         return Ok(await _usersService.GetUserByIdAsync(id));
     }
 
     [Authorize]
     [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> DeleteUserByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> DeleteUserByIdAsync(Guid id)
     {
         await _usersService.DeleteUserByIdAsync(id);
         

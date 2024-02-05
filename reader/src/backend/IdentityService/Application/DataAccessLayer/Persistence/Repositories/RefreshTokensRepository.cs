@@ -24,7 +24,9 @@ public class RefreshTokensRepository(UsersDbContext usersDbContext) : IRefreshTo
 
     public async Task<RefreshToken> FindUserTokenAsync(Guid userId, string token, CancellationToken cancellationToken)
     {
-        return await usersDbContext.RefreshTokens.SingleAsync(refreshToken => refreshToken.UserId == userId && refreshToken.Token == token, cancellationToken);
+        return await usersDbContext.RefreshTokens.AsNoTracking()
+            .SingleAsync(refreshToken => refreshToken.UserId == userId 
+                                         && refreshToken.Token == token, cancellationToken);
     }
 
     public async Task SaveChangesAsync(CancellationToken cancellationToken)
