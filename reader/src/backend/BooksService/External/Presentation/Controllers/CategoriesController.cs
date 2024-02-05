@@ -33,6 +33,7 @@ public class CategoriesController(ICategoriesService categoriesService, IBooksSe
         (CreateCategoryRequest request, CancellationToken cancellationToken)
     {
         await categoriesService.CreateCategoryAsync(request, cancellationToken);
+        
         return Created();
     }
 
@@ -40,6 +41,7 @@ public class CategoriesController(ICategoriesService categoriesService, IBooksSe
     public async Task<IActionResult> DeleteCategoryAsync(Guid id, CancellationToken cancellationToken)
     {
         await categoriesService.DeleteByIdCategoryAsync(id, cancellationToken);
-        return Ok($"Category with id {id} deleted");
+        
+        return NoContent();
     }
 }

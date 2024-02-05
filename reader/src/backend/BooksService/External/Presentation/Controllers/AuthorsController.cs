@@ -33,7 +33,8 @@ public class AuthorsController(IAuthorsService authorsService, IBooksService boo
         (CreateAuthorRequest createAuthorRequest, CancellationToken cancellationToken)
     {
         await authorsService.CreateAuthorAsync(createAuthorRequest, cancellationToken);
-        return Ok("Author Created");
+
+        return Created();
     }
 
     [HttpPut]
@@ -41,13 +42,15 @@ public class AuthorsController(IAuthorsService authorsService, IBooksService boo
         (UpdateAuthorRequest updateAuthorRequest, CancellationToken cancellationToken)
     {
         await authorsService.UpdateAuthorAsync(updateAuthorRequest, cancellationToken);
-        return Ok($"Author with id {updateAuthorRequest.Id} updated");
+        
+        return NoContent();
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteAuthorAsync(Guid id, CancellationToken cancellationToken)
     {
         await authorsService.DeleteByIdAuthorAsync(id, cancellationToken);
-        return Ok($"Author with id {id} deleted");
+        
+        return NoContent();
     }
 }

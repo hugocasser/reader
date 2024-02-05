@@ -1,3 +1,4 @@
+using System.Reflection;
 using Application.Abstractions.Services;
 using Application.Services;
 using Application.Validation.Validators.Authors;
@@ -15,18 +16,13 @@ public static class ApplicationInjection
         services.AddScoped<IBooksService, BooksService>();
         services.AddScoped<ICategoriesService, CategoriesService>();
         services.AddScoped<IAuthorsService, AuthorsService>();
-        
+        services.AddValidators();
         return services;
     }
-    
-    public static IServiceCollection AddValidators(this IServiceCollection services)
+
+    private static IServiceCollection AddValidators(this IServiceCollection services)
     {
-        services.AddValidatorsFromAssemblyContaining<CreateBookValidator>();
-        services.AddValidatorsFromAssemblyContaining<UpdateBookInfoValidator>();
-        services.AddValidatorsFromAssemblyContaining<UpdateBookTextValidator>();
-        services.AddValidatorsFromAssemblyContaining<CreateCategoryValidator>();
-        services.AddValidatorsFromAssemblyContaining<CreateAuthorValidator>();
-        services.AddValidatorsFromAssemblyContaining<UpdateAuthorValidator>();
+        services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
         
         return services;
     }

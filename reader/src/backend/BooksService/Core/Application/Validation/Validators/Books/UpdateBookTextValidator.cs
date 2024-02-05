@@ -9,6 +9,7 @@ public class UpdateBookTextValidator : AbstractValidator<UpdateBookTextRequest>
     {
         RuleFor(book => book.Id)
             .NotNull().WithMessage("Book id can't be null");
+        
         RuleFor(book => book.Text)
             .NotNull().WithMessage("Book text can't be null");
     }

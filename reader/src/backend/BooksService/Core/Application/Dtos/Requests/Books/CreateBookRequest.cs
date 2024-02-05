@@ -3,7 +3,7 @@ using Application.Validation;
 
 namespace Application.Dtos.Requests.Books;
 
-public class CreateBookRequest : Request<CreateBookRequest>
+public class CreateBookRequest
 {
     public string Description { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;

@@ -3,7 +3,7 @@ using Application.Validation;
 
 namespace Application.Dtos.Requests;
 
-public class PageSetting : Request<PageSetting>
+public class PageSetting
 {
     public int PageNumber { get; set; }
     public int PageSize { get; set; }

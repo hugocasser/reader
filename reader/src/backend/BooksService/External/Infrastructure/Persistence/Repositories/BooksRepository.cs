@@ -37,6 +37,7 @@ public class BooksRepository(MongoDbContext dbContext) : AbstractRepository(dbCo
     {
         var book = await DbContext.BooksCollection.Find(book => book.Id == id)
             .FirstOrDefaultAsync(cancellationToken);
+        
         return book is not null;
     }
 

@@ -3,7 +3,7 @@ using Application.Validation;
 
 namespace Application.Dtos.Requests.Authors;
 
-public class CreateAuthorRequest : Request<CreateAuthorRequest>
+public class CreateAuthorRequest
 {
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;

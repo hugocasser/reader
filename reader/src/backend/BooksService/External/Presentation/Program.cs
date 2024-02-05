@@ -1,4 +1,3 @@
-using Presentation.Configurations;
 using Presentation.Extensions;
 
 public class Program
@@ -7,8 +6,7 @@ public class Program
     {
         var builder = WebApplication
             .CreateBuilder(args);
-        var mongoConfiguration = new MongoConfiguration(builder.Configuration);
-        builder.ConfigureBuilder(mongoConfiguration);
+        builder.ConfigureBuilder();
         
         var application = builder
             .Build()

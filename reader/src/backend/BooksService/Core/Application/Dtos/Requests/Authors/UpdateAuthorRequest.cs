@@ -3,7 +3,7 @@ using Application.Validation;
 
 namespace Application.Dtos.Requests.Authors;
 
-public class UpdateAuthorRequest : Request<UpdateAuthorRequest>
+public class UpdateAuthorRequest
 {
     public Guid Id { get; set; }
     public string FirstName { get; set; }

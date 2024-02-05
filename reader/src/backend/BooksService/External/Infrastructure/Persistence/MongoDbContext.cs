@@ -1,6 +1,7 @@
 using Domain.Models;
-using Infrastructure.Abstractions;
+using Microsoft.Extensions.Options;
 using MongoDB.Driver;
+using Presentation.Options;
 
 namespace Infrastructure.Persistence;
 
@@ -10,13 +11,13 @@ public class MongoDbContext
     public IMongoCollection<Author> AuthorsCollection { get; set; }
     public IMongoCollection<Category> CategoriesCollection { get; set; }
 
-    public MongoDbContext(IMongoConfiguration configuration)
+    public MongoDbContext(IOptions<MongoOptions> options)
     {
-        var client = new MongoClient(configuration.ConnectionUri);
-        var database = client.GetDatabase(configuration.DatabaseName);
-        BooksCollection = database.GetCollection<Book>(configuration.CollectionsNames.First());
-        AuthorsCollection = database.GetCollection<Author>(configuration.CollectionsNames.ElementAt(1));
-        CategoriesCollection = database.GetCollection<Category>(configuration.CollectionsNames.ElementAt(2));
+        var client = new MongoClient(options.Value.ConnectionUri);
+        var database = client.GetDatabase(options.Value.DatabaseName);
+        BooksCollection = database.GetCollection<Book>(options.Value.CollectionsNames.First());
+        AuthorsCollection = database.GetCollection<Author>(options.Value.CollectionsNames.ElementAt(1));
+        CategoriesCollection = database.GetCollection<Category>(options.Value.CollectionsNames.ElementAt(2));
     }
     
 }

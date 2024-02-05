@@ -3,7 +3,7 @@ using Application.Validation;
 
 namespace Application.Dtos.Requests.Books;
 
-public class UpdateBookInfoRequest : Request<UpdateBookInfoRequest>
+public class UpdateBookInfoRequest
 {
     public Guid Id { get; set; }
     public string Name { get; set; }

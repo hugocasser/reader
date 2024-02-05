@@ -1,25 +1,29 @@
 using Application;
+using FluentValidation.AspNetCore;
 using Infrastructure;
 using Infrastructure.Abstractions;
 using Microsoft.AspNetCore.Cors.Infrastructure;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+using Presentation.Options;
+using Presentation.Validators;
 
 namespace Presentation.Extensions;
 
 public static class ProgramExtension
 {
     public static WebApplicationBuilder ConfigureBuilder
-        (this WebApplicationBuilder builder, IMongoConfiguration mongoConfiguration)
+        (this WebApplicationBuilder builder)
     {
         builder.Services
-            .AddSingleton(mongoConfiguration)
-            .AddDbContext()
+            .AddDbContext(builder.Configuration)
             .AddRepositories()
             .AddServices()
             .AddValidators()
             .AddSwagger()
             .AddCors(options => options.ConfigureAllowAllCors())
-            .AddControllers();
+            .AddControllers()
+            .AddFluentValidation();
         
         return builder; 
     }
@@ -44,6 +48,7 @@ public static class ProgramExtension
         app.UseAuthorization();
         app.UseCors("AllowAll");
         app.MapControllers();
+
         
         return app;
     }
@@ -76,4 +81,17 @@ public static class ProgramExtension
         return serviceCollection;
     }
 
+    private static IServiceCollection AddTokenOptions(this IServiceCollection serviceCollection, IConfiguration configuration)
+    {
+        return serviceCollection.Configure<TokenOptions>(options =>
+        {
+            configuration.GetSection(nameof(TokenOptions)).Bind(options);
+        });
+    }
+
+    private static IServiceCollection AddValidators(this IServiceCollection serviceCollection)
+    {
+        serviceCollection.AddSingleton<IValidateOptions<TokenOptions>, TokenOptionsValidator>();
+        return serviceCollection;
+    }
 }
