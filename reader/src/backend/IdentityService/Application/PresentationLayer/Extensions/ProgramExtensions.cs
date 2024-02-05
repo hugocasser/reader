@@ -87,6 +87,7 @@ public static class ProgramExtensions
     
     public static WebApplication ConfigureApplication(this WebApplication app)
     {
+        app.UseCustomExceptionHandler();
         app.UseLoggingDependOnEnvironment();
         
         if (app.Environment.IsDevelopment())
@@ -98,8 +99,7 @@ public static class ProgramExtensions
                 c.RoutePrefix = "swagger";
             });
         }
-
-        app.UseCustomExceptionHandler();
+        
         app.UseSwagger();
         app.UseSwaggerUI(c =>
         {

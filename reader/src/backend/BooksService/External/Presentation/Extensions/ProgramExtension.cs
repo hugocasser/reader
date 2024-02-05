@@ -4,6 +4,7 @@ using Infrastructure;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+using Presentation.Middlewares;
 using Presentation.Options;
 using Presentation.Validators;
 
@@ -31,6 +32,7 @@ public static class ProgramExtension
 
     public static WebApplication ConfigureApplication(this WebApplication app)
     {
+        app.UseCustomExceptionHandler();
         if (app.Environment.IsDevelopment())
         {
             app.UseSwagger();
@@ -52,6 +54,12 @@ public static class ProgramExtension
 
         
         return app;
+    }
+    private static IApplicationBuilder UseCustomExceptionHandler(this IApplicationBuilder webApplication)
+    {
+        webApplication.UseMiddleware<CustomExceptionHandlerMiddleware>();
+        
+        return webApplication;
     }
     
     private static CorsOptions ConfigureAllowAllCors(this CorsOptions options)
