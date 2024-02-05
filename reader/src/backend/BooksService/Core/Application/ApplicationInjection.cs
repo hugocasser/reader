@@ -1,9 +1,6 @@
 using System.Reflection;
 using Application.Abstractions.Services;
 using Application.Services;
-using Application.Validation.Validators.Authors;
-using Application.Validation.Validators.Books;
-using Application.Validation.Validators.Categories;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 

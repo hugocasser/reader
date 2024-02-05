@@ -1,7 +1,6 @@
 using System.Reflection;
 using BusinessLogicLayer;
 using DataAccessLayer;
-using DataAccessLayer.Options;
 using DataAccessLayer.Persistence;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.EntityFrameworkCore;

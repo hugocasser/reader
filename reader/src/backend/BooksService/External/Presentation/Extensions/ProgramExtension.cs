@@ -1,7 +1,6 @@
 using Application;
 using FluentValidation.AspNetCore;
 using Infrastructure;
-using Infrastructure.Abstractions;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
@@ -19,7 +18,9 @@ public static class ProgramExtension
             .AddDbContext(builder.Configuration)
             .AddRepositories()
             .AddServices()
-            .AddValidators()
+            .AddOptionsValidators()
+            .AddIdentity(builder.Configuration)
+            .AddOptions()
             .AddSwagger()
             .AddCors(options => options.ConfigureAllowAllCors())
             .AddControllers()
@@ -89,7 +90,7 @@ public static class ProgramExtension
         });
     }
 
-    private static IServiceCollection AddValidators(this IServiceCollection serviceCollection)
+    private static IServiceCollection AddOptionsValidators(this IServiceCollection serviceCollection)
     {
         serviceCollection.AddSingleton<IValidateOptions<TokenOptions>, TokenOptionsValidator>();
         return serviceCollection;
