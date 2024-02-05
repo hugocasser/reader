@@ -19,7 +19,7 @@ public static class ProgramExtension
             .AddDbContext(builder.Configuration)
             .AddRepositories()
             .AddServices()
-            .AddOptionsValidators()
+            .AddTokenOptions(builder.Configuration)
             .AddIdentity(builder.Configuration)
             .AddOptions()
             .AddSwagger()
@@ -27,12 +27,14 @@ public static class ProgramExtension
             .AddControllers()
             .AddFluentValidation();
         
-        return builder; 
+        return builder.AddLoggingServices(); 
     }
 
     public static WebApplication ConfigureApplication(this WebApplication app)
     {
         app.UseCustomExceptionHandler();
+        app.UseLoggingDependOnEnvironment();
+        
         if (app.Environment.IsDevelopment())
         {
             app.UseSwagger();
@@ -92,6 +94,7 @@ public static class ProgramExtension
 
     private static IServiceCollection AddTokenOptions(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
+        serviceCollection.AddOptionsValidators();
         return serviceCollection.Configure<TokenOptions>(options =>
         {
             configuration.GetSection(nameof(TokenOptions)).Bind(options);
