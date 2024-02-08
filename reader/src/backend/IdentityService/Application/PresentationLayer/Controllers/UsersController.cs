@@ -9,9 +9,9 @@ using PresentationLayer.Abstractions;
 namespace PresentationLayer.Controllers;
 
 [Route("api/identity/users")]
-public sealed class UsersController(IUsersService usersService) : ApiController(usersService)
+public sealed class UsersController(IUsersService _usersService) : ApiController(_usersService)
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = nameof(EnumRoles.Admin))]
     [HttpGet]
     public async Task<IActionResult> GetAllUsersAsync(int page, int pageSize, CancellationToken cancellationToken)
     {

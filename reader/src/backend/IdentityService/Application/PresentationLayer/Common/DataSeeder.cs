@@ -8,7 +8,6 @@ namespace PresentationLayer.Common;
 
 public static class DataSeeder
 {
-    
     public static User SeedAdmin(IOptions<AdminSeederOptions> options)
     {
         var admin = new User
@@ -39,7 +38,6 @@ public static class DataSeeder
 
     public static IEnumerable<UserRole> SeedUserRoles(IOptions<AdminSeederOptions> options)
     {
-
         var adminRoles = new List<UserRole>(2)
         {
             new UserRole("Admin")

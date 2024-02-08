@@ -1,4 +1,5 @@
 using BusinessLogicLayer.Validation;
+using DataAccessLayer.Models;
 
 namespace BusinessLogicLayer.Abstractions.Dtos.RequestsDtos;
 
@@ -10,4 +11,16 @@ public class RegisterUserRequestDto(string email, string password,
     public string? FirstName { get; } = firstName;
     public string? LastName { get; } = lastName;
     public string Username { get; init; } = username;
+
+    public User ToUser()
+    {
+        return new User
+        {
+            Id = Guid.NewGuid(),
+            Email = Email,
+            FirstName = FirstName,
+            LastName = LastName,
+            UserName = Username
+        };
+    }
 }

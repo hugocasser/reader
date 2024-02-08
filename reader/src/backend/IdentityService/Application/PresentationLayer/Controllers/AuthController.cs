@@ -6,10 +6,9 @@ using PresentationLayer.Abstractions;
 namespace PresentationLayer.Controllers;
 
 [Route("api/identity/auth")]
-public class AuthController(IUsersService usersService, IRefreshTokensService refreshTokensService)
-    : ApiController(usersService)
+public class AuthController(IUsersService _usersService, IRefreshTokensService refreshTokensService)
+    : ApiController(_usersService)
 {
-
     [HttpPost]
     [Route("login")]
     public async Task<IActionResult> LoginAsync([FromBody]LoginUserRequestDto loginRequestDto,
@@ -43,7 +42,7 @@ public class AuthController(IUsersService usersService, IRefreshTokensService re
     }
 
     [HttpPost]
-    [Route("refreshtoken")]
+    [Route("refresh-token")]
     public async Task<IActionResult> RefreshTokenAsync
         ([FromBody]UpdateAuthTokenRequestDto updateAuthTokenRequestDto, CancellationToken cancellationToken)
     {

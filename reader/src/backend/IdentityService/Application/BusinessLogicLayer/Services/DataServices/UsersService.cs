@@ -19,17 +19,9 @@ public class UsersService(
     IEmailConfirmMessageService emailConfirmMessageService)
     : IUsersService
 {
-    
     public async Task RegisterUserAsync(RegisterUserRequestDto request, CancellationToken cancellationToken)
     {
-        var user = new User
-        {
-            Id = Guid.NewGuid(),
-            Email = request.Email,
-            FirstName = request.FirstName,
-            LastName = request.LastName,
-            UserName = request.Username
-        };
+        var user = request.ToUser();
         var result = await usersManager.CreateAsync(user, request.Password);
         
         Utilities.AggregateIdentityErrorsAndThrow(result);
@@ -40,8 +32,7 @@ public class UsersService(
 
     public async Task<IEnumerable<ViewUserDto>> GetAllUsersAsync(int page, int pageSize, CancellationToken cancellationToken)
     {
-        var users = await usersManager.Users.AsNoTracking().OrderBy(user => user.Email)
-            .Skip((page-1)*pageSize).Take(pageSize).ToListAsync(cancellationToken);
+        var users = await usersManager.GetUsers(page, pageSize).ToListAsync(cancellationToken);
         var viewUserDtos = new List<ViewUserDto>();
         
         foreach (var user in users)
@@ -91,9 +82,7 @@ public class UsersService(
             throw new NotFoundException("User not found");
         }
         
-        user.FirstName = updateUserRequest.FirstName;
-        user.LastName = updateUserRequest.LastName;
-        user.Email = updateUserRequest.NewEmail;
+        updateUserRequest.UpdateUser(user);
         
         var result = await usersManager.UpdateAsync(user);
         Utilities.AggregateIdentityErrorsAndThrow(result);

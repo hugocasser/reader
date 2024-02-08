@@ -9,7 +9,6 @@ using Microsoft.OpenApi.Models;
 using PresentationLayer.Common;
 using PresentationLayer.Middleware;
 using PresentationLayer.Options;
-using PresentationLayer.Validators;
 
 namespace PresentationLayer.Extensions;
 
@@ -18,11 +17,11 @@ public static class ProgramExtensions
     public static WebApplicationBuilder ConfigureBuilder(this WebApplicationBuilder builder)
     {
         builder.Services
-            .AddAdminSeeder(builder.Configuration)
-            .AddDbContext(builder.Configuration)
+            .AddAdminSeeder()
+            .AddDbContext()
             .AddRepositories()
             .AddUsersIdentity()
-            .AddServices(builder.Configuration)
+            .AddServices()
             .AddJwtAuthentication(builder.Configuration)
             .AddSwagger()
             .AddCors(options => options.ConfigureAllowAllCors())
@@ -127,18 +126,12 @@ public static class ProgramExtensions
     }
     
     private static IServiceCollection AddAdminSeeder
-        (this IServiceCollection serviceCollection, IConfiguration configuration)
+        (this IServiceCollection serviceCollection)
     {
-        return serviceCollection.Configure<AdminSeederOptions>(options =>
-        {
-            configuration.GetSection(nameof(AdminSeederOptions))
-                .Bind(options);
-        });
-    }
-
-    private static IServiceCollection AddValidators(this IServiceCollection serviceCollection)
-    {
-        serviceCollection.AddSingleton<IValidateOptions<AdminSeederOptions>, AdminSeederOptionsValidator>();
+        serviceCollection.AddOptions<AdminSeederOptions>()
+            .BindConfiguration(nameof(AdminSeederOptions))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
         
         return serviceCollection;
     }

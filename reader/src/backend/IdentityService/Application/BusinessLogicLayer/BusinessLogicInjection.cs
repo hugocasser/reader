@@ -24,11 +24,9 @@ public static class BusinessLogicInjection
         return serviceCollection;
     }
 
-    private static IServiceCollection UseEmailServices(this IServiceCollection serviceCollection,
-        IConfiguration configuration)
+    private static IServiceCollection UseEmailServices(this IServiceCollection serviceCollection)
     {
-        serviceCollection.AddEmailSenderConfiguration(configuration);
-        serviceCollection.AddSingleton(configuration);
+        serviceCollection.AddOptions();
         serviceCollection.AddTransient<IEmailConfirmMessageService, SendConfirmMessageEmailService>();
         serviceCollection.AddTransient<IEmailSenderService, EmailSenderService>();
         
@@ -44,11 +42,11 @@ public static class BusinessLogicInjection
     }
 
     public static IServiceCollection AddServices
-        (this IServiceCollection serviceCollection, IConfiguration configuration)
+        (this IServiceCollection serviceCollection)
     {
         serviceCollection.UseDataServices();
         serviceCollection.UseAuthenticationServices();
-        serviceCollection.UseEmailServices(configuration);
+        serviceCollection.UseEmailServices();
         serviceCollection.UseValidation();
 
         return serviceCollection;
@@ -57,41 +55,36 @@ public static class BusinessLogicInjection
     private static IServiceCollection UseValidation(this IServiceCollection serviceCollection)
     {
         serviceCollection.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-        serviceCollection
-            .AddSingleton<IValidateOptions<EmailMessageSenderOptions>, EmailMessageSenderOptionsValidator>();
-        serviceCollection
-            .AddSingleton<IValidateOptions<TokenGenerationOptions>,TokenGenerationOptionsValidator>();
         
         return serviceCollection;
     }
 
     private static IServiceCollection AddTokenGenerationOptions
-        (this IServiceCollection serviceCollection, IConfiguration configuration)
+        (this IServiceCollection serviceCollection)
     {
-        return serviceCollection.Configure<TokenGenerationOptions>(options =>
-        {
-            configuration.GetSection(nameof(TokenGenerationOptions))
-                .Bind(options);
-        });
+        serviceCollection.AddOptions<TokenGenerationOptions>()
+            .BindConfiguration(nameof(TokenGenerationOptions))
+            .ValidateOnStart();
+        
+        return serviceCollection;
     }
     
     private static IServiceCollection AddEmailMessageSenderOptions
-        (this IServiceCollection serviceCollection, IConfiguration configuration)
+        (this IServiceCollection serviceCollection)
     {
-        return serviceCollection.Configure<EmailMessageSenderOptions>(options =>
-            {
-                configuration.GetSection(nameof(EmailMessageSenderOptions))
-                    .Bind(options);
-            }
-        );
+        serviceCollection.AddOptions<EmailMessageSenderOptions>()
+            .BindConfiguration(nameof(EmailMessageSenderOptions))
+            .ValidateOnStart();
+        
+        return serviceCollection;
     }
     
-    private static IServiceCollection AddEmailSenderConfiguration
-        (this IServiceCollection serviceCollection, IConfiguration configuration)
+    private static IServiceCollection AddOptions
+        (this IServiceCollection serviceCollection)
     {
         return serviceCollection
-            .AddTokenGenerationOptions(configuration)
-            .AddEmailMessageSenderOptions(configuration);
+            .AddTokenGenerationOptions()
+            .AddEmailMessageSenderOptions();
     }
 
 }
