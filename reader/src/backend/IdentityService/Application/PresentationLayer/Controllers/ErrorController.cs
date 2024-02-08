@@ -6,7 +6,6 @@ namespace PresentationLayer.Controllers;
 
 public sealed class ErrorController : ControllerBase
 {
-
     [ApiExplorerSettings(IgnoreApi = true)]
     [Route("/error")]
     public IActionResult HandleError([FromServices] IHostEnvironment hostEnvironment)

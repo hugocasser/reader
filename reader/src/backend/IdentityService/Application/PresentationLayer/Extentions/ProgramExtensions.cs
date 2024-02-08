@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Net.Mime;
 using System.Reflection;
 using BusinessLogicLayer;
 using DataAccessLayer;
@@ -6,6 +7,9 @@ using DataAccessLayer.Persistence;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.OpenApi.Models;
 using PresentationLayer.Configurations;
+using PresentationLayer.Common;
+using PresentationLayer.Middleware;
+using PresentationLayer.Options;
 
 namespace PresentationLayer.Extentions;
 
@@ -23,6 +27,12 @@ public static class ProgramExtensions
             .AddUsersIdentity()
             .AddServices(tokenGenerationConfiguration, emailMessageSenderConfiguration)
             .AddJwtAuthentication(tokenGenerationConfiguration)
+            .AddAdminSeeder()
+            .AddDbContext(builder.Configuration)
+            .AddRepositories()
+            .AddUsersIdentity()
+            .AddServices()
+            .AddJwtAuthentication(builder.Configuration)
             .AddSwagger()
             .AddCors(options => options.ConfigureAllowAllCors())
             .AddEndpointsApiExplorer()
@@ -102,5 +112,15 @@ public static class ProgramExtensions
 
         return options;
     }
-
+    
+    private static IServiceCollection AddAdminSeeder
+        (this IServiceCollection serviceCollection)
+    {
+        serviceCollection.AddOptions<AdminSeederOptions>()
+            .BindConfiguration(nameof(AdminSeederOptions))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+        
+        return serviceCollection;
+    }
 }

@@ -13,6 +13,7 @@ public sealed class UsersController : ApiController
     { }
 
     [Authorize(Roles = "Admin")]
+    [Authorize(Roles = nameof(EnumRoles.Admin))]
     [HttpGet]
     public async Task<IActionResult> GetAllUsersAsync(CancellationToken cancellationToken)
     {

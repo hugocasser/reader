@@ -30,7 +30,7 @@ public class RefreshTokensService : IRefreshTokensService
         return await _refreshTokensRepository.GetAllAsync(cancellationToken);
     }
 
-    public async Task<AuthTokens> UpdateAuthToken(CancellationToken cancellationToken,
+    public async Task<AuthTokens> UpdateAuthTokenAsync(CancellationToken cancellationToken,
         UpdateAuthTokenRequestDto updateAuthTokenRequestDto)
     {
         var refreshToken = await _refreshTokenService.ValidateTokenAsync(updateAuthTokenRequestDto.UserId,

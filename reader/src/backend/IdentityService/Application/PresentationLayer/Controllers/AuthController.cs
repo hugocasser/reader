@@ -10,7 +10,7 @@ using PresentationLayer.Attributes;
 namespace PresentationLayer.Controllers;
 
 [Route("api/identity/auth")]
-public class AuthController(IUsersService usersService)
+public class AuthController(IUsersService usersService, IRefreshTokensService _refreshTokensService)
     : ApiController(usersService)
 {
 
@@ -43,5 +43,13 @@ public class AuthController(IUsersService usersService)
     public async Task<IActionResult> ResendEmailConfirmMessageAsync(string email, string password, CancellationToken cancellationToken)
     {
         return Ok(await _usersService.ResendEmailConfirmMessageAsync(email, password, cancellationToken));
+    }
+
+    [HttpPost]
+    [Route("refresh-token")]
+    public async Task<IActionResult> RefreshTokenAsync
+        ([FromBody]UpdateAuthTokenRequestDto updateAuthTokenRequestDto, CancellationToken cancellationToken)
+    {
+        return Ok(await _refreshTokensService.UpdateAuthTokenAsync(cancellationToken, updateAuthTokenRequestDto));
     }
 }

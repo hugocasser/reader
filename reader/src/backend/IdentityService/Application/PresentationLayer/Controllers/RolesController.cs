@@ -1,14 +1,10 @@
-using BusinessLogicLayer.Abstractions.Dtos;
 using BusinessLogicLayer.Abstractions.Dtos.RequestsDtos;
 using BusinessLogicLayer.Abstractions.Services.DataServices;
-using DataAccessLayer.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PresentationLayer.Abstractions;
-using PresentationLayer.Attributes;
 
 namespace PresentationLayer.Controllers;
-
 
 [Route("api/identity/roles")]
 public class RolesController : ApiController
@@ -22,13 +18,14 @@ public class RolesController : ApiController
     }
     
     [Authorize(Roles = "Admin")]
+    [Authorize(Roles = nameof(EnumRoles.Admin))]
     [HttpPost]
     public async Task<IActionResult> CreateRoleAsync(string role)
     {
         return Ok(await _rolesService.CreateRoleAsync(role));
     }
     
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = nameof(EnumRoles.Admin))]
     [HttpDelete("{role}")]
     public async Task<IActionResult> DeleteRoleAsync(string role)
     {
@@ -41,7 +38,7 @@ public class RolesController : ApiController
         return Ok(await _rolesService.GetRoleInfoAsync(role));
     }
 
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = nameof(EnumRoles.Admin))]
     [HttpPut]
     public async Task<IActionResult> GiveRoleToUserAsync(GiveRoleToUserRequestDto giveRoleToUserRequestDto, 
         CancellationToken cancellationToken)

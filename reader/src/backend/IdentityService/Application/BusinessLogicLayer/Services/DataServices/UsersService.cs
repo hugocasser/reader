@@ -18,12 +18,10 @@ public class UsersService(
     IAuthTokenGeneratorService authService,
     IRefreshTokenGeneratorService refreshTokenService,
     IRefreshTokensRepository refreshTokensRepository,
-    IEmailConfirmMessageService emailConfirmMessageService)
+    IEmailConfirmMessageService emailConfirmMessageService,
+    UserManager<User> usersManager)
     : IUsersService
 {
-    
-
-
     public async Task RegisterUserAsync(RegisterUserRequestDto request, CancellationToken cancellationToken)
     {
         var user = new User
@@ -42,9 +40,10 @@ public class UsersService(
         await emailConfirmMessageService.SendEmailConfirmMessageAsync(user);
     }
 
-    public async Task<IEnumerable<ViewUserDto>> GetAllUsersAsync(CancellationToken cancellationToken)
+    public async Task<IEnumerable<ViewUserDto>> GetAllUsersAsync(int page, int pageSize, CancellationToken cancellationToken)
     {
-        var users = await usersRepository.GetAllUsersAsync().ToListAsync(cancellationToken: cancellationToken);
+        var users = await usersManager.Users.AsNoTracking().OrderBy(user => user.Email).Skip((page-1)*pageSize).Take(pageSize)
+            .Skip((page-1)*pageSize).Take(pageSize).ToListAsync(cancellationToken);
         var viewUserDtos = new List<ViewUserDto>();
         foreach (var user in users)
         {

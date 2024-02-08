@@ -7,7 +7,7 @@ namespace BusinessLogicLayer.Abstractions.Services.DataServices;
 public interface IUsersService
 {
     Task RegisterUserAsync(RegisterUserRequestDto request, CancellationToken cancellationToken);
-    Task<IEnumerable<ViewUserDto>> GetAllUsersAsync(CancellationToken cancellationToken);
+    Task<IEnumerable<ViewUserDto>> GetAllUsersAsync(int gae, int pageSize,CancellationToken cancellationToken);
     Task<ViewUserDto> GetUserByIdAsync(Guid id, CancellationToken cancellationToken);
     Task DeleteUserByIdAsync(Guid id, CancellationToken cancellationToken);
     Task UpdateUserAsync(UpdateUserRequestDto userRequestViewDto, CancellationToken cancellationToken);
