@@ -4,11 +4,8 @@ using BusinessLogicLayer.Abstractions.Services.DataServices;
 using BusinessLogicLayer.Options;
 using BusinessLogicLayer.Services.AuthServices;
 using BusinessLogicLayer.Services.DataServices;
-using BusinessLogicLayer.Validation.Validators;
 using FluentValidation;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 
 namespace BusinessLogicLayer;
 

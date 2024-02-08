@@ -6,7 +6,7 @@ using PresentationLayer.Abstractions;
 namespace PresentationLayer.Controllers;
 
 [Route("api/identity/auth")]
-public class AuthController(IUsersService _usersService, IRefreshTokensService refreshTokensService)
+public class AuthController(IUsersService _usersService, IRefreshTokensService _refreshTokensService)
     : ApiController(_usersService)
 {
     [HttpPost]
@@ -46,6 +46,6 @@ public class AuthController(IUsersService _usersService, IRefreshTokensService r
     public async Task<IActionResult> RefreshTokenAsync
         ([FromBody]UpdateAuthTokenRequestDto updateAuthTokenRequestDto, CancellationToken cancellationToken)
     {
-        return Ok(await refreshTokensService.RefreshTokenAsync(updateAuthTokenRequestDto, cancellationToken));
+        return Ok(await _refreshTokensService.RefreshTokenAsync(updateAuthTokenRequestDto, cancellationToken));
     }
 }

@@ -4,38 +4,38 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccessLayer.Persistence.Repositories;
 
-public class RefreshTokensRepository(UsersDbContext usersDbContext) : IRefreshTokensRepository
+public class RefreshTokensRepository(UsersDbContext _usersDbContext) : IRefreshTokensRepository
 {
     public async Task<IEnumerable<RefreshToken>> GetAllAsync(int skip, int pageSize, CancellationToken cancellationToken)
     {
-        return await usersDbContext.RefreshTokens.AsNoTracking().Skip(skip).Take(pageSize).ToListAsync(cancellationToken);
+        return await _usersDbContext.RefreshTokens.AsNoTracking().Skip(skip).Take(pageSize).ToListAsync(cancellationToken);
     }
 
     public async Task AddAsync(RefreshToken token, CancellationToken cancellationToken)
     {
-        await usersDbContext.RefreshTokens.AddAsync(token, cancellationToken);
+        await _usersDbContext.RefreshTokens.AddAsync(token, cancellationToken);
     }
 
     public RefreshToken Update(RefreshToken token)
     {
-        return usersDbContext.RefreshTokens.Update(token).Entity;
+        return _usersDbContext.RefreshTokens.Update(token).Entity;
     }
     
 
     public async Task<RefreshToken> FindUserTokenAsync(Guid userId, string token, CancellationToken cancellationToken)
     {
-        return await usersDbContext.RefreshTokens.AsNoTracking()
+        return await _usersDbContext.RefreshTokens.AsNoTracking()
             .SingleAsync(refreshToken => refreshToken.UserId == userId 
                                          && refreshToken.Token == token, cancellationToken);
     }
 
     public async Task SaveChangesAsync(CancellationToken cancellationToken)
     {
-        await usersDbContext.SaveChangesAsync(cancellationToken);
+        await _usersDbContext.SaveChangesAsync(cancellationToken);
     }
 
     public void RemoveToken(RefreshToken refreshToken, CancellationToken cancellationToken)
     {
-        usersDbContext.RefreshTokens.Remove(refreshToken);
+        _usersDbContext.RefreshTokens.Remove(refreshToken);
     }
 }

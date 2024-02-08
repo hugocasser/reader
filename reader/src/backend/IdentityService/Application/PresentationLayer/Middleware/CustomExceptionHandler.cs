@@ -5,13 +5,13 @@ using FluentValidation;
 
 namespace PresentationLayer.Middleware;
 
-public class CustomExceptionHandler(RequestDelegate next)
+public class CustomExceptionHandler(RequestDelegate _next)
 {
     public async Task Invoke(HttpContext context)
     {
         try
         {
-            await next(context);
+            await _next(context);
         }
         catch (Exception exception)
         {

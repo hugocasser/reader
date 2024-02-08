@@ -7,7 +7,7 @@ using DataAccessLayer.Models;
 
 namespace BusinessLogicLayer.Services.AuthServices;
 
-public class RefreshTokenGeneratorService(IRefreshTokensRepository refreshTokensRepository)
+public class RefreshTokenGeneratorService(IRefreshTokensRepository _refreshTokensRepository)
     : IRefreshTokenGeneratorService
 {
     public RefreshToken GenerateToken(Guid userId)
@@ -24,7 +24,7 @@ public class RefreshTokenGeneratorService(IRefreshTokensRepository refreshTokens
 
     public async Task<RefreshToken> ValidateTokenAsync(Guid userId, string token, CancellationToken cancellationToken)
     {
-        var refreshToken = await refreshTokensRepository.FindUserTokenAsync(userId, token, cancellationToken);
+        var refreshToken = await _refreshTokensRepository.FindUserTokenAsync(userId, token, cancellationToken);
         
         if (refreshToken is null)
         {
@@ -36,7 +36,7 @@ public class RefreshTokenGeneratorService(IRefreshTokensRepository refreshTokens
             return refreshToken;
         }
 
-        refreshTokensRepository.RemoveToken(refreshToken, cancellationToken);
+        _refreshTokensRepository.RemoveToken(refreshToken, cancellationToken);
         throw new IdentityException("The refresh token was expired or revoked. Please login again");
     }
 }

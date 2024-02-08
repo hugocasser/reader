@@ -8,9 +8,9 @@ using MimeKit;
 
 namespace BusinessLogicLayer.Services.AuthServices;
 
-public class EmailSenderService(IOptions<EmailMessageSenderOptions> options) : IEmailSenderService
+public class EmailSenderService(IOptions<EmailMessageSenderOptions> _options) : IEmailSenderService
 {
-    private readonly EmailMessageSenderOptions _options = options.Value;
+    private readonly EmailMessageSenderOptions _options = _options.Value;
     
     public async Task SendEmailAsync(EmailMessage message)
     {
