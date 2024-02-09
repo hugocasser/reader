@@ -14,6 +14,7 @@ public static class IdentityProgramExtension
         var tokenOptions = new TokenOptions();
         configuration.GetSection(nameof(TokenOptions)).Bind(tokenOptions);
         serviceCollection.AddSingleton(MicrosoftOptions.Create(tokenOptions));
+        
         serviceCollection.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -41,5 +42,15 @@ public static class IdentityProgramExtension
         };
 
         return jwtBearerOptions;
+    }
+
+    public static IServiceCollection AddTokenOptions(this IServiceCollection serviceCollection)
+    {
+        serviceCollection.AddOptions<TokenOptions>()
+            .BindConfiguration(nameof(TokenOptions))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+        
+        return serviceCollection;
     }
 }

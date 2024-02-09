@@ -1,7 +1,9 @@
 using System.Reflection;
+using Presentation.Options;
 using Serilog;
 using Serilog.Exceptions;
 using Serilog.Sinks.Elasticsearch;
+using MicrosoftOptions = Microsoft.Extensions.Options.Options;
 
 namespace Presentation.Extensions;
 
@@ -34,6 +36,10 @@ public static class LoggingExtension
     private static WebApplicationBuilder AddElasticAndSerilog(
         this WebApplicationBuilder builder)
     {
+        var elasticOptions = new ElasticOptions(); 
+        builder.Configuration.GetSection(nameof(ElasticOptions)).Bind(elasticOptions);
+        builder.Services.AddSingleton(MicrosoftOptions.Create(elasticOptions));
+        
         builder.Host.UseSerilog((context, configuration) =>
         {
             
@@ -46,7 +52,7 @@ public static class LoggingExtension
                 .Enrich.WithMachineName()
                 .Enrich.WithExceptionDetails()
                 .WriteTo.Console()
-                .WriteTo.Elasticsearch(ConfigureElasticSink(configurationRoot))
+                .WriteTo.Elasticsearch(ConfigureElasticSink(configurationRoot, elasticOptions))
                 .Enrich.WithProperty("Environment", context.HostingEnvironment.EnvironmentName)
                 .ReadFrom.Configuration(context.Configuration);
         });
@@ -54,13 +60,9 @@ public static class LoggingExtension
         return builder;
     }
     
-    private static ElasticsearchSinkOptions ConfigureElasticSink(IConfiguration configuration)
+    private static ElasticsearchSinkOptions ConfigureElasticSink(IConfiguration configuration, ElasticOptions elasticOptions)
     {
-        var connectionString = configuration["ElasticConfiguration:Uri"];
-        if (string.IsNullOrEmpty(connectionString))
-        {
-            throw new NullReferenceException("ElasticConfiguration:Uri configuration is empty");
-        }
+        var connectionString = elasticOptions?.Uri;
         
         var connectionUri = new Uri(connectionString);
 
@@ -71,5 +73,15 @@ public static class LoggingExtension
             NumberOfReplicas = 1,
             NumberOfShards = 2,
         };
+    }
+
+    public static IServiceCollection AddElasticOptions(this IServiceCollection services)
+    {
+        services.AddOptions<ElasticOptions>()
+            .BindConfiguration(nameof(ElasticOptions))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+        
+        return services;
     }
 }

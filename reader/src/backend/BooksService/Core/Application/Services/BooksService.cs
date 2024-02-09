@@ -5,22 +5,28 @@ using Application.Dtos.Requests.Books;
 using Application.Dtos.Views.Books;
 using Application.Exceptions;
 using Domain.Models;
+using MapsterMapper;
 
 namespace Application.Services;
 
 public class BooksService(
-    IBooksRepository booksRepository,
-    IAuthorsRepository authorsRepository,
-    ICategoriesRepository categoriesRepository) : IBooksService
+    IBooksRepository _booksRepository,
+    IAuthorsRepository _authorsRepository,
+    ICategoriesRepository _categoriesRepository,
+    IMapper _mapper) : IBooksService
 {
-    public async Task CreateBookAsync(CreateBookRequest request, CancellationToken cancellationToken)
+    public async Task<BookInfoViewDto> CreateBookAsync(CreateBookRequestDto requestDto, CancellationToken cancellationToken)
     {
-        if (!await authorsRepository.AuthorExistsAsync(request.AuthorId, cancellationToken))
+        var author = await _authorsRepository.GetByIdAsync(requestDto.AuthorId, cancellationToken);
+        
+        if (author is null)
         {
             throw new BadRequestException("Author with this id not found");
         }
 
-        if (await categoriesRepository.CategoryExistsAsync(request.CategoryId, cancellationToken))
+        var category = await _categoriesRepository.GetByIdAsync(requestDto.CategoryId, cancellationToken);
+        
+        if (category is null)
         {
             throw new BadRequestException("Category with this id not found");
         }
@@ -28,147 +34,139 @@ public class BooksService(
         var bookModel = new Book
         {
             Id = Guid.NewGuid(),
-            Name = request.Name,
-            Description = request.Description,
-            Text = request.Text,
-            AuthorId = request.AuthorId,
-            CategoryId = request.CategoryId
+            Name = requestDto.Name,
+            Description = requestDto.Description,
+            Text = requestDto.Text,
+            AuthorId = requestDto.AuthorId,
+            CategoryId = requestDto.CategoryId
         };
 
-        await booksRepository.AddBookAsync(bookModel, cancellationToken);
+        await _booksRepository.AddAsync(bookModel, cancellationToken);
+
+        return _mapper.Map<BookInfoViewDto>(bookModel);
     }
 
-    public async Task<IEnumerable<BookShortInfoView>> GetAllBooksAsync
-        (PageSetting pageSettings, CancellationToken cancellationToken)
+    public async Task<IEnumerable<BookShortInfoViewDto>> GetAllBooksAsync
+        (PageSettingRequestDto pageSettingsRequestDto, CancellationToken cancellationToken)
     {
-        var books = await booksRepository
-            .GetBooksAsync(pageSettings.PageSize, pageSettings.PageSize * (pageSettings.PageNumber - 1),
-                cancellationToken);
-        
-        return books
-            .Select(book => BookShortInfoView.MapFromModel(book,
-                authorsRepository.GetAuthorByIdAsync(book.AuthorId, cancellationToken).Result,
-                categoriesRepository.GetCategoryByIdAsync(book.CategoryId, cancellationToken).Result, pageSettings));
-        
+        var books = await _booksRepository
+            .GetAllAsync(pageSettingsRequestDto, cancellationToken);
+
+        return books.Select(_mapper.Map<BookShortInfoViewDto>).ToList();
     }
 
-    public async Task<BookView> GetBookByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<BookViewDto> GetBookByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var book = await booksRepository.GetBookByIdAsync(id, cancellationToken);
+        var book = await _booksRepository.GetByIdAsync(id, cancellationToken);
         if (book is null)
         {
             throw new NotFoundException("Book with this id not found");
         }
 
-        return BookView.MapFromModel(book,
-            await authorsRepository.GetAuthorByIdAsync(book.AuthorId, cancellationToken),
-            await categoriesRepository.GetCategoryByIdAsync(book.CategoryId, cancellationToken));
+        return _mapper.Map<BookViewDto>(book);
     }
 
-    public async Task<BookInfoView> GetBookInfoByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<BookInfoViewDto> GetBookInfoByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var book = await booksRepository.GetBookByIdAsync(id, cancellationToken);
+        var book = await _booksRepository.GetByIdAsync(id, cancellationToken);
         if (book is null)
         {
             throw new NotFoundException("Book with this id not found");
         }
 
-        return BookInfoView.MapFromModel(book,
-            await authorsRepository.GetAuthorByIdAsync(book.AuthorId, cancellationToken),
-            await categoriesRepository.GetCategoryByIdAsync(book.CategoryId, cancellationToken));
+        return _mapper.Map<BookInfoViewDto>(book);
     }
 
     public async Task DeleteByIdBookAsync(Guid id, CancellationToken cancellationToken)
     {
-        if (!await booksRepository.BookExistsAsync(id, cancellationToken))
+        if (!await _booksRepository.IsExistsAsync(id, cancellationToken))
         {
             throw new NotFoundException("Book with this id not found");
         }
         
-        await booksRepository.DeleteByIdBookAsync(id, cancellationToken);
+        await _booksRepository.DeleteByIdAsync(id, cancellationToken);
     }
 
-    public async Task UpdateBookInfoAsync(UpdateBookInfoRequest infoRequest, CancellationToken cancellationToken)
+    public async Task<BookInfoViewDto> UpdateBookInfoAsync(UpdateBookInfoRequestDto infoRequestDto,
+        CancellationToken cancellationToken)
     {
-        var book = await booksRepository.GetBookByIdAsync(infoRequest.Id, cancellationToken);
+        var book = await _booksRepository.GetByIdAsync(infoRequestDto.Id, cancellationToken);
         
         if (book is null)
         {
             throw new NotFoundException("Book with this id not found");
         }
         
-        if (!await authorsRepository.AuthorExistsAsync(infoRequest.AuthorId, cancellationToken))
-        {
-            throw new BadRequestException("Author with this id not found");
-        }
-        
-        if (await categoriesRepository.CategoryExistsAsync(infoRequest.CategoryId, cancellationToken))
-        {
-            throw new BadRequestException("Category with this id not found");
-        }
-        
-        book.Name = infoRequest.Name;
-        book.Description = infoRequest.Description;
-        book.AuthorId = infoRequest.AuthorId;
-        book.CategoryId = infoRequest.CategoryId;
-        
-        await booksRepository.UpdateBookAsync(book, cancellationToken);
-    }
-
-    public async Task UpdateBookTextAsync(UpdateBookTextRequest request, CancellationToken cancellationToken)
-    {
-        var book = await booksRepository.GetBookByIdAsync(request.Id, cancellationToken);
-
-        if (book is null)
-        {
-            throw new NotFoundException("Book with this id not found");
-        }
-        
-        book.Text = request.Text;
-        
-        await booksRepository.UpdateBookAsync(book, cancellationToken);
-    }
-
-    public async Task<IEnumerable<BookShortInfoView>>
-        GetAllAuthorBooksAsync(Guid authorId, PageSetting pageSettings, CancellationToken cancellationToken)
-    {
-        var author = await authorsRepository.GetAuthorByIdAsync(authorId, cancellationToken);
+        var author = await _authorsRepository.GetByIdAsync(infoRequestDto.AuthorId, cancellationToken);
         
         if (author is null)
         {
             throw new BadRequestException("Author with this id not found");
         }
         
-        var books = await authorsRepository.GetBooksByAuthorAsync(authorId, cancellationToken);
-        var booksList = books.ToList() ?? throw new NotFoundException("Author doesn't have books");
+        var category = await _categoriesRepository.GetByIdAsync(infoRequestDto.CategoryId, cancellationToken);
+       
+        if (category is null)
+        {
+            throw new BadRequestException("Category with this id not found");
+        }
+        
+        var bookToUpdate = _mapper.Map<Book>(infoRequestDto);
+        
+        await _booksRepository.UpdateAsync(bookToUpdate, cancellationToken);
+
+        return _mapper.Map<BookInfoViewDto>(bookToUpdate);
+    }
+
+    public async Task<BookViewDto> UpdateBookTextAsync(UpdateBookTextRequestDto requestDto, CancellationToken cancellationToken)
+    {
+        if (await _booksRepository.GetByIdAsync(requestDto.Id, cancellationToken) is not Book book)
+        {
+            throw new NotFoundException("Book with this id not found");
+        }
+        
+        book.Text = requestDto.Text;
+        
+        await _booksRepository.UpdateAsync(book, cancellationToken);
+
+        return _mapper.Map<BookViewDto>(book);
+    }
+
+    public async Task<IEnumerable<BookShortInfoViewDto>>
+        GetAllAuthorBooksAsync(Guid authorId, PageSettingRequestDto pageSettingsRequestDto, CancellationToken cancellationToken)
+    {
+        var author = await _authorsRepository.GetByIdAsync(authorId, cancellationToken);
+        
+        if (author is null)
+        {
+            throw new BadRequestException("Author with this id not found");
+        }
+        
+        var books = await _authorsRepository.GetBooksByAuthorAsync(authorId, cancellationToken);
+        var booksList = books.ToList();
 
         var orderedBooksTakenBooks = books.OrderBy(book => book.Name);
         
-        return orderedBooksTakenBooks.Select(book =>
-            BookShortInfoView.MapFromModel(book, author,
-                categoriesRepository.GetCategoryByIdAsync(book.CategoryId, cancellationToken).Result, pageSettings)).ToList();
+        return orderedBooksTakenBooks.Select(_mapper.Map<BookShortInfoViewDto>).ToList();
     }
 
-    public async Task<IEnumerable<BookShortInfoView>> GetAllCategoryBooksAsync(Guid categoryId,
-        PageSetting pageSettings, CancellationToken cancellationToken)
+    public async Task<IEnumerable<BookShortInfoViewDto>> GetAllCategoryBooksAsync(Guid categoryId,
+        PageSettingRequestDto pageSettingsRequestDto, CancellationToken cancellationToken)
     {
-        var category = await categoriesRepository.GetCategoryByIdAsync(categoryId, cancellationToken);
+        var category = await _categoriesRepository.GetByIdAsync(categoryId, cancellationToken);
 
         if (category is null)
         {
             throw new BadRequestException("Category with this id not found");
         }
         
-        var books = await booksRepository.GetBooksByCategoryAsync(categoryId,
-            pageSettings.PageSize,(pageSettings.PageSize*pageSettings.PageNumber-1), cancellationToken);
+        var books = await _booksRepository.GetBooksByCategoryAsync(categoryId, pageSettingsRequestDto, cancellationToken);
 
         if (!books.Any())
         {
             throw new NotFoundException("No books in this category");
         }
-        
-        return books.Select(book =>
-            BookShortInfoView.MapFromModel(book, authorsRepository.GetAuthorByIdAsync(book.AuthorId, cancellationToken).Result,
-                category, pageSettings)).ToList();
+
+        return books.Select(_mapper.Map<BookShortInfoViewDto>).ToList();
     }
 }

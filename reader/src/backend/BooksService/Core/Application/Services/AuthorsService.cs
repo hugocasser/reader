@@ -5,72 +5,73 @@ using Application.Dtos.Requests.Authors;
 using Application.Dtos.Views.Authors;
 using Application.Exceptions;
 using Domain.Models;
+using Mapster;
+using MapsterMapper;
 
 namespace Application.Services;
 
-public class AuthorsService(IAuthorsRepository authorsRepository): IAuthorsService
+public class AuthorsService(IAuthorsRepository _authorsRepository, IMapper _mapper): IAuthorsService
 {
-    public async Task CreateAuthorAsync(CreateAuthorRequest request, CancellationToken cancellationToken)
+    public async Task<AuthorViewDto> CreateAuthorAsync(CreateAuthorRequestDto requestDto, CancellationToken cancellationToken)
     {
-        await authorsRepository.AddAuthorAsync(new Author
+        var author = new Author
         {
             Id = Guid.NewGuid(),
-            FirstName = request.FirstName,
-            LastName = request.LastName,
-            BirthDate = request.BirthDate,
-            DeathDate = request.DeathDate,
-            Biography = request.Biography
-        }, cancellationToken);
+            FirstName = requestDto.FirstName,
+            LastName = requestDto.LastName,
+            BirthDate = requestDto.BirthDate,
+            DeathDate = requestDto.DeathDate,
+            Biography = requestDto.Biography
+        };
+        await _authorsRepository.AddAsync(author, cancellationToken);
+
+        return _mapper.Map<AuthorViewDto>(author);
     }
 
-    public async Task<IEnumerable<AuthorShortView>> GetAllAuthorsAsync(PageSetting pageSettings,
+    public async Task<IEnumerable<AuthorShortViewDto>> GetAllAuthorsAsync(PageSettingRequestDto pageSettingsRequestDto,
         CancellationToken cancellationToken)
     {
-        var authors = await authorsRepository
-            .GetAuthorsAsync(pageSettings.PageSize,
-                pageSettings.PageNumber*(pageSettings.PageSize-1), cancellationToken);
-        
-        return authors.Select(author =>
-            AuthorShortView.MapFromModel(author, pageSettings)).ToList();
+        var authors = await _authorsRepository
+            .GetAllAsync(pageSettingsRequestDto, cancellationToken);
+
+        return authors.Select(_mapper.Map<AuthorShortViewDto>).ToList();
     }
 
-    public async Task<AuthorView> GetAuthorByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<AuthorViewDto> GetAuthorByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var author = await authorsRepository.GetAuthorByIdAsync(id, cancellationToken);
+        var author = await _authorsRepository.GetByIdAsync(id, cancellationToken);
         
         if (author is null)
         {
             throw new NotFoundException("Author with this id not found");
         }
         
-        return AuthorView.MapFromModel(author);
+        return _mapper.Map<AuthorViewDto>(author);
     }
 
     public async Task DeleteByIdAuthorAsync(Guid id, CancellationToken cancellationToken)
     {
-        if (!await authorsRepository.AuthorExistsAsync(id, cancellationToken))
+        if (!await _authorsRepository.IsExistsAsync(id, cancellationToken))
         {
             throw new NotFoundException("Author with this id not found");
         }
         
-        await authorsRepository.DeleteByIdAuthorAsync(id, cancellationToken);
+        await _authorsRepository.DeleteByIdAsync(id, cancellationToken);
     }
 
-    public async Task UpdateAuthorAsync(UpdateAuthorRequest request, CancellationToken cancellationToken)
+    public async Task<AuthorViewDto> UpdateAuthorAsync(UpdateAuthorRequestDto requestDto, CancellationToken cancellationToken)
     {
-        var author = await authorsRepository.GetAuthorByIdAsync(request.Id, cancellationToken);
+        var author = await _authorsRepository.GetByIdAsync(requestDto.Id, cancellationToken);
 
         if (author is null)
         {
             throw new NotFoundException("Author with this id not found");
         }
+
+        var authorToUpdate = _mapper.Map<Author>(requestDto);
         
-        author.FirstName = request.FirstName;
-        author.LastName = request.LastName;
-        author.BirthDate = request.BirthDate;
-        author.DeathDate = request.DeathDate;
-        author.Biography = request.Biography;
-        
-        await authorsRepository.UpdateAuthorAsync(author, cancellationToken);
+        await _authorsRepository.UpdateAsync(authorToUpdate, cancellationToken);
+
+        return _mapper.Map<AuthorViewDto>(authorToUpdate);
     }
 }

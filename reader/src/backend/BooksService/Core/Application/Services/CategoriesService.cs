@@ -4,42 +4,44 @@ using Application.Dtos.Requests;
 using Application.Dtos.Requests.Category;
 using Application.Exceptions;
 using Domain.Models;
+using MapsterMapper;
 
 namespace Application.Services;
 
-public class CategoriesService(ICategoriesRepository categoriesRepository) : ICategoriesService
+public class CategoriesService(ICategoriesRepository _categoriesRepository, IMapper mapper) : ICategoriesService
 {
-    public async Task CreateCategoryAsync(CreateCategoryRequest request, CancellationToken cancellationToken)
+    public async Task<Category> CreateCategoryAsync(CreateCategoryRequestDto requestDto, CancellationToken cancellationToken)
     {
-        var category = await categoriesRepository.GetCategoryByNameAsync(request.Name, cancellationToken);
+        var category = await _categoriesRepository.GetCategoryByNameAsync(requestDto.Name, cancellationToken);
 
         if (category is not null)
         {
             throw new BadRequestException("Category with this name already exists");
         }
 
-        await categoriesRepository.AddCategoryAsync(new Category
+        var categoryModel = new Category
         {
             Id = Guid.NewGuid(),
-            Name = request.Name
-        }, cancellationToken: cancellationToken );
+            Name = requestDto.Name
+        };
+            
+        await _categoriesRepository.AddAsync(categoryModel, cancellationToken: cancellationToken );
+        
+        return categoryModel;
     }
     
 
-    public async Task<IEnumerable<Category>> GetAllCategoriesAsync(PageSetting pageSettings, CancellationToken cancellationToken)
+    public async Task<IEnumerable<Category>> GetAllCategoriesAsync(PageSettingRequestDto pageSettingsRequestDto, CancellationToken cancellationToken)
     {
-        var categories = await categoriesRepository
-            .GetCategoriesAsync(pageSettings.PageSize,
-                pageSettings.PageSize*(pageSettings.PageNumber-1), cancellationToken);
+        var categories = await _categoriesRepository
+            .GetAllAsync(pageSettingsRequestDto, cancellationToken);
         
         return categories.ToList();
     }
 
     public async Task<Category> GetCategoryByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var category = await categoriesRepository.GetCategoryByIdAsync(id, cancellationToken);
-
-        if (category is null)
+        if (await _categoriesRepository.GetByIdAsync(id, cancellationToken) is not Category category)
         {
             throw new NotFoundException("Category doesn't exist");
         }
@@ -49,11 +51,11 @@ public class CategoriesService(ICategoriesRepository categoriesRepository) : ICa
 
     public async Task DeleteByIdCategoryAsync(Guid id, CancellationToken cancellationToken)
     {
-        if (!await categoriesRepository.CategoryExistsAsync(id, cancellationToken))
+        if (!await _categoriesRepository.IsExistsAsync(id, cancellationToken))
         {
             throw new NotFoundException("Category not found");
         }
 
-        await categoriesRepository.DeleteByIdCategoryAsync(id, cancellationToken);
+        await _categoriesRepository.DeleteByIdAsync(id, cancellationToken);
     }
 }

@@ -7,9 +7,9 @@ namespace Application.Abstractions.Services;
 
 public interface IAuthorsService
 {
-    public Task CreateAuthorAsync(CreateAuthorRequest author, CancellationToken cancellationToken);
-    public Task<IEnumerable<AuthorShortView>> GetAllAuthorsAsync(PageSetting pageSettings, CancellationToken cancellationToken);
-    public Task<AuthorView> GetAuthorByIdAsync(Guid id, CancellationToken cancellationToken);
+    public Task<AuthorViewDto> CreateAuthorAsync(CreateAuthorRequestDto author, CancellationToken cancellationToken);
+    public Task<IEnumerable<AuthorShortViewDto>> GetAllAuthorsAsync(PageSettingRequestDto pageSettingsRequestDto, CancellationToken cancellationToken);
+    public Task<AuthorViewDto> GetAuthorByIdAsync(Guid id, CancellationToken cancellationToken);
     public Task DeleteByIdAuthorAsync(Guid id, CancellationToken cancellationToken);
-    public Task UpdateAuthorAsync(UpdateAuthorRequest request, CancellationToken cancellationToken);
+    public Task<AuthorViewDto> UpdateAuthorAsync(UpdateAuthorRequestDto requestDto, CancellationToken cancellationToken);
 }

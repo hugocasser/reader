@@ -1,20 +1,19 @@
 using Application.Abstractions.Repositories;
+using Infrastructure.Options;
 using Infrastructure.Persistence;
 using Infrastructure.Persistence.Repositories;
-using Infrastructure.Validators;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using Presentation.Options;
+using MongoDB.Driver;
 
 namespace Infrastructure;
 
 public static class InfrastuctureInjection
 {
-    public static IServiceCollection AddDbContext(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddDbContext(this IServiceCollection services)
     {
+        services.AddSingleton<IMongoClient, CustomMongoClient>();
         services.AddSingleton<MongoDbContext>();
-        services.AddOptions(configuration);
+        services.AddOptions();
         
         return services;
     }
@@ -28,18 +27,13 @@ public static class InfrastuctureInjection
         return services;
     }
 
-    private static IServiceCollection AddOptions(this IServiceCollection services, IConfiguration configuration)
+    private static IServiceCollection AddOptions(this IServiceCollection services)
     {
-        services.AddOptionsValidation();
+        services.AddOptions<MongoOptions>()
+            .BindConfiguration(nameof(MongoOptions))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
         
-        return services.Configure<MongoOptions>(options =>
-        {
-            configuration.GetSection(nameof(MongoOptions)).Bind(options);
-        });
-    }
-
-    private static IServiceCollection AddOptionsValidation(this IServiceCollection services)
-    {
-        return services.AddSingleton<IValidateOptions<MongoOptions>, MongoOptionsValidator>();
+        return services;
     }
 }

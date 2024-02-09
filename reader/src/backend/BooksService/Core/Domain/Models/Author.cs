@@ -1,9 +1,10 @@
+using Domain.Abstractions;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace Domain.Models;
 
-public class Author
+public class Author : IEntity
 {
     [BsonId, BsonElement("id")]
     public Guid Id { get; set; }

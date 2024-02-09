@@ -5,13 +5,13 @@ using FluentValidation;
 
 namespace Presentation.Middlewares;
 
-public class CustomExceptionHandlerMiddleware(RequestDelegate next)
+public class CustomExceptionHandlerMiddleware(RequestDelegate _next)
 {
      public async Task Invoke(HttpContext context)
     {
         try
         {
-            await next(context);
+            await _next(context);
         }
         catch (Exception exception)
         {
@@ -21,26 +21,25 @@ public class CustomExceptionHandlerMiddleware(RequestDelegate next)
 
     private Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
-        HttpStatusCode code;
         string result;
+        
         switch (exception)
         {
             case ValidationException validationException:
-                code = HttpStatusCode.BadRequest;
+                context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                 result = JsonSerializer.Serialize(validationException.Errors);
                 break;
             case ExceptionWithStatusCode exceptionWithStatusCode:
-                code = (HttpStatusCode)exceptionWithStatusCode.StatusCode;
+                context.Response.StatusCode= exceptionWithStatusCode.StatusCode;
                 result = JsonSerializer.Serialize(exceptionWithStatusCode.Message);
                 break;
             default:
-                code = HttpStatusCode.InternalServerError;
+                context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 result = JsonSerializer.Serialize(exception.Message);
                 break;
-                
         }
+        
         context.Response.ContentType = "application/json";
-        context.Response.StatusCode = (int)code;
             
         return context.Response.WriteAsync(result);
     }
