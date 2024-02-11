@@ -4,11 +4,7 @@ using Domain.Models;
 
 namespace Application.Abstractions.Repositories;
 
-public interface INotesRepository
+public interface INotesRepository : IBaseRepository<Note>
 {
-    public Task CreateNoteAsync(Note note);
-    public Task<Note?> GetNoteAsync(Guid id);
-    public Task<IEnumerable<Note>> GetNotesAsync(PageSettings pageSettings);
-    public Task DeleteNoteByIdAsync(Guid noteId);
-    public Task SaveChangesAsync();
+    
 }

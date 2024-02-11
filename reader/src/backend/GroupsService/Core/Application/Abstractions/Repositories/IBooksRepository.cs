@@ -4,11 +4,6 @@ using Domain.Models;
 
 namespace Application.Abstractions.Repositories;
 
-public interface IBooksRepository
+public interface IBooksRepository : IBaseRepository<Book>
 {
-    public Task AddBook(Book book);
-    public Task DeleteBook(Book book);
-    public Task UpdateBook(Book book);
-    public Task<Book?> GetBookByIdAsync(Guid bookId);
-    public Task<IEnumerable<Book>> GetAllBooks(PageSettings pageSettings);
 }
