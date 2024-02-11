@@ -1,26 +1,28 @@
 using Application.Abstractions.Repositories;
-using Application.Exceptions;
+using Application.Common;
 using MediatR;
 
 namespace Application.Handlers.Requests.Groups.DeleteGroup;
 
-public class DeleteGroupRequestHandler(IGroupsRepository groupsRepository) : IRequestHandler<DeleteGroupRequest>
+public class DeleteGroupRequestHandler(IGroupsRepository groupsRepository) : IRequestHandler<DeleteGroupRequest, Result<string>>
 {
-    public async Task Handle(DeleteGroupRequest request, CancellationToken cancellationToken)
+    public async Task<Result<string>> Handle(DeleteGroupRequest request, CancellationToken cancellationToken)
     {
-        var group = await groupsRepository.GetGroupByIdAsync(request.GroupId);
+        var group = await groupsRepository.GetByIdAsync(request.GroupId, cancellationToken);
 
         if (group is null)
         {
-            throw new NotFoundException("Group not found");
+            return new Result<string>(new Error("Group not found", 404));
         }
 
-        if (request.UserId != group.AdminId)
+        if (request.RequestingUserId != group.AdminId)
         {
-            throw new BadRequestException("You are not the admin of this group");
+            return new Result<string>(new Error("You are not admin of this group", 400));
         }
         
-        await groupsRepository.DeleteGroupByIdAsync(request.GroupId);
-        await groupsRepository.SaveChangesAsync();
+        await groupsRepository.DeleteByIdAsync(request.GroupId, cancellationToken);
+        await groupsRepository.SaveChangesAsync(cancellationToken);
+        
+        return new Result<string>("Group deleted");
     }
 }

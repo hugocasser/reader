@@ -1,30 +1,35 @@
 using Application.Abstractions.Repositories;
-using Application.Exceptions;
+using Application.Common;
+using Application.Dtos.Views;
 using Domain.Models;
+using MapsterMapper;
 using MediatR;
 
 namespace Application.Handlers.Requests.Groups.CreateGroup;
 
-public class CreateGroupRequestHandler(IGroupsRepository groupsRepository, IUsersRepository usersRepository)
-    : IRequestHandler<CreateGroupRequest>
+public class CreateGroupRequestHandler(IGroupsRepository groupsRepository, IUsersRepository usersRepository, IMapper _mapper)
+    : IRequestHandler<CreateGroupRequest, Result<GroupViewDto>>
 {
-    public async Task Handle(CreateGroupRequest request, CancellationToken cancellationToken)
+    public async Task<Result<GroupViewDto>> Handle(CreateGroupRequest request, CancellationToken cancellationToken)
     {
-        var admin = await usersRepository.GetUserByIdAsync(request.AdminId);
+        var admin = await usersRepository.GetByIdAsync(request.RequestingUserId, cancellationToken);
         
         if (admin is null)
         {
-            throw new NotFoundException( "Admin not found");
+            return new Result<GroupViewDto>(new Error("User not found", 404));
         }
 
         var group = new Group
         {
             Id = Guid.NewGuid(),
-            AdminId = request.AdminId,
+            Members = new List<User> {admin},
+            AdminId = request.RequestingUserId,
             GroupName = request.GroupName
         };
         
-        await groupsRepository.CreateGroupAsync(group);
-        await groupsRepository.SaveChangesAsync();
+        await groupsRepository.CreateAsync(group, cancellationToken);
+        await groupsRepository.SaveChangesAsync(cancellationToken);
+        
+        return new Result<GroupViewDto>(_mapper.Map<GroupViewDto>(group));
     }
 }

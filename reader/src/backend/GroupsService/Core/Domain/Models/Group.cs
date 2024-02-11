@@ -1,6 +1,8 @@
+using Domain.Abstractions;
+
 namespace Domain.Models;
 
-public class Group
+public class Group : IEntity
 {
     public Guid Id { get; set; }
     public Guid AdminId { get; set; }

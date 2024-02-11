@@ -1,26 +1,28 @@
 using Application.Abstractions.Repositories;
-using Application.Exceptions;
+using Application.Common;
 using MediatR;
 
 namespace Application.Handlers.Requests.Notes.DeleteNote;
 
-public class DeleteNoteRequestHandler(INotesRepository notesRepository) : IRequestHandler<DeleteNoteRequest>
+public class DeleteNoteRequestHandler(INotesRepository notesRepository) : IRequestHandler<DeleteNoteRequest, Result<string>>
 {
-    public async Task Handle(DeleteNoteRequest request, CancellationToken cancellationToken)
+    public async Task<Result<string>> Handle(DeleteNoteRequest request, CancellationToken cancellationToken)
     {
-        var note = await notesRepository.GetNoteAsync(request.NoteId);
+        var note = await notesRepository.GetByIdAsync(request.NoteId, cancellationToken);
 
         if (note is null)
         {
-            throw new NotFoundException("Note not found");
+            return new Result<string>(new Error("Note not found", 404));
         }
 
-        if (note.UserBookProgress.UserId != request.UserId)
+        if (note.UserBookProgress.UserId != request.RequestingUserId)
         {
-            throw new BadRequestException("You are not the owner of this note");
+            return new Result<string>(new Error("You can't delete this note", 400));
         }
         
-        await notesRepository.DeleteNoteByIdAsync(request.NoteId);
-        await notesRepository.SaveChangesAsync();
+        await notesRepository.DeleteByIdAsync(request.NoteId, cancellationToken);
+        await notesRepository.SaveChangesAsync(cancellationToken);
+        
+        return new Result<string>("Note deleted");
     }
 }

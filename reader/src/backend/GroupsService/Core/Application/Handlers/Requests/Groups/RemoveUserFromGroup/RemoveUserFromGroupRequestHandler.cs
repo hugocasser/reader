@@ -1,35 +1,38 @@
 using Application.Abstractions.Repositories;
-using Application.Exceptions;
+using Application.Common;
 using MediatR;
 
 namespace Application.Handlers.Requests.Groups.RemoveUserFromGroup;
 
-public class RemoveUserFromGroupRequestHandler(IGroupsRepository groupsRepository) : IRequestHandler<RemoveUserFromGroupRequest>
+public class RemoveUserFromGroupRequestHandler(IGroupsRepository groupsRepository)
+    : IRequestHandler<RemoveUserFromGroupRequest, Result<string>>
 {
-    public async Task Handle(RemoveUserFromGroupRequest request, CancellationToken cancellationToken)
+    public async Task<Result<string>> Handle(RemoveUserFromGroupRequest request, CancellationToken cancellationToken)
     {
-        var group = await groupsRepository.GetGroupByIdAsync(request.GroupId);
+        var group = await groupsRepository.GetByIdAsync(request.GroupId, cancellationToken);
 
         if (group is null)
         {
-            throw new NotFoundException("Group not found");
+            return new Result<string>(new Error("Group not found", 404));
         }
         
-        var userToDelete = group.Members.FirstOrDefault(user => user.Id == request.UserToDeleteId);
+        var userToDelete = group.Members.FirstOrDefault(user => user.Id == request.UserToRemoveId);
         
-        if ( userToDelete is null)
+        if (userToDelete is null)
         {
-            throw new NotFoundException("User not found in group");
+            return new Result<string>(new Error("User not member of this group", 404));
         }
 
-        if (request.DeleterId != group.AdminId)
+        if (request.RequestingUserId != group.AdminId || userToDelete.Id != request.RequestingUserId)
         {
-            throw new BadRequestException("You are not the admin of this group");
+            return new Result<string>(new Error("You can't remove user from this group", 400));
         }
         
         group.Members.Remove(userToDelete);
         
-        await groupsRepository.UpdateGroupAsync(group);
-        await groupsRepository.SaveChangesAsync();
+        await groupsRepository.UpdateAsync(group, cancellationToken);
+        await groupsRepository.SaveChangesAsync(cancellationToken);
+        
+        return new Result<string>("User removed from group");
     }
 }

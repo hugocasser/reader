@@ -1,6 +1,8 @@
+using Domain.Abstractions;
+
 namespace Domain.Models;
 
-public class Book
+public class Book : IEntity
 {
     public Guid Id { get; set; }
     public string BookName { get; set; }

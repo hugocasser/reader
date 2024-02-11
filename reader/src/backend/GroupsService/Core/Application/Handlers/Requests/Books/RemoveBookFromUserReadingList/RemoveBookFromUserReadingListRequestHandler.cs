@@ -1,17 +1,24 @@
 using Application.Abstractions.Repositories;
-using Application.Exceptions;
+using Application.Common;
 using MediatR;
 
 namespace Application.Handlers.Requests.Books.RemoveBookFromUserReadingList;
 
-public class RemoveBookFromUserReadingListRequestHandler(IUserBookProgressRepository userBookProgressRepository) : IRequestHandler<RemoveBookFromUserReadingListRequest>
+public class RemoveBookFromUserReadingListRequestHandler(IUserBookProgressRepository _userBookProgressRepository)
+    : IRequestHandler<RemoveBookFromUserReadingListRequest, Result<string>>
 {
-    public async Task Handle(RemoveBookFromUserReadingListRequest request, CancellationToken cancellationToken)
+    public async Task<Result<string>> Handle(RemoveBookFromUserReadingListRequest request, CancellationToken cancellationToken)
     {
-        var userBookProgress = await userBookProgressRepository
-            .GetProgressByUserIdBookIdAndGroupIdAsync(request.UserId, request.BookId, request.GroupId)
-            ?? throw new NotFoundException("You have not started reading this book in this group");
+        var userBookProgress = await _userBookProgressRepository
+            .GetProgressByUserIdBookIdAndGroupIdAsync(request.RequestingUserId, request.BookId, request.GroupId);
 
-        await userBookProgressRepository.DeleteProgressAsync(userBookProgress);
+        if (userBookProgress is null)
+        {
+            return new Result<string>(new Error("User book progress not found", 404));
+        }   
+        
+        await _userBookProgressRepository.DeleteByIdAsync(userBookProgress.Id, cancellationToken);
+        
+        return new Result<string>("Book removed from reading list");
     }
 }

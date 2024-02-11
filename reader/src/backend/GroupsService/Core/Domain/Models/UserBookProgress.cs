@@ -1,8 +1,9 @@
 using System.ComponentModel.DataAnnotations;
+using Domain.Abstractions;
 
 namespace Domain.Models;
 
-public class UserBookProgress
+public class UserBookProgress : IEntity
 {
     public Guid Id { get; set; }
     public Guid UserId { get; set; }

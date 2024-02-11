@@ -1,41 +1,43 @@
 using Application.Abstractions.Repositories;
-using Application.Exceptions;
+using Application.Common;
 using MediatR;
 
 namespace Application.Handlers.Requests.Groups.AddBookToGroup;
 
 public class AddBookToGroupRequestHandler(IBooksRepository booksRepository, IGroupsRepository groupsRepository)
-    : IRequestHandler<AddBookToGroupRequest>
+    : IRequestHandler<AddBookToGroupRequest, Result<string>>
 {
-    public async Task Handle(AddBookToGroupRequest request, CancellationToken cancellationToken)
+    public async Task<Result<string>> Handle(AddBookToGroupRequest request, CancellationToken cancellationToken)
     {
-        var bookToAdd = await booksRepository.GetBookByIdAsync(request.BookId);
+        var bookToAdd = await booksRepository.GetByIdAsync(request.BookId, cancellationToken);
 
         if (bookToAdd is null)
         {
-            throw new NotFoundException("Book not found");
+            return new Result<string>(new Error("Book not found", 404));
         }
         
-        var group = await groupsRepository.GetGroupByIdAsync(request.GroupId);
+        var group = await groupsRepository.GetByIdAsync(request.GroupId, cancellationToken);
 
         if (group is null)
         {
-            throw new NotFoundException("Group not found");
+            return new Result<string>(new Error("Group not found", 404));
         }
 
-        if (request.UserId != group.AdminId)
+        if (request.RequestingUserId != group.AdminId)
         {
-            throw new BadRequestException("You are not the admin of this group");
+            return new Result<string>(new Error("Only admin can add books to group", 400));
         }
         
         if (group.AllowedBooks.Any(book => book.Id == request.BookId))
         {
-            throw new BadRequestException("Book already in group");
+            return new Result<string>(new Error("Book is already allowed in this group", 400));
         }
         
         group.AllowedBooks.Add(bookToAdd);
         
-        await groupsRepository.UpdateGroupAsync(group);
-        await groupsRepository.SaveChangesAsync();
+        await groupsRepository.UpdateAsync(group, cancellationToken);
+        await groupsRepository.SaveChangesAsync(cancellationToken);
+        
+        return new Result<string>("Book added to group");
     }
 }

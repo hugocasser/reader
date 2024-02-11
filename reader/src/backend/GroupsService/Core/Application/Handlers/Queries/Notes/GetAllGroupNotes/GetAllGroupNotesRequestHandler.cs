@@ -1,29 +1,29 @@
 using Application.Abstractions.Repositories;
+using Application.Common;
 using Application.Dtos.Views;
-using Application.Exceptions;
+using MapsterMapper;
 using MediatR;
 
 namespace Application.Handlers.Queries.Notes.GetAllGroupNotes;
 
-public class GetAllGroupNotesRequestHandler(IGroupsRepository groupsRepository) : IRequestHandler<GetAllGroupNotesRequest, IEnumerable<NoteViewDto>>
+public class GetAllGroupNotesRequestHandler(IGroupsRepository _groupsRepository, IMapper _mapper) : IRequestHandler<GetAllGroupNotesRequest, Result<IEnumerable<NoteViewDto>>>
 {
-    public async Task<IEnumerable<NoteViewDto>> Handle(GetAllGroupNotesRequest request, CancellationToken cancellationToken)
+    public async Task<Result<IEnumerable<NoteViewDto>>> Handle(GetAllGroupNotesRequest request, CancellationToken cancellationToken)
     {
-        var group = await groupsRepository.GetGroupByIdAsync(request.GroupId);
+        var group = await _groupsRepository.GetByIdAsync(request.GroupId, cancellationToken);
 
         if (group is null)
         {
-            throw new NotFoundException("Group not found");    
+            return new Result<IEnumerable<NoteViewDto>>(new Error("Group not found", 404));
         }
-
-        if (group.Members.All(user => user.Id == request.UserId))
+        
+        if (group.Members.All(user => user.Id != request.RequestingUserId))
         {
-            throw new BadRequestException("You are not a member of this group");
+            return new Result<IEnumerable<NoteViewDto>>(new Error("You are not a member of this group", 400));
         }
         
-        var usersNotes = await groupsRepository.GetGroupNotesAsync(request.GroupId, request.PageSettings);
+        var usersNotes = await _groupsRepository.GetGroupNotesAsync(request.GroupId, request.PageSettingsRequestDto);
         
-        return usersNotes.Select(userNote =>
-            NoteViewDto.MapFromModel(userNote.Item1, userNote.Item2));
+        return new Result<IEnumerable<NoteViewDto>>(usersNotes.Select(_mapper.Map<NoteViewDto>));
     }
 }

@@ -1,35 +1,42 @@
 using Application.Abstractions.Repositories;
-using Application.Exceptions;
-using Domain.Models;
+using Application.Common;
 using MediatR;
 
 namespace Application.Handlers.Requests.Books.EndReadSession;
 
-public class EndReadingSessionRequestHandler(IUserBookProgressRepository userBookProgressRepository) : IRequestHandler<EndReadingSessionRequest>
+public class EndReadingSessionRequestHandler(IUserBookProgressRepository _userBookProgressRepository)
+    : IRequestHandler<EndReadingSessionRequest, Result<string>>
 {
-    public async Task Handle(EndReadingSessionRequest request, CancellationToken cancellationToken)
+    public async Task<Result<string>> Handle(EndReadingSessionRequest request, CancellationToken cancellationToken)
     {
-        var userBookProgress = await userBookProgressRepository.GetProgressByIdAsync(request.UserBookProgressId);
+        var userBookProgress = await _userBookProgressRepository.GetByIdAsync(request.UserBookProgressId, cancellationToken);
+        
+        if (userBookProgress.UserId != request.RequestingUserId)
+        {
+            return new Result<string>(new Error("You can't end this reading session", 400));
+        }
 
         if (userBookProgress is null)
         {
-            throw new NotFoundException("User book progress not found");
+            return new Result<string>(new Error("User book progress not found", 404));
         }
 
-        if (userBookProgress.Progress < request.Progress)
+        if (userBookProgress.Progress > request.Progress)
         {
-            throw new BadRequestException("Progress can't be less than previous");
+            return new Result<string>(new Error("Current progress can't be less than previous progress", 400));
         }
 
         if (request.Progress < request.LastReadSymbol)
         {
-            throw new BadRequestException("Progress can't be less than last read symbol");
+            return new Result<string>(new Error("Current progress can't be less than last read symbol", 400));
         }
         
         userBookProgress.Progress = request.Progress;
         userBookProgress.LastReadSymbol = request.LastReadSymbol;
         
-        await userBookProgressRepository.UpdateProgressAsync(userBookProgress);
-        await userBookProgressRepository.SaveChangesAsync();
+        await _userBookProgressRepository.UpdateAsync(userBookProgress, cancellationToken);
+        await _userBookProgressRepository.SaveChangesAsync(cancellationToken);
+        
+        return new Result<string>("Session ended");
     }
 }

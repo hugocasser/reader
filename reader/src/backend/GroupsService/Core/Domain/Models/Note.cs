@@ -1,6 +1,8 @@
+using Domain.Abstractions;
+
 namespace Domain.Models;
 
-public class Note
+public class Note : IEntity
 {
     public Guid Id { get; set; }
     public int NotePosition { get; set; }
