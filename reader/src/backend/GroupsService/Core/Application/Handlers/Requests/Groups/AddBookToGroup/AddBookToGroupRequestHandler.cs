@@ -1,22 +1,24 @@
 using Application.Abstractions.Repositories;
+using Application.Abstractions.Services;
 using Application.Common;
 using MediatR;
 
 namespace Application.Handlers.Requests.Groups.AddBookToGroup;
 
-public class AddBookToGroupRequestHandler(IBooksRepository booksRepository, IGroupsRepository groupsRepository)
+public class AddBookToGroupRequestHandler(IBooksRepository _booksRepository, IDbSyncerService _dbSyncerService,
+    IGroupsRepository _groupsRepository)
     : IRequestHandler<AddBookToGroupRequest, Result<string>>
 {
     public async Task<Result<string>> Handle(AddBookToGroupRequest request, CancellationToken cancellationToken)
     {
-        var bookToAdd = await booksRepository.GetByIdAsync(request.BookId, cancellationToken);
+        var bookToAdd = await _booksRepository.GetByIdAsync(request.BookId, cancellationToken);
 
         if (bookToAdd is null)
         {
             return new Result<string>(new Error("Book not found", 404));
         }
         
-        var group = await groupsRepository.GetByIdAsync(request.GroupId, cancellationToken);
+        var group = await _groupsRepository.GetByIdAsync(request.GroupId, cancellationToken);
 
         if (group is null)
         {
@@ -35,8 +37,9 @@ public class AddBookToGroupRequestHandler(IBooksRepository booksRepository, IGro
         
         group.AllowedBooks.Add(bookToAdd);
         
-        await groupsRepository.UpdateAsync(group, cancellationToken);
-        await groupsRepository.SaveChangesAsync(cancellationToken);
+        await _groupsRepository.UpdateAsync(group, cancellationToken);
+        await _dbSyncerService.SendEventAsync(EventType.Updated, group, cancellationToken);
+        await _groupsRepository.SaveChangesAsync(cancellationToken);
         
         return new Result<string>("Book added to group");
     }

@@ -7,6 +7,6 @@ namespace Application.Abstractions.Repositories;
 
 public interface IGroupsRepository : IBaseRepository<Group>
 {
-    public Task <IEnumerable<Tuple<Note,User>>> GetGroupNotesAsync(Guid groupId, ReadingPageSettingsRequestDto pageSettingsRequestDto);
-    public Task RemoveBookFromGroupAsync(Guid bookId);
+    public Task<IEnumerable<Tuple<Note, User>>> GetGroupNotesAsync(Guid groupId,
+        ReadingPageSettingsRequestDto pageSettingsRequestDto, CancellationToken cancellationToken);
 }

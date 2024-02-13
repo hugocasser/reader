@@ -1,4 +1,5 @@
 using Application.Abstractions.Repositories;
+using Application.Abstractions.Services;
 using Application.Common;
 using Application.Dtos.Views;
 using Domain.Models;
@@ -7,7 +8,8 @@ using MediatR;
 
 namespace Application.Handlers.Requests.Groups.CreateGroup;
 
-public class CreateGroupRequestHandler(IGroupsRepository groupsRepository, IUsersRepository usersRepository, IMapper _mapper)
+public class CreateGroupRequestHandler(IGroupsRepository groupsRepository, IDbSyncerService _dbSyncerService,
+    IUsersRepository usersRepository, IMapper _mapper)
     : IRequestHandler<CreateGroupRequest, Result<GroupViewDto>>
 {
     public async Task<Result<GroupViewDto>> Handle(CreateGroupRequest request, CancellationToken cancellationToken)
@@ -28,6 +30,7 @@ public class CreateGroupRequestHandler(IGroupsRepository groupsRepository, IUser
         };
         
         await groupsRepository.CreateAsync(group, cancellationToken);
+        await _dbSyncerService.SendEventAsync(EventType.Created, group, cancellationToken);
         await groupsRepository.SaveChangesAsync(cancellationToken);
         
         return new Result<GroupViewDto>(_mapper.Map<GroupViewDto>(group));

@@ -4,6 +4,6 @@ using MediatR;
 
 namespace Application.Handlers.Queries.Notes.GetAllUserNotes;
 
-public record GetAllUserNotesInGroupRequest(Guid UserId, Guid GroupId,
+public record GetAllUserNotesInGroupQuery(Guid UserId, Guid GroupId,
     PageSettingsRequestDto PageSettingsRequestDto, Guid RequestingUserId)
     : IRequest<Result<IEnumerable<NoteViewDto>>>;

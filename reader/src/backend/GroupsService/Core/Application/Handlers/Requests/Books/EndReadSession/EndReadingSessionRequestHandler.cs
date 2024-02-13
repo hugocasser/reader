@@ -1,10 +1,12 @@
 using Application.Abstractions.Repositories;
+using Application.Abstractions.Services;
 using Application.Common;
 using MediatR;
 
 namespace Application.Handlers.Requests.Books.EndReadSession;
 
-public class EndReadingSessionRequestHandler(IUserBookProgressRepository _userBookProgressRepository)
+public class EndReadingSessionRequestHandler
+    (IUserBookProgressRepository _userBookProgressRepository, IDbSyncerService _dbSyncerService)
     : IRequestHandler<EndReadingSessionRequest, Result<string>>
 {
     public async Task<Result<string>> Handle(EndReadingSessionRequest request, CancellationToken cancellationToken)
@@ -35,6 +37,7 @@ public class EndReadingSessionRequestHandler(IUserBookProgressRepository _userBo
         userBookProgress.LastReadSymbol = request.LastReadSymbol;
         
         await _userBookProgressRepository.UpdateAsync(userBookProgress, cancellationToken);
+        await _dbSyncerService.SendEventAsync(EventType.Updated, userBookProgress, cancellationToken);
         await _userBookProgressRepository.SaveChangesAsync(cancellationToken);
         
         return new Result<string>("Session ended");

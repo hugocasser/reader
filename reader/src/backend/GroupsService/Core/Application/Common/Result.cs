@@ -1,5 +1,3 @@
-using System.Runtime.InteropServices.JavaScript;
-
 namespace Application.Common;
 
 public class Result<T> where T : class

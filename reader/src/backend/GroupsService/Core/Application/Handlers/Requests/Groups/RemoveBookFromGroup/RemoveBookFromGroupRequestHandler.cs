@@ -1,15 +1,17 @@
 using Application.Abstractions.Repositories;
+using Application.Abstractions.Services;
 using Application.Common;
 using MediatR;
 
 namespace Application.Handlers.Requests.Groups.RemoveBookFromGroup;
 
-public class RemoveBookFromGroupRequestHandler(IGroupsRepository groupsRepository, IUserBookProgressRepository userBookProgressRepository)
+public class RemoveBookFromGroupRequestHandler(IGroupsRepository _groupsRepository, IDbSyncerService _dbSyncerService,
+    IUserBookProgressRepository userBookProgressRepository)
     : IRequestHandler<RemoveBookFromGroupRequest, Result<string>>
 {
     public async Task<Result<string>> Handle(RemoveBookFromGroupRequest request, CancellationToken cancellationToken)
     {
-        var group = await groupsRepository.GetByIdAsync(request.GroupId, cancellationToken);
+        var group = await _groupsRepository.GetByIdAsync(request.GroupId, cancellationToken);
         
         if (group is null)
         {
@@ -21,12 +23,18 @@ public class RemoveBookFromGroupRequestHandler(IGroupsRepository groupsRepositor
             return new Result<string>(new Error("You are not admin of this group", 400));
         }
 
-        if (group.AllowedBooks.FirstOrDefault(book => book.Id == request.BookId) is null)
+        var book = group.AllowedBooks.FirstOrDefault(book => book.Id == request.BookId);
+        
+        if ( book is null)
         {
             return new Result<string>(new Error("Book isn't allowed in this group", 404));
         }
-        
-        await groupsRepository.RemoveBookFromGroupAsync(request.BookId);
+
+        group.AllowedBooks.Remove(book);
+
+        await _groupsRepository.UpdateAsync(group, cancellationToken);
+        await _dbSyncerService.SendEventAsync(EventType.Updated, group, cancellationToken);
+        await _groupsRepository.SaveChangesAsync(cancellationToken);
         
         return new Result<string>("Book removed from group");
     }

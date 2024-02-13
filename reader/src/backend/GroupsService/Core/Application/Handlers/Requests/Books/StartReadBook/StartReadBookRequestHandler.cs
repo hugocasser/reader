@@ -1,11 +1,13 @@
 using Application.Abstractions.Repositories;
+using Application.Abstractions.Services;
 using Application.Common;
 using Domain.Models;
 using MediatR;
 
 namespace Application.Handlers.Requests.Books.StartReadBook;
 
-public class StartReadBookRequestHandler(IGroupsRepository _groupsRepository, IUserBookProgressRepository _userBookProgressRepository,
+public class StartReadBookRequestHandler(IGroupsRepository _groupsRepository,
+    IUserBookProgressRepository _userBookProgressRepository, IDbSyncerService _dbSyncerService,
     IBooksRepository _booksRepository) : IRequestHandler<StartReadBookRequest, Result<string>>
 {
     public async Task<Result<string>> Handle(StartReadBookRequest request, CancellationToken cancellationToken)
@@ -29,7 +31,7 @@ public class StartReadBookRequestHandler(IGroupsRepository _groupsRepository, IU
         }
         
         var progressByUserIdAndBookId = await _userBookProgressRepository
-            .GetProgressByUserIdBookIdAndGroupIdAsync(request.RequestingUserId, request.BookId, request.GroupId);
+            .GetProgressByUserIdBookIdAndGroupIdAsync(request.RequestingUserId, request.BookId, request.GroupId, cancellationToken);
 
         if (progressByUserIdAndBookId is not null)
         {
@@ -50,6 +52,8 @@ public class StartReadBookRequestHandler(IGroupsRepository _groupsRepository, IU
         };
         
         await _userBookProgressRepository.CreateAsync(userBookProgress, cancellationToken);
+        await _dbSyncerService.SendEventAsync(EventType.Created, userBookProgress, cancellationToken);
+        await _userBookProgressRepository.SaveChangesAsync(cancellationToken);
         
         return new Result<string>(userBookProgress.Id.ToString());
     }

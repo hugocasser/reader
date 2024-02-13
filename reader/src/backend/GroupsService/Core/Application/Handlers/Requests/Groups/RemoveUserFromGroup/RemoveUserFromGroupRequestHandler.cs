@@ -1,10 +1,11 @@
 using Application.Abstractions.Repositories;
+using Application.Abstractions.Services;
 using Application.Common;
 using MediatR;
 
 namespace Application.Handlers.Requests.Groups.RemoveUserFromGroup;
 
-public class RemoveUserFromGroupRequestHandler(IGroupsRepository groupsRepository)
+public class RemoveUserFromGroupRequestHandler(IGroupsRepository groupsRepository, IDbSyncerService _dbSyncerService)
     : IRequestHandler<RemoveUserFromGroupRequest, Result<string>>
 {
     public async Task<Result<string>> Handle(RemoveUserFromGroupRequest request, CancellationToken cancellationToken)
@@ -31,6 +32,7 @@ public class RemoveUserFromGroupRequestHandler(IGroupsRepository groupsRepositor
         group.Members.Remove(userToDelete);
         
         await groupsRepository.UpdateAsync(group, cancellationToken);
+        await _dbSyncerService.SendEventAsync(EventType.Updated, group, cancellationToken);
         await groupsRepository.SaveChangesAsync(cancellationToken);
         
         return new Result<string>("User removed from group");

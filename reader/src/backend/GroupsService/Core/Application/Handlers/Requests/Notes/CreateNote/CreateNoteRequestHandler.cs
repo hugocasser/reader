@@ -1,4 +1,5 @@
 using Application.Abstractions.Repositories;
+using Application.Abstractions.Services;
 using Application.Common;
 using Application.Dtos.Views;
 using Domain.Models;
@@ -7,7 +8,8 @@ using MediatR;
 namespace Application.Handlers.Requests.Notes.CreateNote;
 
 public class CreateNoteRequestHandler(IBooksRepository booksRepository, INotesRepository notesRepository,
-    IGroupsRepository groupsRepository, IUserBookProgressRepository userBookProgressRepository)
+    IGroupsRepository groupsRepository, IUserBookProgressRepository userBookProgressRepository,
+    IDbSyncerService _dbSyncerService)
     : IRequestHandler<CreateNoteRequest, Result<NoteViewDto>>
 {
     public async Task<Result<NoteViewDto>> Handle(CreateNoteRequest request, CancellationToken cancellationToken)
@@ -37,7 +39,7 @@ public class CreateNoteRequestHandler(IBooksRepository booksRepository, INotesRe
         }
         
         var progressByUserIdAndBookId = await userBookProgressRepository
-            .GetProgressByUserIdBookIdAndGroupIdAsync(request.RequestingUserId, request.BookId, request.GroupId);
+            .GetProgressByUserIdBookIdAndGroupIdAsync(request.RequestingUserId, request.BookId, request.GroupId, cancellationToken);
 
 
         if (progressByUserIdAndBookId is null)
@@ -55,6 +57,7 @@ public class CreateNoteRequestHandler(IBooksRepository booksRepository, INotesRe
         };
             
         await notesRepository.CreateAsync(note, cancellationToken);
+        await _dbSyncerService.SendEventAsync(EventType.Created, note, cancellationToken);
         await notesRepository.SaveChangesAsync(cancellationToken);
         
         return new Result<NoteViewDto>(new NoteViewDto

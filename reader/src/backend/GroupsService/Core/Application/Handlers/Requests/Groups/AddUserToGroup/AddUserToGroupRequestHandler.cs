@@ -1,10 +1,12 @@
 using Application.Abstractions.Repositories;
+using Application.Abstractions.Services;
 using Application.Common;
 using MediatR;
 
 namespace Application.Handlers.Requests.Groups.AddUserToGroup;
 
-public class AddUserToGroupRequestHandler(IGroupsRepository groupsRepository, IUsersRepository usersRepository)
+public class AddUserToGroupRequestHandler(IGroupsRepository groupsRepository, IDbSyncerService _dbSyncerService,
+    IUsersRepository usersRepository)
     : IRequestHandler<AddUserToGroupRequest, Result<string>>
 {
     public async Task<Result<string>> Handle(AddUserToGroupRequest request, CancellationToken cancellationToken)
@@ -36,6 +38,7 @@ public class AddUserToGroupRequestHandler(IGroupsRepository groupsRepository, IU
         group.Members.Add(invitedUser);
         
         await groupsRepository.UpdateAsync(group, cancellationToken);
+        await _dbSyncerService.SendEventAsync(EventType.Updated, group, cancellationToken);
         await groupsRepository.SaveChangesAsync(cancellationToken);
         
         return new Result<string>("User added to group");

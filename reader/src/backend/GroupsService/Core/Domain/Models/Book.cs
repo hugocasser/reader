@@ -9,4 +9,5 @@ public class Book : IEntity
     public string AuthorFirstName { get; set; }
     public string AuthorLastName { get; set; }
     public ICollection<UserBookProgress> UserBookProgress { get; set; } = new List<UserBookProgress>();
+    public ICollection<Group> AllowedInGroups { get; set; } = new List<Group>();
 }

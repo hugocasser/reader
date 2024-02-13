@@ -1,10 +1,12 @@
 using Application.Abstractions.Repositories;
+using Application.Abstractions.Services;
 using Application.Common;
 using MediatR;
 
 namespace Application.Handlers.Requests.Notes.DeleteNote;
 
-public class DeleteNoteRequestHandler(INotesRepository notesRepository) : IRequestHandler<DeleteNoteRequest, Result<string>>
+public class DeleteNoteRequestHandler(INotesRepository notesRepository, IDbSyncerService _dbSyncerService)
+    : IRequestHandler<DeleteNoteRequest, Result<string>>
 {
     public async Task<Result<string>> Handle(DeleteNoteRequest request, CancellationToken cancellationToken)
     {
@@ -21,6 +23,7 @@ public class DeleteNoteRequestHandler(INotesRepository notesRepository) : IReque
         }
         
         await notesRepository.DeleteByIdAsync(request.NoteId, cancellationToken);
+        await _dbSyncerService.SendEventAsync(EventType.Deleted, note, cancellationToken);
         await notesRepository.SaveChangesAsync(cancellationToken);
         
         return new Result<string>("Note deleted");

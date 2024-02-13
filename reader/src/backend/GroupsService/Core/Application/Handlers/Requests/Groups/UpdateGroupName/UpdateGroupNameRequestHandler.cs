@@ -1,4 +1,5 @@
 using Application.Abstractions.Repositories;
+using Application.Abstractions.Services;
 using Application.Common;
 using Application.Dtos.Views;
 using MapsterMapper;
@@ -6,7 +7,8 @@ using MediatR;
 
 namespace Application.Handlers.Requests.Groups.UpdateGroupName;
 
-public class UpdateGroupNameRequestHandler(IGroupsRepository groupsRepository, IMapper _mapper)
+public class UpdateGroupNameRequestHandler(IGroupsRepository groupsRepository, IMapper _mapper,
+    IDbSyncerService _dbSyncerService)
     : IRequestHandler<UpdateGroupNameRequest, Result<GroupViewDto>>
 {
     public async Task<Result<GroupViewDto>> Handle(UpdateGroupNameRequest request, CancellationToken cancellationToken)
@@ -26,6 +28,7 @@ public class UpdateGroupNameRequestHandler(IGroupsRepository groupsRepository, I
         group.GroupName = request.Name;
         
         await groupsRepository.UpdateAsync(group, cancellationToken);
+        await _dbSyncerService.SendEventAsync(EventType.Updated, group, cancellationToken);
         await groupsRepository.SaveChangesAsync(cancellationToken);
         
         return new Result<GroupViewDto>(_mapper.Map<GroupViewDto>(group));

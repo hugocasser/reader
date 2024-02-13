@@ -8,17 +8,17 @@ using MediatR;
 
 namespace Application.Handlers.Queries.Notes.GetAllUserNotesInGroup;
 
-public class GetAllUserNotesInGroupRequestHandler(IUserBookProgressRepository _userBookProgressRepository, IMapper _mapper)
-    : IRequestHandler<GetAllUserNotesInGroupRequest, Result<IEnumerable<NoteViewDto>>>
+public class GetAllUserNotesInGroupQueryHandler(IUserBookProgressRepository _userBookProgressRepository, IMapper _mapper)
+    : IRequestHandler<GetAllUserNotesInGroupQuery, Result<IEnumerable<NoteViewDto>>>
 {
-    public async Task<Result<IEnumerable<NoteViewDto>>> Handle(GetAllUserNotesInGroupRequest request, CancellationToken cancellationToken)
+    public async Task<Result<IEnumerable<NoteViewDto>>> Handle(GetAllUserNotesInGroupQuery query, CancellationToken cancellationToken)
     {
         var userProgresses = await _userBookProgressRepository
-            .GetProgressesByUserIdAndGroupIdAsync(request.RequestingUserId, request.GroupId);
+            .GetProgressesByUserIdAndGroupIdAsync(query.RequestingUserId, query.GroupId, cancellationToken);
 
-        if (request.RequestingUserId != request.UserId)
+        if (query.RequestingUserId != query.UserId)
         {
-            if (userProgresses.First().Group.AdminId != request.RequestingUserId)
+            if (userProgresses.First().Group.AdminId != query.RequestingUserId)
             {
                 return new Result<IEnumerable<NoteViewDto>>(new Error("You can't get strangers notes ", 400));
             }
