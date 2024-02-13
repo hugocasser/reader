@@ -12,7 +12,7 @@ namespace Presentation.Controllers;
 public class AuthorsController(IAuthorsService _authorsService, IBooksService _booksService) : ApiController
 {
     [HttpGet]
-    //[Authorize]
+    [Authorize]
     public async Task<IActionResult> GetAllAuthors(int page, int size, CancellationToken cancellationToken)
     {
         var pageSettings = new PageSettingRequestDto(page, size);
