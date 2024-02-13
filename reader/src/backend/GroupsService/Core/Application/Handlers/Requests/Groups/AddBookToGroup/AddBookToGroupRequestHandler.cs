@@ -1,11 +1,10 @@
 using Application.Abstractions.Repositories;
-using Application.Abstractions.Services;
 using Application.Common;
 using MediatR;
 
 namespace Application.Handlers.Requests.Groups.AddBookToGroup;
 
-public class AddBookToGroupRequestHandler(IBooksRepository _booksRepository, IDbSyncerService _dbSyncerService,
+public class AddBookToGroupRequestHandler(IBooksRepository _booksRepository,
     IGroupsRepository _groupsRepository)
     : IRequestHandler<AddBookToGroupRequest, Result<string>>
 {
@@ -35,10 +34,9 @@ public class AddBookToGroupRequestHandler(IBooksRepository _booksRepository, IDb
             return new Result<string>(new Error("Book is already allowed in this group", 400));
         }
         
-        group.AllowedBooks.Add(bookToAdd);
+        group.AddBook(bookToAdd);
         
         await _groupsRepository.UpdateAsync(group, cancellationToken);
-        await _dbSyncerService.SendEventAsync(EventType.Updated, group, cancellationToken);
         await _groupsRepository.SaveChangesAsync(cancellationToken);
         
         return new Result<string>("Book added to group");

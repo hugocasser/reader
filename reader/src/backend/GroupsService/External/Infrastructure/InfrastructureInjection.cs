@@ -8,6 +8,7 @@ public static class InfrastructureInjection
 {
     private static IServiceCollection AddReadDbContext(this IServiceCollection services)
     {
+        services.AddDbOptions();
         services.AddDbContext<ReadDbContext>();
         
         return services;

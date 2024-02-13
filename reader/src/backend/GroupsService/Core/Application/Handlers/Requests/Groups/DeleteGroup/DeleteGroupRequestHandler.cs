@@ -1,11 +1,10 @@
 using Application.Abstractions.Repositories;
-using Application.Abstractions.Services;
 using Application.Common;
 using MediatR;
 
 namespace Application.Handlers.Requests.Groups.DeleteGroup;
 
-public class DeleteGroupRequestHandler(IGroupsRepository groupsRepository, IDbSyncerService _dbSyncerService)
+public class DeleteGroupRequestHandler(IGroupsRepository groupsRepository)
     : IRequestHandler<DeleteGroupRequest, Result<string>>
 {
     public async Task<Result<string>> Handle(DeleteGroupRequest request, CancellationToken cancellationToken)
@@ -22,8 +21,9 @@ public class DeleteGroupRequestHandler(IGroupsRepository groupsRepository, IDbSy
             return new Result<string>(new Error("You are not admin of this group", 400));
         }
         
+        group.Delete();
+        
         await groupsRepository.DeleteByIdAsync(request.GroupId, cancellationToken);
-        await _dbSyncerService.SendEventAsync(EventType.Deleted, group, cancellationToken);
         await groupsRepository.SaveChangesAsync(cancellationToken);
         
         return new Result<string>("Group deleted");

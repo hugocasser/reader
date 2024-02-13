@@ -25,7 +25,7 @@ public class GroupsRepository(WriteDbContext _writeDbContext, ReadDbContext _rea
             notes.AddRange(progress.UserNotes
                 .Where(note => note.NotePosition <= pageSettingsRequestDto.LastNotePosition &&
                     note.NotePosition >= pageSettingsRequestDto.FirstNotePosition)
-                .Select(note => new Tuple<Note, User>(note, progress.User)));
+                .Select(note => new Tuple<Note, User?>(note, progress.User)));
         }
 
         return notes;

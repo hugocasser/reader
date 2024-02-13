@@ -5,4 +5,4 @@ using MediatR;
 
 namespace Application.Handlers.Requests.Groups.UpdateGroupName;
 
-public record UpdateGroupNameRequest(string Name, Guid GroupId, Guid RequestingUserId) : IRequest<Result<GroupViewDto>>;
+public record UpdateGroupNameRequest(string? Name, Guid GroupId, Guid RequestingUserId) : IRequest<Result<GroupViewDto>>;

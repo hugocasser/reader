@@ -1,11 +1,10 @@
 using Application.Abstractions.Repositories;
-using Application.Abstractions.Services;
 using Application.Common;
 using MediatR;
 
 namespace Application.Handlers.Requests.Groups.RemoveBookFromGroup;
 
-public class RemoveBookFromGroupRequestHandler(IGroupsRepository _groupsRepository, IDbSyncerService _dbSyncerService,
+public class RemoveBookFromGroupRequestHandler(IGroupsRepository _groupsRepository,
     IUserBookProgressRepository userBookProgressRepository)
     : IRequestHandler<RemoveBookFromGroupRequest, Result<string>>
 {
@@ -30,10 +29,9 @@ public class RemoveBookFromGroupRequestHandler(IGroupsRepository _groupsReposito
             return new Result<string>(new Error("Book isn't allowed in this group", 404));
         }
 
-        group.AllowedBooks.Remove(book);
+        group.RemoveBook(book);
 
         await _groupsRepository.UpdateAsync(group, cancellationToken);
-        await _dbSyncerService.SendEventAsync(EventType.Updated, group, cancellationToken);
         await _groupsRepository.SaveChangesAsync(cancellationToken);
         
         return new Result<string>("Book removed from group");

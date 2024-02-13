@@ -1,5 +1,4 @@
 using Application.Abstractions.Repositories;
-using Application.Abstractions.Services;
 using Application.Common;
 using Application.Dtos.Views;
 using Domain.Models;
@@ -8,7 +7,7 @@ using MediatR;
 
 namespace Application.Handlers.Requests.Groups.CreateGroup;
 
-public class CreateGroupRequestHandler(IGroupsRepository groupsRepository, IDbSyncerService _dbSyncerService,
+public class CreateGroupRequestHandler(IGroupsRepository groupsRepository,
     IUsersRepository usersRepository, IMapper _mapper)
     : IRequestHandler<CreateGroupRequest, Result<GroupViewDto>>
 {
@@ -21,16 +20,10 @@ public class CreateGroupRequestHandler(IGroupsRepository groupsRepository, IDbSy
             return new Result<GroupViewDto>(new Error("User not found", 404));
         }
 
-        var group = new Group
-        {
-            Id = Guid.NewGuid(),
-            Members = new List<User> {admin},
-            AdminId = request.RequestingUserId,
-            GroupName = request.GroupName
-        };
+        var group = new Group();
+        group.CreateGroup(admin, request.GroupName);
         
         await groupsRepository.CreateAsync(group, cancellationToken);
-        await _dbSyncerService.SendEventAsync(EventType.Created, group, cancellationToken);
         await groupsRepository.SaveChangesAsync(cancellationToken);
         
         return new Result<GroupViewDto>(_mapper.Map<GroupViewDto>(group));

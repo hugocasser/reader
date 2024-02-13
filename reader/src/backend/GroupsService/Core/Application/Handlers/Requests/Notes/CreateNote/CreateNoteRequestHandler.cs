@@ -1,15 +1,14 @@
 using Application.Abstractions.Repositories;
-using Application.Abstractions.Services;
 using Application.Common;
 using Application.Dtos.Views;
+using Domain.DomainEvents;
 using Domain.Models;
 using MediatR;
 
 namespace Application.Handlers.Requests.Notes.CreateNote;
 
 public class CreateNoteRequestHandler(IBooksRepository booksRepository, INotesRepository notesRepository,
-    IGroupsRepository groupsRepository, IUserBookProgressRepository userBookProgressRepository,
-    IDbSyncerService _dbSyncerService)
+    IGroupsRepository groupsRepository, IUserBookProgressRepository userBookProgressRepository)
     : IRequestHandler<CreateNoteRequest, Result<NoteViewDto>>
 {
     public async Task<Result<NoteViewDto>> Handle(CreateNoteRequest request, CancellationToken cancellationToken)
@@ -38,26 +37,20 @@ public class CreateNoteRequestHandler(IBooksRepository booksRepository, INotesRe
             return new Result<NoteViewDto>(new Error("Book isn't allowed in this group", 404));
         }
         
-        var progressByUserIdAndBookId = await userBookProgressRepository
+        var progress = await userBookProgressRepository
             .GetProgressByUserIdBookIdAndGroupIdAsync(request.RequestingUserId, request.BookId, request.GroupId, cancellationToken);
 
 
-        if (progressByUserIdAndBookId is null)
+        if (progress is null)
         {
             return new Result<NoteViewDto>(new Error("Progress not found", 404));
         }
+
+        var note = new Note();
         
-        var note = new Note
-        {
-            Id = Guid.NewGuid(),
-            NotePosition = request.NotePosition,
-            UserBookProgressId = progressByUserIdAndBookId.Id,
-            UserBookProgress = progressByUserIdAndBookId,
-            Text = request.Text
-        };
-            
+        note.CreateNote(request.NotePosition, progress, request.Text);
+        
         await notesRepository.CreateAsync(note, cancellationToken);
-        await _dbSyncerService.SendEventAsync(EventType.Created, note, cancellationToken);
         await notesRepository.SaveChangesAsync(cancellationToken);
         
         return new Result<NoteViewDto>(new NoteViewDto

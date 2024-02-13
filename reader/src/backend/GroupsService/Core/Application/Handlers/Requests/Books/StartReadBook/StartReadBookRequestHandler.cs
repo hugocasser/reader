@@ -1,5 +1,4 @@
 using Application.Abstractions.Repositories;
-using Application.Abstractions.Services;
 using Application.Common;
 using Domain.Models;
 using MediatR;
@@ -7,7 +6,7 @@ using MediatR;
 namespace Application.Handlers.Requests.Books.StartReadBook;
 
 public class StartReadBookRequestHandler(IGroupsRepository _groupsRepository,
-    IUserBookProgressRepository _userBookProgressRepository, IDbSyncerService _dbSyncerService,
+    IUserBookProgressRepository _userBookProgressRepository,
     IBooksRepository _booksRepository) : IRequestHandler<StartReadBookRequest, Result<string>>
 {
     public async Task<Result<string>> Handle(StartReadBookRequest request, CancellationToken cancellationToken)
@@ -19,13 +18,15 @@ public class StartReadBookRequestHandler(IGroupsRepository _groupsRepository,
             return new Result<string>(new Error("Group not found", 404));
         }
 
+        var user = group.Members.FirstOrDefault(searchingUser => searchingUser.Id == request.RequestingUserId);
         
-        if (group.Members.All(user => user.Id != request.RequestingUserId))
+        if (user is null)
         {
             return new Result<string>(new Error("You are not a member of this group", 400));
         }
 
-        if (group.AllowedBooks.All(book => book.Id != request.BookId))
+        var book = group.AllowedBooks.FirstOrDefault(searchingBook => searchingBook.Id == request.BookId);
+        if (book is null)
         {
             return new Result<string>(new Error("Book isn't allowed in this group", 404));
         }
@@ -38,23 +39,12 @@ public class StartReadBookRequestHandler(IGroupsRepository _groupsRepository,
             return new Result<string>(new Error("You have already started reading this book", 400));
         }
 
-        var userBookProgress = new UserBookProgress
-        {
-            Id = Guid.NewGuid(),
-            UserId = request.RequestingUserId,
-            BookId = request.BookId,
-            GroupId = request.GroupId,
-            Group = group,
-            User = group.Members.First(user => user.Id == request.RequestingUserId),
-            Book = group.AllowedBooks.First(book => book.Id == request.BookId),
-            Progress = 0,
-            LastReadSymbol = 0
-        };
+        var progress = new UserBookProgress();
+        progress.CreateUserBookProgress(book, group, user);
         
-        await _userBookProgressRepository.CreateAsync(userBookProgress, cancellationToken);
-        await _dbSyncerService.SendEventAsync(EventType.Created, userBookProgress, cancellationToken);
+        await _userBookProgressRepository.CreateAsync(progress, cancellationToken);
         await _userBookProgressRepository.SaveChangesAsync(cancellationToken);
         
-        return new Result<string>(userBookProgress.Id.ToString());
+        return new Result<string>(progress.Id.ToString());
     }
 }

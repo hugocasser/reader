@@ -1,4 +1,5 @@
 using Domain.Models;
+using Infrastructure.OutboxMessages;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence;
@@ -10,6 +11,7 @@ public class WriteDbContext : DbContext
     public DbSet<Note> Notes { get; set; }
     public DbSet<Book> Books { get; set; }
     public DbSet<UserBookProgress> UserBookProgresses { get; set; }
+    public DbSet<OutboxMessage> OutboxMessages { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

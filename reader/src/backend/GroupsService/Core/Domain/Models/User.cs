@@ -1,12 +1,26 @@
 using Domain.Abstractions;
+using Domain.DomainEvents;
 
 namespace Domain.Models;
 
-public class User : IEntity
+public class User : Entity
 {
-    public Guid Id { get; set; }
-    public string FirstName { get; set; } = string.Empty;
-    public string LastName { get; set; } = string.Empty;
-    public ICollection<Group> Groups { get; set; } = new List<Group>();
-    public ICollection<UserBookProgress> UserBookProgresses { get; set; } = new List<UserBookProgress>();
+    public string FirstName { get; private set; } = string.Empty;
+    public string LastName { get; private set; } = string.Empty;
+    public ICollection<Group> Groups { get; private set; } = new List<Group>();
+    public ICollection<UserBookProgress> UserBookProgresses { get; private set; } = new List<UserBookProgress>();
+
+    public void CreateUser(string firstName, string lastName)
+    {
+        FirstName = firstName;
+        LastName = lastName;
+        RaiseDomainEvent(EventType.Created, this);
+    }
+
+    public void UpdateUser(string firstName, string lastName)
+    {
+        FirstName = firstName;
+        LastName = lastName;
+        RaiseDomainEvent(EventType.Updated, this);
+    }
 }

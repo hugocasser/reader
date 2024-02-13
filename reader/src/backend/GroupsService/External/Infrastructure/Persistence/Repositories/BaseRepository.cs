@@ -1,13 +1,12 @@
 using Application.Abstractions.Repositories;
 using Application.Dtos.Views;
 using Domain.Abstractions;
-using Infrastructure.Abstractions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence.Repositories;
 
 public class BaseRepository<T>(WriteDbContext _writeDbContext, ReadDbContext _readDbContext)
-    : IBaseRepository<T> where T : class, IEntity
+    : IBaseRepository<T> where T : Entity
 {
     public async Task CreateAsync(T entity, CancellationToken cancellationToken)
     {

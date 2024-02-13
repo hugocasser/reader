@@ -3,7 +3,7 @@ using Domain.Abstractions;
 
 namespace Application.Abstractions.Repositories;
 
-public interface IBaseRepository<T> where T : IEntity
+public interface IBaseRepository<T> where T : Entity
 {
     public Task CreateAsync(T entity, CancellationToken cancellationToken);
     public Task UpdateAsync(T entity, CancellationToken cancellationToken);
