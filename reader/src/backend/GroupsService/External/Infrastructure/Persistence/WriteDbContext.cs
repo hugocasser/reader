@@ -1,11 +1,15 @@
 using Domain.Models;
+using Infrastructure.Interceptor;
 using Infrastructure.OutboxMessages;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence;
 
-public class WriteDbContext : DbContext
+public class WriteDbContext(DbContextOptions<WriteDbContext> options) : DbContext(options)
 {
+    private static readonly ConvertDomainEventsToOutboxMessagesInterceptor _messagesInterceptor
+        = new ConvertDomainEventsToOutboxMessagesInterceptor();
+    
     public DbSet<User> Users { get; set; }
     public DbSet<Group> Groups { get; set; }
     public DbSet<Note> Notes { get; set; }
@@ -17,5 +21,11 @@ public class WriteDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(WriteDbContext).Assembly);
+    }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        base.OnConfiguring(optionsBuilder);
+        optionsBuilder.AddInterceptors(_messagesInterceptor);
     }
 }

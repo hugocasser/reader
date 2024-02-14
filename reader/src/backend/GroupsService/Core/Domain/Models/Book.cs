@@ -5,9 +5,9 @@ namespace Domain.Models;
 
 public class Book : Entity
 {
-    public string BookName { get; private set; }
-    public string AuthorFirstName { get; private set; }
-    public string AuthorLastName { get; private set; }
+    public string BookName { get; set; }
+    public string AuthorFirstName { get; set; }
+    public string AuthorLastName { get; set; }
     public ICollection<UserBookProgress> UserBookProgress { get; set; } = new List<UserBookProgress>();
     public ICollection<Group> AllowedInGroups { get; set; } = new List<Group>();
     

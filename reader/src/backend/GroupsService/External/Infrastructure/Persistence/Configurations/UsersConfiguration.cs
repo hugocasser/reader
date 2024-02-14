@@ -13,5 +13,8 @@ public class UsersConfiguration : IEntityTypeConfiguration<User>
         
         builder.HasMany(user => user.Groups)
             .WithMany(group => group.Members);
+        
+        builder.HasOne(user => user.AdminGroup)
+            .WithOne(group => group.Admin);
     }
 }
