@@ -1,22 +1,17 @@
-using BusinessLogicLayer.Abstractions.Configurations;
-using BusinessLogicLayer.Abstractions.Dtos;
 using BusinessLogicLayer.Abstractions.Dtos.RequestsDtos;
 using BusinessLogicLayer.Abstractions.Services.DataServices;
-using BusinessLogicLayer.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using PresentationLayer.Abstractions;
-using PresentationLayer.Attributes;
 
 namespace PresentationLayer.Controllers;
 
 [Route("api/identity/auth")]
-public class AuthController(IUsersService usersService, IRefreshTokensService _refreshTokensService)
-    : ApiController(usersService)
+public class AuthController(IUsersService _usersService, IRefreshTokensService _refreshTokensService)
+    : ApiController(_usersService)
 {
-
     [HttpPost]
     [Route("login")]
-    public async Task<IActionResult> LoginAsync(LoginUserRequestDto loginRequestDto,
+    public async Task<IActionResult> LoginAsync([FromBody]LoginUserRequestDto loginRequestDto,
         CancellationToken cancellationToken)
     {
         return Ok(await _usersService.LoginUserAsync(loginRequestDto, cancellationToken));
@@ -24,11 +19,12 @@ public class AuthController(IUsersService usersService, IRefreshTokensService _r
 
     [HttpPost]
     [Route("register")]
-    public async Task<IActionResult> RegisterAsync(RegisterUserRequestDto registerUserRequestDto,
+    public async Task<IActionResult> RegisterAsync([FromBody]RegisterUserRequestDto registerUserRequestDto,
         CancellationToken cancellationToken)
     {
         await _usersService.RegisterUserAsync(registerUserRequestDto, cancellationToken);
-        return Ok();
+        
+        return Created();
     }
 
     [HttpGet]
@@ -42,7 +38,15 @@ public class AuthController(IUsersService usersService, IRefreshTokensService _r
     [Route("resend")]
     public async Task<IActionResult> ResendEmailConfirmMessageAsync(string email, string password, CancellationToken cancellationToken)
     {
-        return Ok(await _usersService.ResendEmailConfirmMessageAsync(email, password, cancellationToken));
+        return Ok(await _usersService.ResendEmailConfirmMessageAsync(email, password));
+    }
+
+    [HttpPost]
+    [Route("refresh-token")]
+    public async Task<IActionResult> RefreshTokenAsync
+        ([FromBody]UpdateAuthTokenRequestDto updateAuthTokenRequestDto, CancellationToken cancellationToken)
+    {
+        return Ok(await _refreshTokensService.RefreshTokenAsync(updateAuthTokenRequestDto, cancellationToken));
     }
 
     [HttpPost]

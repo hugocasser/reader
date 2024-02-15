@@ -1,20 +1,17 @@
-using BusinessLogicLayer.Abstractions.Configurations;
 using BusinessLogicLayer.Abstractions.Dtos;
-using BusinessLogicLayer.Abstractions.Services;
 using BusinessLogicLayer.Abstractions.Services.AuthServices;
+using BusinessLogicLayer.Exceptions;
+using BusinessLogicLayer.Options;
 using MailKit.Net.Smtp;
+using Microsoft.Extensions.Options;
 using MimeKit;
 
 namespace BusinessLogicLayer.Services.AuthServices;
 
-public class EmailSenderService : IEmailSenderService
+public class EmailSenderService(IOptions<EmailMessageSenderOptions> _options) : IEmailSenderService
 {
-    private readonly IEmailMessageSenderConfiguration _configuration;
-
-    public EmailSenderService(IEmailMessageSenderConfiguration configuration)
-    {
-        _configuration = configuration;
-    }
+    private readonly EmailMessageSenderOptions _options = _options.Value;
+    
     public async Task SendEmailAsync(EmailMessage message)
     {
         await SendAsync(CreateEmailMessage(message));
@@ -23,16 +20,17 @@ public class EmailSenderService : IEmailSenderService
     private MimeMessage CreateEmailMessage(EmailMessage message)
     {
         var emailMessage = new MimeMessage();
-        emailMessage.From.Add(new MailboxAddress("Identity", _configuration.Sender));
+        emailMessage.From.Add(new MailboxAddress("Identity", _options.Sender));
         emailMessage.To.Add(new MailboxAddress(message.AddresseeName, message.Addressee));
         emailMessage.Subject = message.Subject;
 
         var bodyBuilder = new BodyBuilder 
         { 
-            HtmlBody = $"<h2 style='color:red;'>{message.Content}</h2>" 
+            HtmlBody = message.Content
         };
 
         emailMessage.Body = bodyBuilder.ToMessageBody();
+        
         return emailMessage;
     }
     
@@ -42,21 +40,20 @@ public class EmailSenderService : IEmailSenderService
         try
         {
             await client.ConnectAsync(
-                _configuration.SmtpServer,
-                _configuration.Port,
+                _options.SmtpServer,
+                _options.Port,
                 true);
             client.AuthenticationMechanisms
                 .Remove("XOAUTH2");
             await client.AuthenticateAsync(
-                _configuration.UserName,
-                _configuration.Password);
+                _options.UserName,
+                _options.Password);
 
             await client.SendAsync(mailMessage);
         }
-        catch
+        catch(Exception ex)
         {
-            // TODO: throw an exception
-            throw;
+            throw new EmailNotSentException(ex.Message);
         }
         finally
         {

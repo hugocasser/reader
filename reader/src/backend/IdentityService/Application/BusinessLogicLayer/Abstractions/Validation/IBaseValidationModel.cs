@@ -1,4 +1,3 @@
-
 namespace BusinessLogicLayer.Abstractions.Validation;
 
 public interface IBaseValidationModel

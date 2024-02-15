@@ -1,4 +1,4 @@
-using PresentationLayer.Extentions;
+using PresentationLayer.Extensions;
 
 public class Program
 {

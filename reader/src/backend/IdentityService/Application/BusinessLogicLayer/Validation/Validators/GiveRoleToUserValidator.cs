@@ -1,4 +1,3 @@
-using BusinessLogicLayer.Abstractions.Dtos;
 using BusinessLogicLayer.Abstractions.Dtos.RequestsDtos;
 using FluentValidation;
 
@@ -10,10 +9,13 @@ public class GiveRoleToUserValidator : AbstractValidator<GiveRoleToUserRequestDt
     {
         RuleFor(dto => dto.Id)
             .NotNull().WithMessage("Id is required");
+        
         RuleFor(dto => dto.Role)
             .NotNull().WithMessage("Role is required");
+        
         RuleFor(dto => dto.Role.Id)
             .NotNull().WithMessage("Id is required");
+        
         RuleFor(dto => dto.Role.Name)
             .NotNull().WithMessage("Name is required");
         RuleFor(dto => dto.Role.Name)

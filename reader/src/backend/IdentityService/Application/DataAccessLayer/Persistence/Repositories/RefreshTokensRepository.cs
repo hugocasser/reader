@@ -4,18 +4,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccessLayer.Persistence.Repositories;
 
-public class RefreshTokensRepository : IRefreshTokensRepository
+public class RefreshTokensRepository(UsersDbContext _usersDbContext) : IRefreshTokensRepository
 {
-    private readonly UsersDbContext _usersDbContext;
-    
-    public RefreshTokensRepository(UsersDbContext usersDbContext)
+    public async Task<IEnumerable<RefreshToken>> GetAllAsync(int skip, int pageSize, CancellationToken cancellationToken)
     {
-        _usersDbContext = usersDbContext;
-    }
-
-    public async Task<IEnumerable<RefreshToken>> GetAllAsync(CancellationToken cancellationToken)
-    {
-        return await _usersDbContext.RefreshTokens.ToListAsync(cancellationToken);
+        return await _usersDbContext.RefreshTokens.AsNoTracking().Skip(skip).Take(pageSize).ToListAsync(cancellationToken);
     }
 
     public async Task AddAsync(RefreshToken token, CancellationToken cancellationToken)
@@ -27,14 +20,22 @@ public class RefreshTokensRepository : IRefreshTokensRepository
     {
         return _usersDbContext.RefreshTokens.Update(token).Entity;
     }
+    
 
     public async Task<RefreshToken> FindUserTokenAsync(Guid userId, string token, CancellationToken cancellationToken)
     {
-        return await _usersDbContext.RefreshTokens.SingleAsync(refreshToken => refreshToken.UserId == userId && refreshToken.Token == token, cancellationToken);
+        return await _usersDbContext.RefreshTokens.AsNoTracking()
+            .SingleAsync(refreshToken => refreshToken.UserId == userId 
+                                         && refreshToken.Token == token, cancellationToken);
     }
 
     public async Task SaveChangesAsync(CancellationToken cancellationToken)
     {
         await _usersDbContext.SaveChangesAsync(cancellationToken);
+    }
+
+    public void RemoveToken(RefreshToken refreshToken, CancellationToken cancellationToken)
+    {
+        _usersDbContext.RefreshTokens.Remove(refreshToken);
     }
 }

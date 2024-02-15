@@ -7,7 +7,7 @@ using PresentationLayer.Abstractions;
 namespace PresentationLayer.Controllers;
 
 [Route("api/identity/roles")]
-public class RolesController : ApiController
+public class RolesController(IRolesService _rolesService, IUsersService _usersService) : ApiController(_usersService)
 {
     private readonly IRolesService _rolesService;
 
@@ -17,7 +17,6 @@ public class RolesController : ApiController
         _rolesService = rolesService;
     }
     
-    [Authorize(Roles = "Admin")]
     [Authorize(Roles = nameof(EnumRoles.Admin))]
     [HttpPost]
     public async Task<IActionResult> CreateRoleAsync(string role)
@@ -40,9 +39,8 @@ public class RolesController : ApiController
 
     [Authorize(Roles = nameof(EnumRoles.Admin))]
     [HttpPut]
-    public async Task<IActionResult> GiveRoleToUserAsync(GiveRoleToUserRequestDto giveRoleToUserRequestDto, 
-        CancellationToken cancellationToken)
+    public async Task<IActionResult> GiveRoleToUserAsync([FromBody]GiveRoleToUserRequestDto giveRoleToUserRequestDto)
     {
-        return Ok(await _usersService.GiveRoleToUserAsync(giveRoleToUserRequestDto, cancellationToken));
+        return Ok(await _usersService.GiveRoleToUserAsync(giveRoleToUserRequestDto));
     }
 }

@@ -7,12 +7,7 @@ namespace PresentationLayer.Abstractions;
 [ApiController]
 [Produces("application/json")]
 [RequestDataValidation]
-public abstract class ApiController : ControllerBase
+public abstract class ApiController(IUsersService _usersService) : ControllerBase
 {
-    protected readonly IUsersService _usersService;
-
-    protected ApiController(IUsersService usersService)
-    {
-        _usersService = usersService;
-    }
+    protected readonly IUsersService _usersService = _usersService;
 }

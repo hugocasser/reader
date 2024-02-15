@@ -1,13 +1,7 @@
 namespace BusinessLogicLayer.Exceptions;
 
-public class ExceptionWithStatusCode : Exception
+public class ExceptionWithStatusCode(int _statusCode, string? _errorMessage = null) : Exception(_errorMessage)
 {
-    public int StatusCode { get; }
-    public string? ErrorMessage { get; }
-
-    public ExceptionWithStatusCode(int statusCode, string? errorMessage = null) : base(errorMessage)
-    {
-        StatusCode = statusCode;
-        ErrorMessage = errorMessage;
-    }
+    public int StatusCode { get; } = _statusCode;
+    public string? ErrorMessage { get; } = _errorMessage;
 }

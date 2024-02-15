@@ -1,45 +1,47 @@
 using BusinessLogicLayer.Abstractions.Dtos.RequestsDtos;
 using BusinessLogicLayer.Abstractions.Services.DataServices;
+using DataAccessLayer.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.OpenApi.Extensions;
 using PresentationLayer.Abstractions;
 
 namespace PresentationLayer.Controllers;
 
 [Route("api/identity/users")]
-public sealed class UsersController : ApiController
+public sealed class UsersController(IUsersService _usersService) : ApiController(_usersService)
 {
     public UsersController(IUsersService usersService) : base(usersService)
     { }
-
-    [Authorize(Roles = "Admin")]
     [Authorize(Roles = nameof(EnumRoles.Admin))]
     [HttpGet]
-    public async Task<IActionResult> GetAllUsersAsync(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAllUsersAsync(int page, int pageSize, CancellationToken cancellationToken)
     {
-        return Ok(await _usersService.GetAllUsersAsync(cancellationToken));
+        return Ok(await _usersService.GetAllUsersAsync(page, pageSize, cancellationToken));
     }
 
     [HttpGet("{id:guid}")]
-    public async Task<IActionResult> GetUserByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetUserByIdAsync(Guid id)
     {
-        return Ok(await _usersService.GetUserByIdAsync(id, cancellationToken));
+        return Ok(await _usersService.GetUserByIdAsync(id));
     }
 
     [Authorize]
     [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> DeleteUserByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> DeleteUserByIdAsync(Guid id)
     {
-        await _usersService.DeleteUserByIdAsync(id, cancellationToken);
-        return Ok($"User({id}) deleted");
+        await _usersService.DeleteUserByIdAsync(id);
+        
+        return NoContent();
     }
 
     [Authorize]
     [HttpPut]
-    public async Task<IActionResult> UpdateUserAsync(UpdateUserRequestDto userRequestViewDto,
+    public async Task<IActionResult> UpdateUserAsync([FromBody]UpdateUserRequestDto userRequestViewDto,
         CancellationToken cancellationToken)
     {
         await _usersService.UpdateUserAsync(userRequestViewDto, cancellationToken);
-        return Ok($"User({userRequestViewDto.OldEmail}) updated");
+
+        return NoContent();
     }
 }

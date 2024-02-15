@@ -1,6 +1,3 @@
 namespace BusinessLogicLayer.Exceptions;
 
-public class EmailNotSentException : Exception
-{
-    
-}
+public class EmailNotSentException(string _message) : Exception(_message);

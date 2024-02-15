@@ -1,4 +1,5 @@
 using BusinessLogicLayer.Abstractions.Services;
+using BusinessLogicLayer.Abstractions.Services.AuthServices;
 using BusinessLogicLayer.Common;
 using BusinessLogicLayer.Exceptions;
 using DataAccessLayer.Abstractions.Repositories;
@@ -6,15 +7,9 @@ using DataAccessLayer.Models;
 
 namespace BusinessLogicLayer.Services.AuthServices;
 
-public class RefreshTokenGeneratorService : IRefreshTokenGeneratorService
+public class RefreshTokenGeneratorService(IRefreshTokensRepository _refreshTokensRepository)
+    : IRefreshTokenGeneratorService
 {
-    private readonly IRefreshTokensRepository _refreshTokensRepository;
-
-    public RefreshTokenGeneratorService(IRefreshTokensRepository refreshTokensRepository)
-    {
-        _refreshTokensRepository = refreshTokensRepository;
-    }
-
     public RefreshToken GenerateToken(Guid userId)
     {
         return new RefreshToken
@@ -30,16 +25,18 @@ public class RefreshTokenGeneratorService : IRefreshTokenGeneratorService
     public async Task<RefreshToken> ValidateTokenAsync(Guid userId, string token, CancellationToken cancellationToken)
     {
         var refreshToken = await _refreshTokensRepository.FindUserTokenAsync(userId, token, cancellationToken);
+        
         if (refreshToken is null)
         {
-            throw new IdentityExceptionWithStatusCode("The refresh token was not generated.");
+            throw new IdentityException("The refresh token was not generated.");
         }
 
-        if (refreshToken.ExpiryTime < DateTime.UtcNow)
+        if (refreshToken.ExpiryTime >= DateTime.UtcNow)
         {
-            throw new IdentityExceptionWithStatusCode("The refresh token was expired or revoked. Please login again");
+            return refreshToken;
         }
 
-        return refreshToken;
+        _refreshTokensRepository.RemoveToken(refreshToken, cancellationToken);
+        throw new IdentityException("The refresh token was expired or revoked. Please login again");
     }
 }

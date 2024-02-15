@@ -1,11 +1,8 @@
 using System.Text;
-using BusinessLogicLayer.Abstractions.Dtos;
-using BusinessLogicLayer.Abstractions.Dtos.RequestsDtos;
 using BusinessLogicLayer.Exceptions;
-using BusinessLogicLayer.Validation.Validators;
-using FluentValidation;
-using FluentValidation.Results;
+using DataAccessLayer.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLogicLayer.Common;
 
@@ -16,18 +13,29 @@ public static class Utilities
     public static void AggregateIdentityErrorsAndThrow(IdentityResult result)
     {
         if (result.Succeeded) return;
-        var errors = result.Errors.Aggregate(string.Empty, (current, error) => current + (error.Description + "\n"));
-        throw new IdentityExceptionWithStatusCode(errors);
+        
+        var errors = result.Errors.Aggregate(string.Empty,
+            (current, error) => current + (error.Description + "\n"));
+        throw new IdentityException(errors);
     }
 
     public static string GenerateRandomString(int length)
     {
         var random = new Random();
         var result = new StringBuilder(length);
-        for (int i = 0; i < length; i++)
+        
+        for (var i = 0; i < length; i++)
         {
             result.Append(Chars[random.Next(Chars.Length)]);
         }
+        
         return result.ToString();
+    }
+
+    public static IQueryable<User> GetUsers(this UserManager<User> userManager, int page, int pageSize)
+    {
+        return userManager.Users.AsNoTracking().OrderBy(user => user.Email)
+            .ThenBy(user => user.UserName)
+            .Skip((page-1)*pageSize).Take(pageSize);
     }
 }

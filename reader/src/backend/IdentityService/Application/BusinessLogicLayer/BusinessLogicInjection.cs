@@ -1,9 +1,7 @@
 using System.Reflection;
-using BusinessLogicLayer.Abstractions.Configurations;
-using BusinessLogicLayer.Abstractions.Services;
 using BusinessLogicLayer.Abstractions.Services.AuthServices;
 using BusinessLogicLayer.Abstractions.Services.DataServices;
-using BusinessLogicLayer.Services;
+using BusinessLogicLayer.Options;
 using BusinessLogicLayer.Services.AuthServices;
 using BusinessLogicLayer.Services.DataServices;
 using FluentValidation;
@@ -32,33 +30,34 @@ public static class BusinessLogicInjection
         return serviceCollection;
     }
 
-    private static IServiceCollection UseEmailServices(this IServiceCollection serviceCollection ,IEmailMessageSenderConfiguration configuration)
+    private static IServiceCollection UseEmailServices(this IServiceCollection serviceCollection)
     {
-        
-        serviceCollection.AddSingleton(configuration);
+        serviceCollection.AddOptions();
         serviceCollection.AddTransient<IEmailConfirmMessageService, SendConfirmMessageEmailService>();
         serviceCollection.AddTransient<IEmailSenderService, EmailSenderService>();
+        
         return serviceCollection;
     }
     
     private static IServiceCollection UseAuthenticationServices(this IServiceCollection serviceCollection,
         ITokenGenerationConfiguration configuration)
+
+    private static IServiceCollection UseAuthenticationServices(this IServiceCollection serviceCollection)
     {
-        serviceCollection.AddSingleton(configuration);
         serviceCollection.AddScoped<IAuthTokenGeneratorService, JwtTokenGeneratorService>();
         serviceCollection.AddScoped<IRefreshTokenGeneratorService, RefreshTokenGeneratorService>();
-        
+
         return serviceCollection;
     }
 
-    public static IServiceCollection AddServices(this IServiceCollection serviceCollection,
-        ITokenGenerationConfiguration configuration, IEmailMessageSenderConfiguration emailConfiguration)
+    public static IServiceCollection AddServices
+        (this IServiceCollection serviceCollection)
     {
         serviceCollection.UseDataServices();
         serviceCollection.UseAuthenticationServices();
         serviceCollection.UseEmailServices();
         serviceCollection.UseValidation();
-        
+
         return serviceCollection;
     }
 
@@ -76,7 +75,7 @@ public static class BusinessLogicInjection
             .BindConfiguration(nameof(TokenGenerationOptions))
             .ValidateDataAnnotations()
             .ValidateOnStart();
-
+        
         return serviceCollection;
     }
     

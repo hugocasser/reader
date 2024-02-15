@@ -1,48 +1,42 @@
 using BusinessLogicLayer.Abstractions.Dtos;
 using BusinessLogicLayer.Abstractions.Dtos.RequestsDtos;
+using BusinessLogicLayer.Abstractions.Dtos.ViewDtos;
 using BusinessLogicLayer.Abstractions.Services;
 using BusinessLogicLayer.Abstractions.Services.AuthServices;
 using BusinessLogicLayer.Abstractions.Services.DataServices;
 using BusinessLogicLayer.Exceptions;
 using DataAccessLayer.Abstractions.Repositories;
 using DataAccessLayer.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLogicLayer.Services.DataServices;
 
-public class RefreshTokensService : IRefreshTokensService
+public class RefreshTokensService(
+    IRefreshTokensRepository _refreshTokensRepository,
+    UserManager<User> _userManager,
+    IRefreshTokenGeneratorService _refreshTokenService,
+    IAuthTokenGeneratorService _authService)
+    : IRefreshTokensService
 {
-    private readonly IRefreshTokensRepository _refreshTokensRepository;
-    private readonly IUsersRepository _usersRepository;
-    private readonly IRefreshTokenGeneratorService _refreshTokenService;
-    private readonly IAuthTokenGeneratorService _authService;
 
-    public RefreshTokensService(IRefreshTokensRepository refreshTokensRepository,
-        IUsersRepository usersRepository, IRefreshTokenGeneratorService refreshTokenService,
-        IAuthTokenGeneratorService authService)
+    public async Task<IEnumerable<RefreshToken>> GetAllAsync(int page, int pageSize, CancellationToken cancellationToken)
     {
-        _refreshTokensRepository = refreshTokensRepository;
-        _usersRepository = usersRepository;
-        _refreshTokenService = refreshTokenService;
-        _authService = authService;
-    }
-    public async Task<IEnumerable<RefreshToken>> GetAllAsync(CancellationToken cancellationToken)
-    {
-        return await _refreshTokensRepository.GetAllAsync(cancellationToken);
+        return await _refreshTokensRepository.GetAllAsync((page-1)*pageSize, pageSize, cancellationToken);
     }
 
-    public async Task<AuthTokens> UpdateAuthTokenAsync(CancellationToken cancellationToken,
-        UpdateAuthTokenRequestDto updateAuthTokenRequestDto)
+    public async Task<AuthTokens> RefreshTokenAsync(UpdateAuthTokenRequestDto updateAuthTokenRequestDto,CancellationToken cancellationToken)
     {
         var refreshToken = await _refreshTokenService.ValidateTokenAsync(updateAuthTokenRequestDto.UserId,
-            updateAuthTokenRequestDto.RefreshToken, cancellationToken);
-        var user = await _usersRepository.GetUserByIdAsync(refreshToken.UserId);
+            updateAuthTokenRequestDto.RefreshToken, cancellationToken); ;
+        var user = await _userManager.FindByIdAsync(updateAuthTokenRequestDto.UserId.ToString());
         
         if (user is null)
         {
-            throw new NotFoundExceptionWithStatusCode("There is no user with this Id");
+            throw new NotFoundException("There is no user with this Id");
         }
         
-        var userRoles = await _usersRepository.GetUserRolesAsync(user);
+        var userRoles = await _userManager.GetRolesAsync(user);
         var userToken = _authService.GenerateToken(user.Id, user.Email, userRoles);
         
         return new AuthTokens(user.Id, userToken, refreshToken.Token);
