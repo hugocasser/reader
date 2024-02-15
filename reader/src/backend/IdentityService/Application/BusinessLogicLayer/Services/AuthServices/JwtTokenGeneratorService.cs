@@ -9,9 +9,9 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace BusinessLogicLayer.Services.AuthServices;
 
-public class JwtTokenGeneratorService(IOptions<TokenGenerationOptions> options) : IAuthTokenGeneratorService
+public class JwtTokenGeneratorService(IOptions<TokenGenerationOptions> _options) : IAuthTokenGeneratorService
 {
-    private readonly TokenGenerationOptions _options = options.Value;
+    private readonly TokenGenerationOptions _options = _options.Value;
     
     public string GenerateToken(Guid userId, string userEmail, IEnumerable<string> roles)
     {

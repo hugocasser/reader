@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 namespace DataAccessLayer.Persistence;
 
 public class UsersDbContext(
-    DbContextOptions options) : IdentityDbContext<User, UserRole, Guid>(options)
+    DbContextOptions _options) : IdentityDbContext<User, UserRole, Guid>(_options)
 {
     public DbSet<RefreshToken> RefreshTokens { get; set; }
 

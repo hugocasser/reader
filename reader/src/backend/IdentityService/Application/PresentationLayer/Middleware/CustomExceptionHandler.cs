@@ -5,13 +5,13 @@ using FluentValidation;
 
 namespace PresentationLayer.Middleware;
 
-public class CustomExceptionHandler(RequestDelegate next)
+public class CustomExceptionHandler(RequestDelegate _next)
 {
     public async Task Invoke(HttpContext context)
     {
         try
         {
-            await next(context);
+            await _next(context);
         }
         catch (Exception exception)
         {
@@ -21,46 +21,30 @@ public class CustomExceptionHandler(RequestDelegate next)
 
     private Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
-        HttpStatusCode code;
         string result;
+        
         switch (exception)
         {
             case ValidationException validationException:
-                code = HttpStatusCode.BadRequest;
+                context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                 result = JsonSerializer.Serialize(validationException.Errors);
                 break;
-            case NotFoundException:
-                code = HttpStatusCode.NotFound;
-                result = JsonSerializer.Serialize(exception.Message);
-                break;
-            case IdentityException:
-                code = HttpStatusCode.Unauthorized;
-                result = JsonSerializer.Serialize(exception.Message);
-                break;
-            case BadRequestException:
-                code = HttpStatusCode.BadRequest;
-                result = JsonSerializer.Serialize(exception.Message);
-                break;
-            case EmailNotConfirmedException:
-                code = HttpStatusCode.Unauthorized;
-                result = JsonSerializer.Serialize(exception.Message);
-                break;
-            case IncorrectEmailOrPasswordException:
-                code = HttpStatusCode.Unauthorized;
+            case ExceptionWithStatusCode exceptionWithStatusCode:
+                context.Response.StatusCode = exceptionWithStatusCode.StatusCode;
                 result = JsonSerializer.Serialize(exception.Message);
                 break;
             case EmailNotSentException:
-                code = HttpStatusCode.BadGateway;
+                context.Response.StatusCode = (int)HttpStatusCode.BadGateway;
                 result = JsonSerializer.Serialize(exception.Message);
                 break;
             default:
-                code = HttpStatusCode.InternalServerError;
+                context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 result = JsonSerializer.Serialize(exception.Message);
                 break;
                 
         }
+        
         context.Response.ContentType = "application/json";
-        context.Response.StatusCode = (int)code;
             
         return context.Response.WriteAsync(result);
     }

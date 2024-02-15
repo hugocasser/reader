@@ -43,8 +43,7 @@ public static class IdentityAuthenticationProgramExtension
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
             options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        })
-            .AddJwtBearer(options => options
+        }).AddJwtBearer(options => options
                 .SetValidationTokenOptions(tokenOptions)
             );
 

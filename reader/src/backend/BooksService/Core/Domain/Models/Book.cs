@@ -1,11 +1,12 @@
+using Domain.Abstractions;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace Domain.Models;
 
-public class Book
+public class Book : IEntity
 {
     [BsonId, BsonElement("id")]
-    public Guid Id { get; init; }
+    public Guid Id { get; set; }
     [BsonElement ("description")]
     public string Description { get; set; } = string.Empty;
     [BsonElement("name")]

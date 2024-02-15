@@ -6,8 +6,8 @@ namespace Application.Abstractions.Services;
 
 public interface ICategoriesService
 {
-    public Task CreateCategoryAsync(CreateCategoryRequest request, CancellationToken cancellationToken);
-    public Task<IEnumerable<Category>> GetAllCategoriesAsync(PageSetting pageSettings,
+    public Task<Category> CreateCategoryAsync(CreateCategoryRequestDto requestDto, CancellationToken cancellationToken);
+    public Task<IEnumerable<Category>> GetAllCategoriesAsync(PageSettingRequestDto pageSettingsRequestDto,
         CancellationToken cancellationToken);
     public Task<Category> GetCategoryByIdAsync(Guid id, CancellationToken cancellationToken) ;
     public Task DeleteByIdCategoryAsync(Guid id, CancellationToken cancellationToken);

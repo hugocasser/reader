@@ -3,11 +3,11 @@ using FluentValidation;
 
 namespace Application.Validation.Validators.Categories;
 
-public class CreateCategoryValidator : AbstractValidator<CreateCategoryRequest>
+public class CreateCategoryValidator : AbstractValidator<CreateCategoryRequestDto>
 {
     public CreateCategoryValidator()
     {
         RuleFor(category => category.Name)
-            .NotNull().WithMessage("Category name can't be null");
+            .NotEmpty().WithMessage("Category name can't be null");
     }
 }

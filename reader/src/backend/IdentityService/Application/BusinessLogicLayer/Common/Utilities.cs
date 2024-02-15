@@ -1,6 +1,8 @@
 using System.Text;
 using BusinessLogicLayer.Exceptions;
+using DataAccessLayer.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLogicLayer.Common;
 
@@ -28,5 +30,12 @@ public static class Utilities
         }
         
         return result.ToString();
+    }
+
+    public static IQueryable<User> GetUsers(this UserManager<User> userManager, int page, int pageSize)
+    {
+        return userManager.Users.AsNoTracking().OrderBy(user => user.Email)
+            .ThenBy(user => user.UserName)
+            .Skip((page-1)*pageSize).Take(pageSize);
     }
 }

@@ -1,6 +1,6 @@
 namespace Application.Dtos.Requests.Books;
 
-public class UpdateBookTextRequest
+public class UpdateBookTextRequestDto
 {
     public Guid Id { get; set; }
     public string Text { get; set; }

@@ -1,4 +1,4 @@
-namespace Presentation.Common;
+namespace Application.Common;
 
 public enum RolesEnum
 {

@@ -10,18 +10,18 @@ using Microsoft.Extensions.Options;
 namespace BusinessLogicLayer.Services.AuthServices;
 
 public class SendConfirmMessageEmailService(
-    UserManager<User> userManager,
-    IEmailSenderService emailSenderService,
-    IOptions<EmailMessageSenderOptions> emailMessageSenderOptions) : IEmailConfirmMessageService
+    UserManager<User> _userManager,
+    IEmailSenderService _emailSenderService,
+    IOptions<EmailMessageSenderOptions> _emailMessageSenderOptions) : IEmailConfirmMessageService
 {
     public async Task SendEmailConfirmMessageAsync(User user)
     {
         var token = await GenerateConfirmationToken(user);
 
-        var confirmUrl = emailMessageSenderOptions.Value.ConfirmUrl + $"{user.Id}/{token}";
+        var confirmUrl = _emailMessageSenderOptions.Value.ConfirmUrl + $"{user.Id}/{token}";
         var emailBody = GenerateEmailBody(user, confirmUrl);
         var message = await GenerateEmailMessage(user, "Email confirmation", emailBody);
-        await emailSenderService.SendEmailAsync(message);
+        await _emailSenderService.SendEmailAsync(message);
     }
 
     private static string GenerateEmailBody(User user, string confirmUrl)
@@ -37,7 +37,7 @@ public class SendConfirmMessageEmailService(
 
     private async Task<string> GenerateConfirmationToken(User user)
     {
-        var code = await userManager.GenerateEmailConfirmationTokenAsync(user);
+        var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
         var tokenGeneratedBytes = Encoding.UTF8.GetBytes(code);
         var codeEncoded = WebEncoders.Base64UrlEncode(tokenGeneratedBytes);
 

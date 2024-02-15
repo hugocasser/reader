@@ -1,12 +1,10 @@
 using Application;
 using FluentValidation.AspNetCore;
 using Infrastructure;
+using Mapster;
 using Microsoft.AspNetCore.Cors.Infrastructure;
-using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Presentation.Middlewares;
-using Presentation.Options;
-using Presentation.Validators;
 
 namespace Presentation.Extensions;
 
@@ -16,16 +14,20 @@ public static class ProgramExtension
         (this WebApplicationBuilder builder)
     {
         builder.Services
-            .AddDbContext(builder.Configuration)
+            .AddDbContext()
             .AddRepositories()
             .AddServices()
-            .AddTokenOptions(builder.Configuration)
+            .AddTokenOptions()
+            .AddElasticOptions()
             .AddIdentity(builder.Configuration)
             .AddOptions()
+            .AddFluentValidationAutoValidation()
             .AddSwagger()
             .AddCors(options => options.ConfigureAllowAllCors())
-            .AddControllers()
-            .AddFluentValidation();
+            .AddControllers();
+
+        builder.Services
+            .AddMapster();
         
         return builder.AddLoggingServices(); 
     }
@@ -44,6 +46,7 @@ public static class ProgramExtension
                 c.RoutePrefix = "swagger";
             });
         }
+        
         app.UseExceptionHandler(new ExceptionHandlerOptions()
         {
             AllowStatusCode404Response = true,
@@ -53,10 +56,10 @@ public static class ProgramExtension
         app.UseAuthorization();
         app.UseCors("AllowAll");
         app.MapControllers();
-
         
         return app;
     }
+    
     private static IApplicationBuilder UseCustomExceptionHandler(this IApplicationBuilder webApplication)
     {
         webApplication.UseMiddleware<CustomExceptionHandlerMiddleware>();
@@ -89,23 +92,6 @@ public static class ProgramExtension
         });
 
 
-        return serviceCollection;
-    }
-
-    private static IServiceCollection AddTokenOptions(this IServiceCollection serviceCollection, IConfiguration configuration)
-    {
-        serviceCollection.AddOptionsValidators();
-        
-        return serviceCollection.Configure<TokenOptions>(options =>
-        {
-            configuration.GetSection(nameof(TokenOptions)).Bind(options);
-        });
-    }
-
-    private static IServiceCollection AddOptionsValidators(this IServiceCollection serviceCollection)
-    {
-        serviceCollection.AddSingleton<IValidateOptions<TokenOptions>, TokenOptionsValidator>();
-        
         return serviceCollection;
     }
 }

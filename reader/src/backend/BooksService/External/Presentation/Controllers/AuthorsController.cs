@@ -1,63 +1,63 @@
 using Application.Abstractions.Services;
+using Application.Common;
 using Application.Dtos.Requests;
 using Application.Dtos.Requests.Authors;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Abstractions;
-using Presentation.Common;
 
 namespace Presentation.Controllers;
 
 [Route("api/authors")]
-public class AuthorsController(IAuthorsService authorsService, IBooksService booksService) : ApiController
+public class AuthorsController(IAuthorsService _authorsService, IBooksService _booksService) : ApiController
 {
     [HttpGet]
     [Authorize]
-    public async Task<IActionResult> GetAllAuthors([FromBody]PageSetting pageSettings, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAllAuthors(int page, int size, CancellationToken cancellationToken)
     {
-        return Ok(await authorsService.GetAllAuthorsAsync(pageSettings, cancellationToken));
+        var pageSettings = new PageSettingRequestDto(page, size);
+        
+        return Ok(await _authorsService.GetAllAuthorsAsync(pageSettings, cancellationToken));
     }
     
     [HttpGet("{id}")]
     [Authorize]
     public async Task<IActionResult> GetAuthorByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        return Ok(await authorsService.GetAuthorByIdAsync(id, cancellationToken));
+        return Ok(await _authorsService.GetAuthorByIdAsync(id, cancellationToken));
     }
     
     [HttpGet("{id}/books")]
     [Authorize]
     public async Task<IActionResult> GetBooksByAuthorAsync
-        (Guid id, PageSetting pageSettings, CancellationToken cancellationToken)
+        (int page, int size, Guid id, CancellationToken cancellationToken)
     {
-        return Ok(await booksService.GetAllAuthorBooksAsync(id, pageSettings, cancellationToken));
+        var pageSettingsRequestDto = new PageSettingRequestDto(page, size);
+        
+        return Ok(await _booksService.GetAllAuthorBooksAsync(id, pageSettingsRequestDto, cancellationToken));
     }
 
     [HttpPost]
     [Authorize(Roles = nameof(RolesEnum.Admin))]
     public async Task<IActionResult> CreateAuthorAsync
-        (CreateAuthorRequest createAuthorRequest, CancellationToken cancellationToken)
+        ([FromBody] CreateAuthorRequestDto createAuthorRequestDto, CancellationToken cancellationToken)
     {
-        await authorsService.CreateAuthorAsync(createAuthorRequest, cancellationToken);
-
-        return Created();
+        return Ok(await _authorsService.CreateAuthorAsync(createAuthorRequestDto, cancellationToken));
     }
 
     [HttpPut]
     [Authorize(Roles = nameof(RolesEnum.Admin))]
     public async Task<IActionResult> UpdateAuthorAsync
-        (UpdateAuthorRequest updateAuthorRequest, CancellationToken cancellationToken)
+        ([FromBody] UpdateAuthorRequestDto updateAuthorRequestDto, CancellationToken cancellationToken)
     {
-        await authorsService.UpdateAuthorAsync(updateAuthorRequest, cancellationToken);
-        
-        return NoContent();
+        return Ok(await _authorsService.UpdateAuthorAsync(updateAuthorRequestDto, cancellationToken));
     }
 
     [HttpDelete("{id}")]
     [Authorize(Roles = nameof(RolesEnum.Admin))]
     public async Task<IActionResult> DeleteAuthorAsync(Guid id, CancellationToken cancellationToken)
     {
-        await authorsService.DeleteByIdAuthorAsync(id, cancellationToken);
+        await _authorsService.DeleteByIdAuthorAsync(id, cancellationToken);
         
         return NoContent();
     }

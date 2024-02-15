@@ -1,7 +1,8 @@
 namespace Application.Dtos.Requests.Authors;
 
-public class CreateAuthorRequest
+public record UpdateAuthorRequestDto
 {
+    public Guid Id { get; set; }
     public string FirstName { get; set; }
     public string LastName { get; set; }
     public DateTime BirthDate { get; set; }

@@ -1,9 +1,9 @@
 namespace BusinessLogicLayer.Abstractions.Dtos;
 
-public class EmailMessage(string addressee, string subject, string content, string addresseeName)
+public class EmailMessage(string _addressee, string _subject, string _content, string _addresseeName)
 {
-    public string Addressee { get; set; } = addressee;
-    public string Subject { get; set; } = subject;
-    public string Content { get; set; } = content;
-    public string AddresseeName { get; set; } = addresseeName;
+    public string Addressee { get; set; } = _addressee;
+    public string Subject { get; set; } = _subject;
+    public string Content { get; set; } = _content;
+    public string AddresseeName { get; set; } = _addresseeName;
 }
