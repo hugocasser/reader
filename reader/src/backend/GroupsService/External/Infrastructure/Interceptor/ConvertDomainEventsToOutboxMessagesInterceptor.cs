@@ -1,6 +1,9 @@
+using System.Text.Json;
 using Domain.Abstractions;
 using Infrastructure.OutboxMessages;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Newtonsoft.Json;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Infrastructure.Interceptor;
 
@@ -33,9 +36,12 @@ public sealed class ConvertDomainEventsToOutboxMessagesInterceptor
                 domainEvent => new OutboxMessage()
                 {
                     Id = Guid.NewGuid(),
-                    IsProcessed = false,
-                    EventType = domainEvent.EventType,
-                    Entity = domainEvent.Entity
+                    ProcessedAt = null,
+                    Content = JsonConvert.SerializeObject(domainEvent,
+                        new JsonSerializerSettings()
+                        {
+                            TypeNameHandling = TypeNameHandling.All
+                        })
                 });
         
         context.Set<OutboxMessage>().AddRange(messages);
