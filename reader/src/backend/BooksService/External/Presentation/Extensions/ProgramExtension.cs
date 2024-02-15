@@ -59,6 +59,7 @@ public static class ProgramExtension
         
         return app;
     }
+    
     private static IApplicationBuilder UseCustomExceptionHandler(this IApplicationBuilder webApplication)
     {
         webApplication.UseMiddleware<CustomExceptionHandlerMiddleware>();

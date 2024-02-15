@@ -14,15 +14,9 @@ public class AuthorsService(IAuthorsRepository _authorsRepository, IMapper _mapp
 {
     public async Task<AuthorViewDto> CreateAuthorAsync(CreateAuthorRequestDto requestDto, CancellationToken cancellationToken)
     {
-        var author = new Author
-        {
-            Id = Guid.NewGuid(),
-            FirstName = requestDto.FirstName,
-            LastName = requestDto.LastName,
-            BirthDate = requestDto.BirthDate,
-            DeathDate = requestDto.DeathDate,
-            Biography = requestDto.Biography
-        };
+        var author = _mapper.Map<Author>(requestDto);
+        author.Id = Guid.NewGuid();
+        
         await _authorsRepository.AddAsync(author, cancellationToken);
 
         return _mapper.Map<AuthorViewDto>(author);

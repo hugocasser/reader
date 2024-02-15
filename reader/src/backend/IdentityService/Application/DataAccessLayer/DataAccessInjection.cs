@@ -27,8 +27,8 @@ public static class DataAccessInjection
     {
         var databaseOptions = new DataBaseOption();
         serviceCollection.AddOptions<DataBaseOption>()
-            .BindConfiguration(nameof(DataBaseOption))
-            .ValidateOnStart();
+            .BindConfiguration(nameof(DataBaseOption));
+        
         serviceCollection.AddSingleton(MicrosoftOptions.Create(databaseOptions));
         
         serviceCollection.AddSqlServerDatabase(databaseOptions.ConnectionString);

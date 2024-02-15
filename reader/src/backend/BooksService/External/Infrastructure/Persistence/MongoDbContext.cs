@@ -18,5 +18,4 @@ public class MongoDbContext
         AuthorsCollection = database.GetCollection<Author>(options.Value.CollectionsNames.ElementAt(1));
         CategoriesCollection = database.GetCollection<Category>(options.Value.CollectionsNames.ElementAt(2));
     }
-    
 }
