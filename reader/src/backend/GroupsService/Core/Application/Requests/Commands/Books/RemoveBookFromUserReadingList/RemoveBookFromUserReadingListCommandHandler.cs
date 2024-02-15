@@ -1,5 +1,6 @@
 using Application.Abstractions.Repositories;
 using Application.Common;
+using Domain.DomainEvents.UserProgresses;
 using MediatR;
 
 namespace Application.Requests.Commands.Books.RemoveBookFromUserReadingList;
@@ -18,7 +19,7 @@ public class RemoveBookFromUserReadingListCommandHandler
             return new Result<string>(new Error("User book progress not found", 404));
         }   
         
-        userBookProgress.Delete();
+        userBookProgress.Delete(new UserBookProgressDeletedEvent(userBookProgress.Id));
         await _userBookProgressRepository.DeleteByIdAsync(userBookProgress.Id, cancellationToken);
         await _userBookProgressRepository.SaveChangesAsync(cancellationToken);
         

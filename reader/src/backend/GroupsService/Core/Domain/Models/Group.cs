@@ -1,5 +1,6 @@
 using Domain.Abstractions;
 using Domain.DomainEvents;
+using Domain.DomainEvents.Groups;
 
 namespace Domain.Models;
 
@@ -19,7 +20,7 @@ public class Group : Entity
         AdminId = admin.Id;
         Members.Add(admin);
         GroupName = groupName;
-        RaiseDomainEvent(EventType.Created, this);
+        RaiseDomainEvent(new GroupCreatedEvent(this));
     }
 
     private void UpdateGroup(string? groupName = null, User? newMember = null,
@@ -46,7 +47,7 @@ public class Group : Entity
             AllowedBooks.Remove(removedBook);
         }
         
-        RaiseDomainEvent(EventType.Updated, this);
+        RaiseDomainEvent(new GroupUpdatedEvent(this));
     }
 
     public void UpdateGroupName(string? groupName)

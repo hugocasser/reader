@@ -1,5 +1,6 @@
 using Domain.Abstractions;
 using Domain.DomainEvents;
+using Domain.DomainEvents.Users;
 
 namespace Domain.Models;
 
@@ -15,13 +16,13 @@ public class User : Entity
     {
         FirstName = firstName;
         LastName = lastName;
-        RaiseDomainEvent(EventType.Created, this);
+        RaiseDomainEvent(new UserCreatedEvent(this));
     }
 
     public void UpdateUser(string firstName, string lastName)
     {
         FirstName = firstName;
         LastName = lastName;
-        RaiseDomainEvent(EventType.Updated, this);
+        RaiseDomainEvent(new UserUpdatedEvent(this));
     }
 }

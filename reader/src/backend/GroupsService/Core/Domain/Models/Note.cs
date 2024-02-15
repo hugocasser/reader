@@ -1,5 +1,6 @@
 using Domain.Abstractions;
 using Domain.DomainEvents;
+using Domain.DomainEvents.Notes;
 
 namespace Domain.Models;
 
@@ -18,6 +19,6 @@ public class Note : Entity
         UserBookProgress = userBookProgress;
         Text = text;
         
-        RaiseDomainEvent(EventType.Created, this);
+        RaiseDomainEvent(new NoteCreatedEvent(this));
     }
 }

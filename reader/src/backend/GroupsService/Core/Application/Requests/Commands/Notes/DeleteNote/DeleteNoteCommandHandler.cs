@@ -1,5 +1,6 @@
 using Application.Abstractions.Repositories;
 using Application.Common;
+using Domain.DomainEvents.Notes;
 using MediatR;
 
 namespace Application.Requests.Commands.Notes.DeleteNote;
@@ -21,7 +22,7 @@ public class DeleteNoteCommandHandler(INotesRepository notesRepository)
             return new Result<string>(new Error("You can't delete this note", 400));
         }
         
-        note.Delete();
+        note.Delete(new NoteDeletedEvent(note.Id));
         await notesRepository.DeleteByIdAsync(command.NoteId, cancellationToken);
         await notesRepository.SaveChangesAsync(cancellationToken);
         

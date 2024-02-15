@@ -1,4 +1,4 @@
-using Domain.DomainEvents;
+using Domain.Abstractions.Events;
 
 namespace Domain.Abstractions;
 
@@ -7,9 +7,9 @@ public abstract class Entity
     private readonly IList<IDomainEvent> _events = new List<IDomainEvent>();
     public Guid Id { get; protected set; } = Guid.Empty;
 
-    protected void RaiseDomainEvent(EventType eventType, Entity entity)
+    protected void RaiseDomainEvent(IDomainEvent domainEvent)
     {
-        _events.Add(new DomainEvent(eventType, entity));
+        _events.Add(domainEvent);
     }
 
     public IEnumerable<IDomainEvent> GetDomainEvents()
@@ -22,8 +22,8 @@ public abstract class Entity
         _events.Clear();
     }
 
-    public void Delete()
+    public void Delete(IDomainEvent domainEvent)
     {
-        RaiseDomainEvent(EventType.Deleted, this);
+        _events.Add(domainEvent);
     }
 }

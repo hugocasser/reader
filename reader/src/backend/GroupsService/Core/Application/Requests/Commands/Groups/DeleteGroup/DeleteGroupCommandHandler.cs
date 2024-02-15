@@ -1,5 +1,6 @@
 using Application.Abstractions.Repositories;
 using Application.Common;
+using Domain.DomainEvents.Groups;
 using MediatR;
 
 namespace Application.Requests.Commands.Groups.DeleteGroup;
@@ -21,7 +22,7 @@ public class DeleteGroupCommandHandler(IGroupsRepository groupsRepository)
             return new Result<string>(new Error("You are not admin of this group", 400));
         }
         
-        group.Delete();
+        group.Delete(new GroupDeletedEvent(group.Id));
         
         await groupsRepository.DeleteByIdAsync(command.GroupId, cancellationToken);
         await groupsRepository.SaveChangesAsync(cancellationToken);

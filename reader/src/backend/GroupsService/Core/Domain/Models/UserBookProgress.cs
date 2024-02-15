@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Domain.Abstractions;
-using Domain.DomainEvents;
+using Domain.DomainEvents.UserProgresses;
 
 namespace Domain.Models;
 
@@ -27,13 +27,13 @@ public class UserBookProgress : Entity
         BookId = book.Id;
         Progress = 0;
         LastReadSymbol = 0;
-        RaiseDomainEvent(EventType.Created, this);
+        RaiseDomainEvent(new UserBookProgressCreatedEvent(this));
     }
 
     public void UpdateUserBookProgress(int progress, int lastReadSymbol)
     {
         Progress = progress;
         LastReadSymbol = lastReadSymbol;
-        RaiseDomainEvent(EventType.Updated, this);
+        RaiseDomainEvent(new UserBookProgressUpdatedEvent(this));
     }
 }

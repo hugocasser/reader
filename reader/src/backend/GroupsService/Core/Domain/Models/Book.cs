@@ -1,5 +1,6 @@
 using Domain.Abstractions;
 using Domain.DomainEvents;
+using Domain.DomainEvents.Books;
 
 namespace Domain.Models;
 
@@ -18,7 +19,7 @@ public class Book : Entity
         AuthorLastName = authorLastName;
         Id = id;
         
-        RaiseDomainEvent(EventType.Created, this);
+        RaiseDomainEvent(new BookCreatedEvent(this));
     }
 
     public void UpdateBook(string bookName, string authorFirstName, string authorLastName)
@@ -26,6 +27,6 @@ public class Book : Entity
         BookName = bookName;
         AuthorFirstName = authorFirstName;
         AuthorLastName = authorLastName;
-        RaiseDomainEvent(EventType.Updated, this);
+        RaiseDomainEvent(new BookUpdatedEvent(this));
     }
 }
