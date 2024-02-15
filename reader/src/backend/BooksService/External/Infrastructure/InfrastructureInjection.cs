@@ -7,7 +7,7 @@ using MongoDB.Driver;
 
 namespace Infrastructure;
 
-public static class InfrastuctureInjection
+public static class InfrastructureInjection
 {
     public static IServiceCollection AddDbContext(this IServiceCollection services)
     {
