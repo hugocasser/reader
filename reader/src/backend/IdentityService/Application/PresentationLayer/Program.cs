@@ -1,6 +1,17 @@
-var builder = WebApplication.CreateBuilder(args);
-var app = builder.Build();
+using PresentationLayer.Extentions;
 
-app.MapGet("/", () => "Hello World!");
+public class Program
+{
+    public static async Task Main(string[] args)
+    {
+        var builder = WebApplication
+            .CreateBuilder(args)
+            .ConfigureBuilder();
+        
+        var application = builder
+            .Build()
+            .ConfigureApplication();
 
-app.Run();
+        await application.RunApplicationAsync();
+    }
+}
