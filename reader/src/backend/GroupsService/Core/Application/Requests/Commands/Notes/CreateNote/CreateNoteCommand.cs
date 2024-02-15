@@ -4,5 +4,12 @@ using MediatR;
 
 namespace Application.Requests.Commands.Notes.CreateNote;
 
-public record CreateNoteCommand(Guid BookId, string Text, Guid GroupId, int NotePosition, Guid RequestingUserId )
-    : IRequest<Result<NoteViewDto>>;
+public class CreateNoteCommand
+    : IRequest<Result<NoteViewDto>> , IRequestWithRequestingUserId
+{
+    public Guid? RequestingUserId { get; set; }
+    public Guid BookId { get; init; }
+    public string Text { get; init; }
+    public Guid GroupId { get; init; }
+    public int NotePosition { get; init; }
+}

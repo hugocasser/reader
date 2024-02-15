@@ -4,21 +4,21 @@ using Application.Dtos.Views;
 using MapsterMapper;
 using MediatR;
 
-namespace Application.Handlers.Queries.Progress.GetProgressById;
+namespace Application.Requests.Queries.Progress.GetProgressById;
 
-public class GetProgressByIdRequestHandler
-    (IUserBookProgressRepository _progressRepository, IMapper _mapper): IRequestHandler<GetProgressByIdRequest, Result<ProgressViewDto>>
+public class GetProgressByIdQueryHandler
+    (IUserBookProgressRepository _progressRepository, IMapper _mapper): IRequestHandler<GetProgressByIdQuery, Result<ProgressViewDto>>
 {
-    public async Task<Result<ProgressViewDto>> Handle(GetProgressByIdRequest request, CancellationToken cancellationToken)
+    public async Task<Result<ProgressViewDto>> Handle(GetProgressByIdQuery query, CancellationToken cancellationToken)
     {
-        var progress = await _progressRepository.GetByIdAsync(request.ProgressId, cancellationToken);
+        var progress = await _progressRepository.GetByIdAsync(query.ProgressId, cancellationToken);
 
         if (progress is null)
         {
             return new Result<ProgressViewDto>(new Error("Progress Not Found", 404));
         }
 
-        if (progress.UserId != request.RequestingUserId)
+        if (progress.UserId != query.RequestingUserId)
         {
             return new Result<ProgressViewDto>(new Error("You are not owner of this progress", 400));
         }

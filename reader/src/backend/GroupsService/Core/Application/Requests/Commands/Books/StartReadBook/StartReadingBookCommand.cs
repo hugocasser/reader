@@ -3,4 +3,10 @@ using MediatR;
 
 namespace Application.Requests.Commands.Books.StartReadBook;
 
-public record StartReadingBookCommand(Guid BookId, Guid GroupId, Guid RequestingUserId) : IRequest<Result<string>>;
+public class StartReadingBookCommand
+    : IRequest<Result<string>>, IRequestWithRequestingUserId
+{
+    public Guid? RequestingUserId { get; set; }
+    public Guid BookId { get; init; }
+    public Guid GroupId { get; init; }
+}

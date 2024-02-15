@@ -3,4 +3,10 @@ using MediatR;
 
 namespace Application.Requests.Commands.Books.RemoveBookFromUserReadingList;
 
-public record RemoveBookFromUserCommandListRequest(Guid BookId, Guid GroupId, Guid RequestingUserId) : IRequest<Result<string>>;
+public class RemoveBookFromUserCommandListRequest
+    : IRequest<Result<string>>, IRequestWithRequestingUserId
+{
+    public Guid? RequestingUserId { get; set; }
+    public Guid BookId { get; init; } 
+    public Guid GroupId { get; init; }
+}

@@ -3,4 +3,9 @@ using MediatR;
 
 namespace Application.Requests.Commands.Notes.DeleteNote;
 
-public record DeleteNoteCommand(Guid NoteId, Guid RequestingUserId) : IRequest<Result<string>>;
+public class DeleteNoteCommand
+    : IRequest<Result<string>>, IRequestWithRequestingUserId
+{
+    public Guid? RequestingUserId { get; set; }
+    public Guid NoteId { get; init; }
+}

@@ -1,11 +1,12 @@
 using Application.Requests.Commands.Books.StartReadBook;
+using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Abstractions;
 
 namespace Presentation.Controllers;
 
-public class ReadingController(ISender _sender) : ApiController(_sender)
+public class ReadingController(ISender sender) : ApiController(sender)
 {
     [HttpPost]
     [Route("{bookId}/start")]

@@ -1,10 +1,17 @@
+using System.Text.Json;
+
 namespace Application.Common;
 
-public class Result<T> where T : class
+public class Result<T> : IResult where T : class
 {
     public Error? Error { get; }
     public bool IsSuccess { get; }
-    public T? Response { get; }
+    private T? Response { get; }
+    public string SerializeResponse()
+    {
+        return IsSuccess ? JsonSerializer.Serialize(Response)
+            : JsonSerializer.Serialize(Error.Message);
+    }
 
     public Result(Error error)
     {

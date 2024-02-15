@@ -4,4 +4,10 @@ using MediatR;
 
 namespace Application.Requests.Commands.Groups.CreateGroup;
 
-public record CreateGroupCommand(string GroupName, Guid RequestingUserId) : IRequest<Result<GroupViewDto>>;
+public class CreateGroupCommand
+    : IRequest<Result<GroupViewDto>>, IRequestWithRequestingUserId
+{
+    public Guid? RequestingUserId { get; set; }
+
+    public string GroupName { get; init; }
+}

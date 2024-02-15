@@ -3,4 +3,10 @@ using MediatR;
 
 namespace Application.Requests.Commands.Groups.AddBookToGroup;
 
-public record AddBookToGroupCommand(Guid GroupId, Guid BookId, Guid RequestingUserId) : IRequest<Result<string>>;
+public class AddBookToGroupCommand
+    : IRequest<Result<string>>, IRequestWithRequestingUserId
+{
+    public Guid? RequestingUserId { get; set; }
+    public Guid GroupId { get; init; }
+    public Guid BookId { get; init; }
+}

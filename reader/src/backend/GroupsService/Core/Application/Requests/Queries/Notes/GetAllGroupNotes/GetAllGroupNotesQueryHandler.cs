@@ -1,6 +1,7 @@
 using Application.Abstractions.Repositories;
 using Application.Common;
 using Application.Dtos.Views;
+using Application.Requests.Queries.Notes.GetAllGroupNotes;
 using MapsterMapper;
 using MediatR;
 

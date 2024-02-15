@@ -7,6 +7,7 @@ using Mapster;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Presentation.Middleware;
 using MicrosoftOptions = Microsoft.Extensions.Options.Options;
 
 namespace Presentation.Extensions;
@@ -19,6 +20,7 @@ public static class ProgramExtension
         builder.Configuration.GetSection(nameof(DbOptions)).Bind(databaseOptions);
         builder.Services.AddSingleton(MicrosoftOptions.Create(databaseOptions));
         builder.Services
+            .UseClaimsServices()
             .AddDbContext(databaseOptions)
             .AddRepositories()
             .AddApplication()
@@ -33,7 +35,13 @@ public static class ProgramExtension
         
         return builder;
     }
-    
+
+    private static IServiceCollection UseClaimsServices(this IServiceCollection services)
+    {
+        services.AddHttpContextAccessor();
+        
+        return services;
+    }
     public static WebApplication ConfigureApplication(this WebApplication app)
     {
         if (app.Environment.IsDevelopment())
@@ -45,12 +53,6 @@ public static class ProgramExtension
                 c.RoutePrefix = "swagger";
             });
         }
-        
-        app.UseExceptionHandler(new ExceptionHandlerOptions()
-        {
-            AllowStatusCode404Response = true,
-            ExceptionHandlingPath = "/error"
-        });
         
         app.UseAuthentication();
         app.UseAuthorization();

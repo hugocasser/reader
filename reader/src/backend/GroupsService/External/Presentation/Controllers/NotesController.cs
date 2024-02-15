@@ -1,15 +1,16 @@
-using Application.Handlers.Queries.Notes.GetAllGroupNotes;
-using Application.Handlers.Queries.Notes.GetAllUserNotes;
-using Application.Handlers.Queries.Notes.GetNoteById;
 using Application.Requests.Commands.Notes.CreateNote;
 using Application.Requests.Commands.Notes.DeleteNote;
+using Application.Requests.Queries.Notes.GetAllGroupNotes;
+using Application.Requests.Queries.Notes.GetAllUserNotes;
+using Application.Requests.Queries.Notes.GetAllUserNotesInGroup;
+using Application.Requests.Queries.Notes.GetNoteById;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Abstractions;
 
 namespace Presentation.Controllers;
 
-public class NotesController(ISender _sender) : ApiController(_sender)
+public class NotesController(ISender sender) : ApiController(sender)
 {
     [HttpGet]
     public async Task<IActionResult> GetAllUserNotes([FromQuery]GetAllUserNotesQuery request)
@@ -49,5 +50,4 @@ public class NotesController(ISender _sender) : ApiController(_sender)
     {
         return Ok(await _sender.Send(command));
     }
-    
 }

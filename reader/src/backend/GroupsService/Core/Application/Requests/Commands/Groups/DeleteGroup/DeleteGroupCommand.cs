@@ -3,4 +3,9 @@ using MediatR;
 
 namespace Application.Requests.Commands.Groups.DeleteGroup;
 
-public record DeleteGroupCommand(Guid GroupId, Guid RequestingUserId) : IRequest<Result<string>>;
+public class DeleteGroupCommand
+    : IRequest<Result<string>> , IRequestWithRequestingUserId
+{
+    public Guid? RequestingUserId { get; set; }
+    public Guid GroupId { get; init; }
+}

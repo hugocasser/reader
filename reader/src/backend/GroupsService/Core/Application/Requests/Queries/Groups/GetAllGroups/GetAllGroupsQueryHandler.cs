@@ -4,7 +4,7 @@ using Application.Dtos.Views;
 using MapsterMapper;
 using MediatR;
 
-namespace Application.Handlers.Queries.Groups.GetAllGroups;
+namespace Application.Requests.Queries.Groups.GetAllGroups;
 
 public class GetAllGroupsQueryHandler(IGroupsRepository _groupsRepository, IMapper _mapper)
     : IRequestHandler<GetAllGroupsQuery, Result<IEnumerable<GroupViewDto>>>

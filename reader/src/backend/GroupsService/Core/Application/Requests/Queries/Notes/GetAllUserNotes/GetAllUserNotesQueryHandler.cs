@@ -4,14 +4,14 @@ using Application.Dtos.Views;
 using MapsterMapper;
 using MediatR;
 
-namespace Application.Handlers.Queries.Notes.GetAllUserNotes;
+namespace Application.Requests.Queries.Notes.GetAllUserNotes;
 
 public class GetAllUserNotesQueryHandler(IUsersRepository _usersRepository, IMapper _mapper) 
     : IRequestHandler<GetAllUserNotesQuery, Result<IEnumerable<NoteViewDto>>>
 {
     public async Task<Result<IEnumerable<NoteViewDto>>> Handle(GetAllUserNotesQuery request, CancellationToken cancellationToken)
     {
-        var user =await _usersRepository.GetByIdAsync(request.RequestingUserId, cancellationToken);
+        var user =await _usersRepository.GetByIdAsync(request.RequestingUserId ?? Guid.Empty, cancellationToken);
 
         if (user is null)
         {

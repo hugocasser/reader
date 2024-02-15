@@ -37,7 +37,7 @@ public class CreateNoteCommandHandler(IBooksRepository booksRepository, INotesRe
         }
         
         var progress = await userBookProgressRepository
-            .GetProgressByUserIdBookIdAndGroupIdAsync(command.RequestingUserId, command.BookId, command.GroupId, cancellationToken);
+            .GetProgressByUserIdBookIdAndGroupIdAsync(command.RequestingUserId ?? Guid.Empty, command.BookId, command.GroupId, cancellationToken);
 
 
         if (progress is null)

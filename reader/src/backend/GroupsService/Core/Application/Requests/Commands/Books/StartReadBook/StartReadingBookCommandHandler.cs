@@ -32,7 +32,7 @@ public class StartReadingBookCommandHandler(IGroupsRepository _groupsRepository,
         }
         
         var progressByUserIdAndBookId = await _userBookProgressRepository
-            .GetProgressByUserIdBookIdAndGroupIdAsync(command.RequestingUserId, command.BookId, command.GroupId, cancellationToken);
+            .GetProgressByUserIdBookIdAndGroupIdAsync(command.RequestingUserId ?? Guid.Empty, command.BookId, command.GroupId, cancellationToken);
 
         if (progressByUserIdAndBookId is not null)
         {

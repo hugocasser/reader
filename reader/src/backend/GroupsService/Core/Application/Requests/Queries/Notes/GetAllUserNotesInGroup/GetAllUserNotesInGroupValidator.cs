@@ -1,4 +1,5 @@
 using Application.Common;
+using Application.Requests.Queries.Notes.GetAllUserNotesInGroup;
 using FluentValidation;
 
 namespace Application.Handlers.Queries.Notes.GetAllUserNotes;

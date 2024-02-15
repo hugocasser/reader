@@ -13,7 +13,7 @@ public class CreateGroupCommandHandler(IGroupsRepository groupsRepository,
 {
     public async Task<Result<GroupViewDto>> Handle(CreateGroupCommand command, CancellationToken cancellationToken)
     {
-        var admin = await usersRepository.GetByIdAsync(command.RequestingUserId, cancellationToken);
+        var admin = await usersRepository.GetByIdAsync(command.RequestingUserId ?? Guid.Empty, cancellationToken);
         
         if (admin is null)
         {

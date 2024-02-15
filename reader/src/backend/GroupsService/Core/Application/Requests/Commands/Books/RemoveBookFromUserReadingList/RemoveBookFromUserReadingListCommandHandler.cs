@@ -11,7 +11,7 @@ public class RemoveBookFromUserReadingListCommandHandler
     public async Task<Result<string>> Handle(RemoveBookFromUserCommandListRequest request, CancellationToken cancellationToken)
     {
         var userBookProgress = await _userBookProgressRepository
-            .GetProgressByUserIdBookIdAndGroupIdAsync(request.RequestingUserId, request.BookId, request.GroupId, cancellationToken);
+            .GetProgressByUserIdBookIdAndGroupIdAsync(request.RequestingUserId ?? Guid.Empty, request.BookId, request.GroupId, cancellationToken);
 
         if (userBookProgress is null)
         {

@@ -2,8 +2,13 @@ using Application.Common;
 using Application.Dtos.Views;
 using MediatR;
 
-namespace Application.Handlers.Queries.Notes.GetAllUserNotes;
+namespace Application.Requests.Queries.Notes.GetAllUserNotesInGroup;
 
-public record GetAllUserNotesInGroupQuery(Guid UserId, Guid GroupId,
-    PageSettingsRequestDto PageSettingsRequestDto, Guid RequestingUserId)
-    : IRequest<Result<IEnumerable<NoteViewDto>>>;
+public class GetAllUserNotesInGroupQuery
+    : IRequest<Result<IEnumerable<NoteViewDto>>>, IRequestWithRequestingUserId
+{
+    public Guid? RequestingUserId { get; set; }
+    public PageSettingsRequestDto PageSettingsRequestDto { get; init; }
+    public Guid UserId { get; init; }
+    public Guid GroupId { get; init; }
+}

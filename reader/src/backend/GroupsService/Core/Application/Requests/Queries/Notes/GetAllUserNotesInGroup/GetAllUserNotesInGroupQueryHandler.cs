@@ -2,6 +2,7 @@ using Application.Abstractions.Repositories;
 using Application.Common;
 using Application.Dtos.Views;
 using Application.Handlers.Queries.Notes.GetAllUserNotes;
+using Application.Requests.Queries.Notes.GetAllUserNotesInGroup;
 using Domain.Models;
 using MapsterMapper;
 using MediatR;
@@ -14,7 +15,7 @@ public class GetAllUserNotesInGroupQueryHandler(IUserBookProgressRepository _use
     public async Task<Result<IEnumerable<NoteViewDto>>> Handle(GetAllUserNotesInGroupQuery query, CancellationToken cancellationToken)
     {
         var userProgresses = await _userBookProgressRepository
-            .GetProgressesByUserIdAndGroupIdAsync(query.RequestingUserId, query.GroupId, cancellationToken);
+            .GetProgressesByUserIdAndGroupIdAsync(query.RequestingUserId?? Guid.Empty, query.GroupId, cancellationToken);
 
         if (query.RequestingUserId != query.UserId)
         {

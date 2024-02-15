@@ -3,7 +3,12 @@ using Application.Dtos.Requests;
 using Application.Dtos.Views;
 using MediatR;
 
-namespace Application.Handlers.Queries.Notes.GetAllGroupNotes;
+namespace Application.Requests.Queries.Notes.GetAllGroupNotes;
 
-public record GetAllGroupNotesQuery(Guid GroupId, Guid RequestingUserId, ReadingPageSettingsRequestDto PageSettingsRequestDto)
-    : IRequest<Result<IEnumerable<NoteViewDto>>>;
+public class GetAllGroupNotesQuery
+    : IRequest<Result<IEnumerable<NoteViewDto>>> , IRequestWithRequestingUserId
+{
+    public Guid? RequestingUserId { get; set; }
+    public Guid GroupId { get; init; }
+    public ReadingPageSettingsRequestDto PageSettingsRequestDto { get; init; }
+}
