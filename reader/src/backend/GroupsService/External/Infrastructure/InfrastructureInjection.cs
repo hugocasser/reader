@@ -1,11 +1,18 @@
 using Application.Abstractions.Repositories;
+using Application.Abstractions.Services.Cache;
+using Hangfire;
+using MicrosoftOptions = Microsoft.Extensions.Options.Options;
+using Infrastructure.BackgroundJobs;
 using Infrastructure.Interceptor;
 using Infrastructure.Options;
 using Infrastructure.Persistence;
 using Infrastructure.Persistence.Repositories;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
+using Quartz;
+using StackExchange.Redis;
 
 namespace Infrastructure;
 
@@ -36,6 +43,48 @@ public static class InfrastructureInjection
         return services;
     }
     
+    private static IServiceCollection AddJobs(this IServiceCollection services)
+    {
+        services.AddQuartz(configure =>
+        {
+            var jobKey = new JobKey(nameof(ProcessOutboxMessagesJob));
+            configure
+                .AddJob<ProcessOutboxMessagesJob>(jobKey)
+                .AddTrigger(trigger =>
+                    trigger.ForJob(jobKey)
+                        .WithSimpleSchedule(schedule =>
+                            schedule.WithIntervalInSeconds(10).RepeatForever())); 
+            configure.UseMicrosoftDependencyInjectionJobFactory();
+        });
+
+        services.AddQuartzHostedService();
+        
+       return services;
+    }
+
+    public static void AddHangfireProcesses()
+    {
+        RecurringJob.AddOrUpdate<BackgroundCacheService>(
+            "PushNotes",
+            x => x.PushNotes(),
+            Cron.Minutely);
+    }
+    
+    public static IServiceCollection AddRedisCache(this IServiceCollection services, IConfiguration configuration)
+    {
+        var redisOptions = new RedisOptions();
+        configuration.GetSection(nameof(RedisOptions)).Bind(redisOptions);
+        services.AddSingleton(MicrosoftOptions.Create(redisOptions));
+        
+        services.AddSingleton<IConnectionMultiplexer, ConnectionMultiplexer>(provider => 
+            provider.GetService<ConnectionMultiplexer>() 
+            ?? ConnectionMultiplexer.Connect(redisOptions.ConnectionString));
+        
+        services.AddSingleton<IRedisCacheService, RedisCacheService>();
+        
+        return services;
+    }
+    
     private static IServiceCollection AddDbOptions(this IServiceCollection services)
     {
         services.AddOptions<DbOptions>()
@@ -46,11 +95,20 @@ public static class InfrastructureInjection
         return services;
     }
     
+    public static IServiceCollection AddRedisCaching(
+        this IServiceCollection serviceCollection)
+    {
+        serviceCollection.Decorate<INotesRepository, CashedNotesRepository>();
+        
+        return serviceCollection;
+    }
+    
     public static IServiceCollection AddDbContext(this IServiceCollection services, DbOptions dbOptions)
     {
         services.AddSingleton<ConvertDomainEventsToOutboxMessagesInterceptor>();
         services.AddReadDbContext(dbOptions);
         services.AddWriteDbContext(dbOptions);
+        services.AddJobs();
         
         return services;
     }
