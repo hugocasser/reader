@@ -24,6 +24,7 @@ public static class ProgramExtension
             .AddDbContext(databaseOptions)
             .AddRepositories()
             .AddApplication()
+            .AddIdentity(builder.Configuration)
             .AddSwagger()
             .AddOptions()
             .AddCors(options => options.ConfigureAllowAllCors())
@@ -42,8 +43,19 @@ public static class ProgramExtension
         
         return services;
     }
+    
+    private static IApplicationBuilder UseCustomExceptionHandler(this IApplicationBuilder webApplication)
+    {
+        webApplication.UseMiddleware<CustomExceptionHandlerMiddleware>();
+        
+        return webApplication;
+    }
+    
     public static WebApplication ConfigureApplication(this WebApplication app)
     {
+        app.UseCustomExceptionHandler();
+        app.UseLoggingDependOnEnvironment();
+        
         if (app.Environment.IsDevelopment())
         {
             app.UseSwagger();
@@ -76,19 +88,20 @@ public static class ProgramExtension
     public static async Task<WebApplication> RunApplicationAsync(this WebApplication app)
     {
         using var scope = app.Services.CreateScope();
-        var servicesProvider = scope.ServiceProvider;
+        var serviceProvider = scope.ServiceProvider;
         
         try
         {
-            var readDbContext = servicesProvider.GetRequiredService<ReadDbContext>();
-            var writeDbContext = servicesProvider.GetRequiredService<WriteDbContext>();
+            var readDbContext = serviceProvider.GetRequiredService<ReadDbContext>();
+            var writeDbContext = serviceProvider.GetRequiredService<WriteDbContext>();
             await readDbContext.Database.MigrateAsync();
             await writeDbContext.Database.MigrateAsync();
             await app.RunAsync();
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            //TODO: handle exceptions
+            var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
+            logger.LogError(ex, "Host terminated unexpectedly");
             throw;
         }
         
