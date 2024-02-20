@@ -1,0 +1,21 @@
+services:
+  db:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    volumes:
+      - database-data:/data/db
+    environment:
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_USER=group
+      - POSTGRES_DATABASE=read-db
+      - POSTGRES_DATABASE=write-db
+    networks:
+      - dev
+
+networks:
+  dev:
+    driver: bridge
+
+volumes:
+  database-data:
