@@ -7,6 +7,7 @@ using Mapster;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Presentation.Hubs;
 using Presentation.Middleware;
 using MicrosoftOptions = Microsoft.Extensions.Options.Options;
 
@@ -21,18 +22,24 @@ public static class ProgramExtension
         builder.Services.AddSingleton(MicrosoftOptions.Create(databaseOptions));
         builder.Services
             .UseClaimsServices()
+            .AddRedisCache(builder.Configuration)
             .AddDbContext(databaseOptions)
             .AddRepositories()
             .AddApplication()
             .AddIdentity(builder.Configuration)
             .AddSwagger()
             .AddOptions()
+            .AddTokenOptions()
+            .AddElasticOptions()
+            .AddRedisOptions()
             .AddCors(options => options.ConfigureAllowAllCors())
             .AddEndpointsApiExplorer()
             .AddFluentValidationAutoValidation()
             .AddControllers();
-            
+
+        builder.Services.AddSignalR();
         builder.Services.AddMapster();
+        builder.AddLoggingServices();
         
         return builder;
     }
@@ -66,10 +73,16 @@ public static class ProgramExtension
             });
         }
         
+        app.UseExceptionHandler(new ExceptionHandlerOptions()
+        {
+            AllowStatusCode404Response = true,
+            ExceptionHandlingPath = "/error"
+        });
         app.UseAuthentication();
         app.UseAuthorization();
         app.UseCors("AllowAll");
         app.MapControllers();
+        app.MapHub<NotesHub>("/notesHub");
         
         return app;
     }
@@ -119,6 +132,16 @@ public static class ProgramExtension
                 Type = SecuritySchemeType.ApiKey
             });
         });
+        
+        return serviceCollection;
+    }
+    
+    public static IServiceCollection AddRedisOptions(this IServiceCollection serviceCollection)
+    {
+        serviceCollection.AddOptions<RedisOptions>()
+            .BindConfiguration(nameof(RedisOptions))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
         
         return serviceCollection;
     }

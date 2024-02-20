@@ -62,7 +62,7 @@ public static class InfrastructureInjection
        return services;
     }
 
-    public static void AddHangfireProcesses()
+    private static void AddHangfireProcesses()
     {
         RecurringJob.AddOrUpdate<BackgroundCacheService>(
             "PushNotes",
@@ -95,14 +95,6 @@ public static class InfrastructureInjection
         return services;
     }
     
-    public static IServiceCollection AddRedisCaching(
-        this IServiceCollection serviceCollection)
-    {
-        serviceCollection.Decorate<INotesRepository, CashedNotesRepository>();
-        
-        return serviceCollection;
-    }
-    
     public static IServiceCollection AddDbContext(this IServiceCollection services, DbOptions dbOptions)
     {
         services.AddSingleton<ConvertDomainEventsToOutboxMessagesInterceptor>();
@@ -120,6 +112,7 @@ public static class InfrastructureInjection
         services.AddScoped<INotesRepository, NotesRepository>();
         services.AddScoped<IBooksRepository, BooksRepository>();
         services.AddScoped<IUserBookProgressRepository, UserBookProgressRepository>();
+        services.Decorate<INotesRepository, CashedNotesRepository>();
         
         return services;
     }
