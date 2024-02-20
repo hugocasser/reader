@@ -1,15 +1,14 @@
 using Application.Abstractions.Repositories;
 using Application.Common;
 using Application.Dtos.Views;
-using Application.Handlers.Queries.Notes.GetAllUserNotes;
-using Application.Requests.Queries.Notes.GetAllUserNotesInGroup;
-using Domain.Models;
 using MapsterMapper;
 using MediatR;
 
-namespace Application.Handlers.Queries.Notes.GetAllUserNotesInGroup;
+namespace Application.Requests.Queries.Notes.GetAllUserNotesInGroup;
 
-public class GetAllUserNotesInGroupQueryHandler(IUserBookProgressRepository _userBookProgressRepository, IMapper _mapper)
+public class GetAllUserNotesInGroupQueryHandler
+    (IUserBookProgressRepository _userBookProgressRepository,
+        IMapper _mapper)
     : IRequestHandler<GetAllUserNotesInGroupQuery, Result<IEnumerable<NoteViewDto>>>
 {
     public async Task<Result<IEnumerable<NoteViewDto>>> Handle(GetAllUserNotesInGroupQuery query, CancellationToken cancellationToken)

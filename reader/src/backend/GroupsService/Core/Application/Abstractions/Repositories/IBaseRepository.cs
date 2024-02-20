@@ -8,12 +8,11 @@ public interface IBaseRepository<T> where T : Entity
     public Task CreateAsync(T entity,  CancellationToken cancellationToken);
     public Task UpdateAsync(T entity, CancellationToken cancellationToken);
     public Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken);
-    public Task CreateAsyncInReadDbContext(T entity,  CancellationToken cancellationToken);
-    public Task UpdateAsyncInReadDbContext(T entity, CancellationToken cancellationToken);
-    public Task DeleteByIdAsyncInReadDbContext(Guid id, CancellationToken cancellationToken);
+    public Task CreateAsyncInReadDbContextAsync(T entity,  CancellationToken cancellationToken);
+    public Task UpdateAsyncInReadDbContextAsync(T entity, CancellationToken cancellationToken);
+    public Task DeleteByIdAsyncInReadDbContextAsync(Guid id, CancellationToken cancellationToken);
     public Task<T?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
     public Task<IEnumerable<T>> GetAllAsync(PageSettingsRequestDto pageSettingsRequestDto, CancellationToken cancellationToken);
     public Task SaveChangesAsync(CancellationToken cancellationToken);
-    
     public Task<bool> IsExistByIdAsync(Guid id, CancellationToken cancellationToken);
 }

@@ -8,6 +8,6 @@ public class UserDeletedEventHandler(IUsersRepository _usersRepository) : INotif
 {
     public async Task Handle(UserDeletedEvent notification, CancellationToken cancellationToken)
     {
-        await _usersRepository.DeleteByIdAsyncInReadDbContext(notification.Id, cancellationToken);
+        await _usersRepository.DeleteByIdAsyncInReadDbContextAsync(notification.Id, cancellationToken);
     }
 }

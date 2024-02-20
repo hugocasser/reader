@@ -4,9 +4,8 @@ using MediatR;
 
 namespace Application.Requests.Queries.Progress.GetProgressById;
 
-public class GetProgressByIdQuery
+public record GetProgressByIdQuery(Guid ProgressId)
     : IRequest<Result<ProgressViewDto>>, IRequestWithRequestingUserId
 {
     public Guid? RequestingUserId { get; set; }
-    public Guid ProgressId { get; init; }
 }

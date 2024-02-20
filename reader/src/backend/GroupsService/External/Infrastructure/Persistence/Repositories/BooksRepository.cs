@@ -1,6 +1,5 @@
 using Application.Abstractions.Repositories;
 using Domain.Models;
-using Infrastructure.Abstractions;
 
 namespace Infrastructure.Persistence.Repositories;
 

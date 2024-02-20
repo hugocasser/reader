@@ -2,11 +2,12 @@ using Application.Abstractions.Repositories;
 using Application.Common;
 using Application.Dtos.Views;
 using Application.Requests.Queries.Notes.GetNoteById;
+using MapsterMapper;
 using MediatR;
 
 namespace Application.Handlers.Queries.Notes.GetNoteById;
 
-public class GetNoteByIdQueryHandler(INotesRepository _notesRepository, IUsersRepository _usersRepository) : IRequestHandler<GetNoteByIdQuery, Result<NoteViewDto>>
+public class GetNoteByIdQueryHandler(INotesRepository _notesRepository, IUsersRepository _usersRepository, IMapper _mapper) : IRequestHandler<GetNoteByIdQuery, Result<NoteViewDto>>
 {
     public async Task<Result<NoteViewDto>> Handle(GetNoteByIdQuery request, CancellationToken cancellationToken)
     {
@@ -24,6 +25,6 @@ public class GetNoteByIdQueryHandler(INotesRepository _notesRepository, IUsersRe
         
         var user = await _usersRepository.GetByIdAsync(request.RequestingUserId ??Guid.Empty, cancellationToken);
         
-        return new Result<NoteViewDto>(new NoteViewDto(note.Text, note.NotePosition, user.FirstName, user.LastName));
+        return new Result<NoteViewDto>(_mapper.Map<NoteViewDto>(note));
     }
 }

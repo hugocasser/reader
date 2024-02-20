@@ -4,7 +4,7 @@ using MediatR;
 
 namespace Application.Requests.Queries.Notes.GetAllUserNotes;
 
-public class GetAllUserNotesQuery
+public record GetAllUserNotesQuery
     : IRequest<Result<IEnumerable<NoteViewDto>>>, IRequestWithRequestingUserId
 {
     public Guid? RequestingUserId { get; set; }

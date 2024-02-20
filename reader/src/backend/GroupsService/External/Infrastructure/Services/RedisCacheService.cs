@@ -36,6 +36,7 @@ public class RedisCacheService(IConnectionMultiplexer _connection) : IRedisCache
     public async Task SetAddRangeAsync<T>(string key, Func<IQueryable<T>> factory)
     {
         var values = factory.Invoke();
+        
         foreach (var value in values)
         {
             await _database.SetAddAsync(key, JsonSerializer.Serialize(value));

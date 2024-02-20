@@ -7,7 +7,7 @@ public interface IRequestWithRequestingUserId
     [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
     public Guid? RequestingUserId { get; protected set; }
 
-    void SetRequestingUserId(Guid id)
+    public void SetRequestingUserId(Guid id)
     {
         RequestingUserId = id;
     }

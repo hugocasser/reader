@@ -9,6 +9,6 @@ public class UserBookProgressDeletedEventHandler(IUserBookProgressRepository _us
 {
     public async Task Handle(UserBookProgressDeletedEvent notification, CancellationToken cancellationToken)
     {
-        await _userBookProgressRepository.DeleteByIdAsyncInReadDbContext(notification.Id, cancellationToken);
+        await _userBookProgressRepository.DeleteByIdAsyncInReadDbContextAsync(notification.Id, cancellationToken);
     }
 }

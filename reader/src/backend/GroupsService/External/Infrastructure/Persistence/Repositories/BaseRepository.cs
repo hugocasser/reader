@@ -26,19 +26,19 @@ public class BaseRepository<T>(WriteDbContext _writeDbContext, ReadDbContext _re
         _writeDbContext.Set<T>().Remove(entity);
     }
 
-    public async Task CreateAsyncInReadDbContext(T entity, CancellationToken cancellationToken)
+    public async Task CreateAsyncInReadDbContextAsync(T entity, CancellationToken cancellationToken)
     {
         await _readDbContext.Set<T>().AddAsync(entity, cancellationToken);
     }
 
-    public Task UpdateAsyncInReadDbContext(T entity, CancellationToken cancellationToken)
+    public Task UpdateAsyncInReadDbContextAsync(T entity, CancellationToken cancellationToken)
     {
         _readDbContext.Set<T>().Update(entity);
 
         return Task.CompletedTask;
     }
 
-    public async Task DeleteByIdAsyncInReadDbContext(Guid id, CancellationToken cancellationToken)
+    public async Task DeleteByIdAsyncInReadDbContextAsync(Guid id, CancellationToken cancellationToken)
     {
         var entity = await _readDbContext.Set<T>().FirstOrDefaultAsync(entity => entity.Id == id, cancellationToken);
         _readDbContext.Set<T>().Remove(entity);

@@ -1,11 +1,10 @@
 using Application.Abstractions.Repositories;
 using Application.Common;
 using Application.Dtos.Views;
-using Application.Requests.Queries.Notes.GetAllGroupNotes;
 using MapsterMapper;
 using MediatR;
 
-namespace Application.Handlers.Queries.Notes.GetAllGroupNotes;
+namespace Application.Requests.Queries.Notes.GetAllGroupNotes;
 
 public class GetAllGroupNotesQueryHandler(IGroupsRepository _groupsRepository, IMapper _mapper) : IRequestHandler<GetAllGroupNotesQuery, Result<IEnumerable<NoteViewDto>>>
 {

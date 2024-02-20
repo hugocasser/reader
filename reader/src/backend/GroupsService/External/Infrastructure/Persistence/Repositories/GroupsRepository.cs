@@ -1,7 +1,6 @@
 using Application.Abstractions.Repositories;
 using Application.Dtos.Requests;
 using Domain.Models;
-using Infrastructure.Abstractions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence.Repositories;

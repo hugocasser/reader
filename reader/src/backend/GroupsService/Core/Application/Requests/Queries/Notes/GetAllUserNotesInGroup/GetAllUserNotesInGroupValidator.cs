@@ -1,8 +1,7 @@
 using Application.Common;
-using Application.Requests.Queries.Notes.GetAllUserNotesInGroup;
 using FluentValidation;
 
-namespace Application.Handlers.Queries.Notes.GetAllUserNotes;
+namespace Application.Requests.Queries.Notes.GetAllUserNotesInGroup;
 
 public class GetAllUserNotesInGroupValidator : AbstractValidator<GetAllUserNotesInGroupQuery>
 {

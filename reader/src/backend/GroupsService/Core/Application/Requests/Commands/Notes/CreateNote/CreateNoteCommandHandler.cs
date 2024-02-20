@@ -1,25 +1,27 @@
 using Application.Abstractions.Repositories;
+using Application.Abstractions.Services;
 using Application.Common;
 using Application.Dtos.Views;
 using Domain.Models;
+using MapsterMapper;
 using MediatR;
 
 namespace Application.Requests.Commands.Notes.CreateNote;
 
-public class CreateNoteCommandHandler(IBooksRepository booksRepository, INotesRepository notesRepository,
-    IGroupsRepository groupsRepository, IUserBookProgressRepository userBookProgressRepository)
+public class CreateNoteCommandHandler(IBooksRepository _booksRepository, INotesRepository _notesRepository,
+    IGroupsRepository _groupsRepository, IUserBookProgressRepository _userBookProgressRepository, IMapper _mapper)
     : IRequestHandler<CreateNoteCommand, Result<NoteViewDto>>
 {
     public async Task<Result<NoteViewDto>> Handle(CreateNoteCommand command, CancellationToken cancellationToken)
     {
-        var bookToAdd = await booksRepository.GetByIdAsync(command.BookId, cancellationToken);
+        var bookToAdd = await _booksRepository.GetByIdAsync(command.BookId, cancellationToken);
 
         if (bookToAdd is null)
         {
             return new Result<NoteViewDto>(new Error("Book not found", 404));
         }
         
-        var group = await groupsRepository.GetByIdAsync(command.GroupId, cancellationToken);
+        var group = await _groupsRepository.GetByIdAsync(command.GroupId, cancellationToken);
 
         if (group is null)
         {
@@ -36,7 +38,7 @@ public class CreateNoteCommandHandler(IBooksRepository booksRepository, INotesRe
             return new Result<NoteViewDto>(new Error("Book isn't allowed in this group", 404));
         }
         
-        var progress = await userBookProgressRepository
+        var progress = await _userBookProgressRepository
             .GetProgressByUserIdBookIdAndGroupIdAsync(command.RequestingUserId ?? Guid.Empty, command.BookId, command.GroupId, cancellationToken);
 
 
@@ -46,14 +48,11 @@ public class CreateNoteCommandHandler(IBooksRepository booksRepository, INotesRe
         }
 
         var note = new Note();
-        
         note.CreateNote(command.NotePosition, progress, command.Text);
         
-        await notesRepository.CreateAsync(note, cancellationToken);
-        await notesRepository.SaveChangesAsync(cancellationToken);
+        await _notesRepository.CreateAsync(note, cancellationToken);
+        await _notesRepository.SaveChangesAsync(cancellationToken);
         
-        return new Result<NoteViewDto>(new NoteViewDto
-            (note.Text, note.NotePosition, note.UserBookProgress.User.FirstName, note.UserBookProgress.User.LastName));
+        return new Result<NoteViewDto>(_mapper.Map<NoteViewDto>(note));
     }
-    
 }

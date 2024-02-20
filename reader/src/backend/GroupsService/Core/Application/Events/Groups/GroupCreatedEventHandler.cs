@@ -8,6 +8,6 @@ public class GroupCreatedEventHandler(IGroupsRepository _groupsRepository) : INo
 {
     public async Task Handle(GroupCreatedEvent notification, CancellationToken cancellationToken)
     {
-        await _groupsRepository.CreateAsyncInReadDbContext(notification.Entity, cancellationToken);
+        await _groupsRepository.CreateAsyncInReadDbContextAsync(notification.Entity, cancellationToken);
     }
 }

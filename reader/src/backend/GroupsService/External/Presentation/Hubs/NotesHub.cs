@@ -22,7 +22,7 @@ public class NotesHub(ISender _sender , IHttpContextAccessor _httpContextAccesso
         
         if (group.IsSuccess && result.IsSuccess)
         {
-            Clients.Group(group.Response.Id.ToString()).SendAsync("ReciveNote", result.Response);
+            Clients.Group(group.Response.Id.ToString()).SendAsync("ReceiveNote", result.Response);
         }
     }
 
@@ -52,7 +52,7 @@ public class NotesHub(ISender _sender , IHttpContextAccessor _httpContextAccesso
 
         if (result.IsSuccess && progress.IsSuccess)
         {
-            
+            await Clients.Group(progress.Response.Group.Id.ToString()).SendAsync("ReceiveUserProgress", progress.Response);
         }
     }
 
@@ -73,7 +73,6 @@ public class NotesHub(ISender _sender , IHttpContextAccessor _httpContextAccesso
         }
             
         await base.OnConnectedAsync();
-        throw new NotValidClaimsException("user is not valid");
     }
 
     [Authorize]

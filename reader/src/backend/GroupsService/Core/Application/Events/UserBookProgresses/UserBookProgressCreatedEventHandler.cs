@@ -10,6 +10,6 @@ public class UserBookProgressCreatedEventHandler(IUserBookProgressRepository _us
 {
     public async Task Handle(UserBookProgressCreatedEvent notification, CancellationToken cancellationToken)
     {
-        await _userBookProgressRepository.CreateAsyncInReadDbContext(notification.Entity, cancellationToken);
+        await _userBookProgressRepository.CreateAsyncInReadDbContextAsync(notification.Entity, cancellationToken);
     }
 }

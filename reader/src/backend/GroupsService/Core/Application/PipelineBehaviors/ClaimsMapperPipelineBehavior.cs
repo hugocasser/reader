@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Http;
 
 namespace Application.PipelineBehaviors;
 
-public class ClaimsMapperPipelineBehavior<TRequest, TResponse>(IHttpContextAccessor _context) : IPipelineBehavior<TRequest, TResponse> where
-    TRequest : class, IRequestWithRequestingUserId
+public class ClaimsMapperPipelineBehavior<TRequest, TResponse>(IHttpContextAccessor _context) 
+    : IPipelineBehavior<TRequest, TResponse> where TRequest : class, IRequestWithRequestingUserId
 {
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {

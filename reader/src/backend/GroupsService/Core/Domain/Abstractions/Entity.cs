@@ -5,7 +5,7 @@ namespace Domain.Abstractions;
 public abstract class Entity
 {
     private readonly IList<IDomainEvent> _events = new List<IDomainEvent>();
-    public Guid Id { get; protected set; } = Guid.Empty;
+    public Guid Id { get; set; } = Guid.Empty;
 
     protected void RaiseDomainEvent(IDomainEvent domainEvent)
     {

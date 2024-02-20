@@ -1,5 +1,4 @@
 using Domain.Abstractions.Events;
-using Domain.DomainEvents;
 using Infrastructure.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +14,8 @@ public class ProcessOutboxMessagesJob(WriteDbContext _writeDbContext, ReadDbCont
 {
     public async Task Execute(IJobExecutionContext context)
     {
+        _logger.LogInformation($"--- Started syncing databases --- \n" +
+            $"DateTime: {DateTime.Now}");
         var messages = await _writeDbContext.OutboxMessages
             .Where(message => message.ProcessedAt == null)
             .Take(50)
@@ -37,6 +38,9 @@ public class ProcessOutboxMessagesJob(WriteDbContext _writeDbContext, ReadDbCont
             _logger.LogInformation($"Message {message.Id} processed at {DateTime.Now}");
             
             await _readDbContext.SaveChangesAsync(context.CancellationToken);
+
+            _logger.LogInformation($"--- Finished syncing databases --- \n" +
+                $"DateTime: {DateTime.Now}");
         }
     }
 }

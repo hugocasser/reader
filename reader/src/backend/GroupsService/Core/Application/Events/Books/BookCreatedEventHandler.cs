@@ -8,6 +8,6 @@ public class BookCreatedEventHandler(IBooksRepository _booksRepository) : INotif
 {
     public async Task Handle(BookCreatedEvent notification, CancellationToken cancellationToken)
     {
-        await _booksRepository.CreateAsyncInReadDbContext(notification.Entity, cancellationToken);
+        await _booksRepository.CreateAsyncInReadDbContextAsync(notification.Entity, cancellationToken);
     }
 }

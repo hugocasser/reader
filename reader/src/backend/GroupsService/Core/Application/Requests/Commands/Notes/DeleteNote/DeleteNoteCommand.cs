@@ -8,4 +8,5 @@ public class DeleteNoteCommand
 {
     public Guid? RequestingUserId { get; set; }
     public Guid NoteId { get; init; }
+    public Guid GroupId { get; init; }
 }

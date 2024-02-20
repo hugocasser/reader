@@ -1,11 +1,10 @@
 using Application.Abstractions.Repositories;
 using Application.Common;
 using Application.Dtos.Views;
-using Application.Requests.Queries.Groups.GetGroupById;
 using MapsterMapper;
 using MediatR;
 
-namespace Application.Handlers.Queries.Groups.GetGroupById;
+namespace Application.Requests.Queries.Groups.GetGroupById;
 
 public class GetGroupByIdQueryHandler(IGroupsRepository _groupsRepository, IMapper _mapper)
     : IRequestHandler<GetGroupByIdQuery, Result<GroupViewDto>>

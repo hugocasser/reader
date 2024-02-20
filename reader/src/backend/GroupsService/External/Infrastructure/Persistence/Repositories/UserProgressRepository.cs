@@ -1,6 +1,5 @@
 using Application.Abstractions.Repositories;
 using Domain.Models;
-using Infrastructure.Abstractions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence.Repositories;

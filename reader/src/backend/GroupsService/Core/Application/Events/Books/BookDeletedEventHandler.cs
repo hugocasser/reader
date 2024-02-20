@@ -8,6 +8,6 @@ public class BookDeletedEventHandler(IBooksRepository _booksRepository) : INotif
 {
     public async Task Handle(BookDeletedEvent notification, CancellationToken cancellationToken)
     {
-        await _booksRepository.DeleteByIdAsyncInReadDbContext(notification.Id, cancellationToken);
+        await _booksRepository.DeleteByIdAsyncInReadDbContextAsync(notification.Id, cancellationToken);
     }
 }

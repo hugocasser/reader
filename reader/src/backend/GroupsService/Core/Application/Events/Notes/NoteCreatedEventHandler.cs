@@ -8,6 +8,6 @@ public class NoteCreatedEventHandler(INotesRepository _notesRepository) : INotif
 {
     public async Task Handle(NoteCreatedEvent notification, CancellationToken cancellationToken)
     {
-        await _notesRepository.CreateAsyncInReadDbContext(notification.Entity, cancellationToken);
+        await _notesRepository.CreateAsyncInReadDbContextAsync(notification.Entity, cancellationToken);
     }
 }

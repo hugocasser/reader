@@ -6,6 +6,7 @@ using Presentation.Abstractions;
 
 namespace Presentation.Controllers;
 
+[Route("reading")]
 public class ReadingController(ISender sender) : ApiController(sender)
 {
     [HttpPost]

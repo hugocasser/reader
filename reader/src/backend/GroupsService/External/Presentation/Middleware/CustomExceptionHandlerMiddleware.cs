@@ -3,9 +3,9 @@ using Presentation.Exceptions;
 
 namespace Presentation.Middleware;
 
-public class CustomExceptionHandlerMiddleware() : IMiddleware
+public class CustomExceptionHandlerMiddleware(RequestDelegate next)
 {
-    public async Task InvokeAsync(HttpContext context, RequestDelegate next)
+    public async Task Invoke(HttpContext context)
     {
         try
         {

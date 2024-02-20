@@ -8,6 +8,6 @@ public class GroupUpdatedEventHandler(IGroupsRepository _groupsRepository) : INo
 {
     public async Task Handle(GroupUpdatedEvent notification, CancellationToken cancellationToken)
     {
-        await _groupsRepository.UpdateAsyncInReadDbContext(notification.Entity, cancellationToken);
+        await _groupsRepository.UpdateAsyncInReadDbContextAsync(notification.Entity, cancellationToken);
     }
 }

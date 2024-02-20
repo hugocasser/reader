@@ -8,6 +8,6 @@ public class UserUpdatedEventHandler(IUsersRepository _usersRepository) : INotif
 {
     public async Task Handle(UserUpdatedEvent notification, CancellationToken cancellationToken)
     {
-        await _usersRepository.UpdateAsyncInReadDbContext(notification.Entity, cancellationToken);
+        await _usersRepository.UpdateAsyncInReadDbContextAsync(notification.Entity, cancellationToken);
     }
 }

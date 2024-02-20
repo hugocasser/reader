@@ -6,7 +6,9 @@ using MediatR;
 
 namespace Application.Requests.Queries.Notes.GetAllUserNotes;
 
-public class GetAllUserNotesQueryHandler(IUsersRepository _usersRepository, IMapper _mapper) 
+public class GetAllUserNotesQueryHandler
+    (IUsersRepository _usersRepository,
+        IMapper _mapper) 
     : IRequestHandler<GetAllUserNotesQuery, Result<IEnumerable<NoteViewDto>>>
 {
     public async Task<Result<IEnumerable<NoteViewDto>>> Handle(GetAllUserNotesQuery request, CancellationToken cancellationToken)

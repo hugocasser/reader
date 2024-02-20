@@ -8,6 +8,6 @@ public class GroupDeletedEventHandler(IGroupsRepository _groupsRepository) : INo
 {
     public async Task Handle(GroupDeletedEvent notification, CancellationToken cancellationToken)
     {
-        await _groupsRepository.DeleteByIdAsyncInReadDbContext(notification.Id, cancellationToken);
+        await _groupsRepository.DeleteByIdAsyncInReadDbContextAsync(notification.Id, cancellationToken);
     }
 }

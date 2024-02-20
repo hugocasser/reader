@@ -12,7 +12,7 @@ public class BackgroundCacheService(ILogger<BackgroundCacheService> _logger, IRe
 {
     public async Task PushNotes()
     {
-        _logger.LogInformation("--> Start pushing session logs...");
+        _logger.LogInformation("--> Start pushing notes...");
         var cachedNotes = _redisCacheService.GetSetAsync<Note>(CachingKeys.Notes).ToBlockingEnumerable();
 
         foreach (var cachedNote in cachedNotes)

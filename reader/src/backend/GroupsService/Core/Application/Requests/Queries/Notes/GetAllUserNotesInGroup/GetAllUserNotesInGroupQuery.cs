@@ -4,11 +4,11 @@ using MediatR;
 
 namespace Application.Requests.Queries.Notes.GetAllUserNotesInGroup;
 
-public class GetAllUserNotesInGroupQuery
+public record GetAllUserNotesInGroupQuery
+    (Guid UserId,
+        Guid GroupId,
+        PageSettingsRequestDto PageSettingsRequestDto)
     : IRequest<Result<IEnumerable<NoteViewDto>>>, IRequestWithRequestingUserId
 {
     public Guid? RequestingUserId { get; set; }
-    public PageSettingsRequestDto PageSettingsRequestDto { get; init; }
-    public Guid UserId { get; init; }
-    public Guid GroupId { get; init; }
 }

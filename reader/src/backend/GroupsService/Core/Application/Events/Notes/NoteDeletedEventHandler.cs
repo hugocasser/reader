@@ -8,6 +8,6 @@ public class NoteDeletedEventHandler(INotesRepository _notesRepository) : INotif
 {
     public async Task Handle(NoteDeletedEvent notification, CancellationToken cancellationToken)
     {
-        await _notesRepository.DeleteByIdAsyncInReadDbContext(notification.Id, cancellationToken);
+        await _notesRepository.DeleteByIdAsyncInReadDbContextAsync(notification.Id, cancellationToken);
     }
 }

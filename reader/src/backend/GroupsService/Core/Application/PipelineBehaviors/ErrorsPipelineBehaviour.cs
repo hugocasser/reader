@@ -5,8 +5,8 @@ using IResult = Application.Common.IResult;
 
 namespace Application.PipelineBehaviors;
 
-public class ErrorPipelineBehaviour<TRequest, TResponse>(IHttpContextAccessor _context)
-    : IPipelineBehavior<TRequest, TResponse> where TResponse : IResult
+public class ErrorsPipelineBehaviour<TRequest, TResponse>(IHttpContextAccessor _context)
+    : IPipelineBehavior<TRequest, TResponse> where TResponse : IResult where TRequest : notnull
 {
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
@@ -21,9 +21,9 @@ public class ErrorPipelineBehaviour<TRequest, TResponse>(IHttpContextAccessor _c
         {
             return result;
         }
-        
+
         _context.HttpContext.Response.ContentType = "application/json";
-        _context.HttpContext.Response.StatusCode = result.Error.Code;
+        _context.HttpContext.Response.StatusCode = result.IsSuccess ? 200 : result.Error.Code;
         await _context.HttpContext.Response.WriteAsync(result.SerializeResponse(), cancellationToken);
         
         return result;

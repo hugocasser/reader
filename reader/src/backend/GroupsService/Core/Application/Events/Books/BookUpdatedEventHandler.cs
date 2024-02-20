@@ -8,6 +8,6 @@ public class BookUpdatedEventHandler(IBooksRepository _booksRepository) : INotif
 {
     public async Task Handle(BookUpdatedEvent notification, CancellationToken cancellationToken)
     {
-        await _booksRepository.UpdateAsyncInReadDbContext(notification.Entity, cancellationToken);
+        await _booksRepository.UpdateAsyncInReadDbContextAsync(notification.Entity, cancellationToken);
     }
 }
