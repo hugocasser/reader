@@ -21,6 +21,7 @@ public static class ProgramExtension
             .AddElasticOptions()
             .AddIdentity(builder.Configuration)
             .AddOptions()
+            .AddBackgroundJobs()
             .AddFluentValidationAutoValidation()
             .AddSwagger()
             .AddCors(options => options.ConfigureAllowAllCors())

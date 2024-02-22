@@ -17,7 +17,7 @@ public class BooksService(
 {
     public async Task<BookInfoViewDto> CreateBookAsync(CreateBookRequestDto requestDto, CancellationToken cancellationToken)
     {
-        var author = await _authorsRepository.GetByIdAsync(requestDto.AuthorId, cancellationToken);
+        var author =await _authorsRepository.GetByIdAsync(requestDto.AuthorId, cancellationToken) as Author;
         
         if (author is null)
         {
@@ -31,18 +31,19 @@ public class BooksService(
             throw new BadRequestException("Category with this id not found");
         }
 
-        var bookModel = new Book
-        {
-            Id = Guid.NewGuid(),
-            Name = requestDto.Name,
-            Description = requestDto.Description,
-            Text = requestDto.Text,
-            AuthorId = requestDto.AuthorId,
-            CategoryId = requestDto.CategoryId
-        };
+        var bookModel = new Book();
+        
+        bookModel.CreateBook
+            (requestDto.Description,
+                requestDto.Name,
+                requestDto.Text,
+                requestDto.AuthorId,
+                requestDto.CategoryId,
+                author.FirstName,
+                author.LastName);
 
         await _booksRepository.AddAsync(bookModel, cancellationToken);
-
+        
         return _mapper.Map<BookInfoViewDto>(bookModel);
     }
 
@@ -79,7 +80,9 @@ public class BooksService(
 
     public async Task DeleteByIdBookAsync(Guid id, CancellationToken cancellationToken)
     {
-        if (!await _booksRepository.IsExistsAsync(id, cancellationToken))
+        var book = await _booksRepository.GetByIdAsync(id, cancellationToken) as Book;
+        
+        if (book is null)
         {
             throw new NotFoundException("Book with this id not found");
         }
@@ -97,7 +100,7 @@ public class BooksService(
             throw new NotFoundException("Book with this id not found");
         }
         
-        var author = await _authorsRepository.GetByIdAsync(infoRequestDto.AuthorId, cancellationToken);
+        var author = await _authorsRepository.GetByIdAsync(infoRequestDto.AuthorId, cancellationToken) as Author;
         
         if (author is null)
         {
@@ -114,7 +117,7 @@ public class BooksService(
         var bookToUpdate = _mapper.Map<Book>(infoRequestDto);
         
         await _booksRepository.UpdateAsync(bookToUpdate, cancellationToken);
-
+        
         return _mapper.Map<BookInfoViewDto>(bookToUpdate);
     }
 
