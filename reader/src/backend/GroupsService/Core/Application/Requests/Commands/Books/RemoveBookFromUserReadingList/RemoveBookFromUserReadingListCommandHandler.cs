@@ -14,16 +14,22 @@ public class RemoveBookFromUserReadingListCommandHandler
 {
     public async Task<Result<string>> Handle(RemoveBookFromUserCommandListRequest request, CancellationToken cancellationToken)
     {
-        var userBookProgress = await _userBookProgressRepository
-            .GetProgressByUserIdBookIdAndGroupIdAsync(request.RequestingUserId ?? Guid.Empty, request.BookId, request.GroupId, cancellationToken);
+        var userBookProgresses = await _userBookProgressRepository
+            .GetByAsync(userBookProgress =>
+                    userBookProgress.BookId == request.BookId
+                    && userBookProgress.UserId == request.RequestingUserId
+                    && userBookProgress.GroupId == request.GroupId,
+                cancellationToken);
 
-        if (userBookProgress is null)
+        var progress = userBookProgresses.First();
+        
+        if (progress is null)
         {
             return new Result<string>(new NotFoundError("Progress"));
         }   
         
-        userBookProgress.Delete(new UserBookProgressDeletedEvent(userBookProgress.Id));
-        await _userBookProgressRepository.DeleteByIdAsync(userBookProgress.Id, cancellationToken);
+        progress.Delete(new UserBookProgressDeletedEvent(progress.Id));
+        await _userBookProgressRepository.DeleteByIdAsync(progress.Id, cancellationToken);
         await _userBookProgressRepository.SaveChangesAsync(cancellationToken);
         
         return new Result<string>();

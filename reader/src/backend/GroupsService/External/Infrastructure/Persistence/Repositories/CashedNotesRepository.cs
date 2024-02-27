@@ -3,6 +3,7 @@ using Application.Abstractions.Repositories;
 using Application.Abstractions.Services;
 using Application.Abstractions.Services.Cache;
 using Application.Dtos.Views;
+using Domain.Abstractions;
 using Domain.Models;
 using Infrastructure.Common;
 using Mapster;
@@ -53,9 +54,9 @@ public class CashedNotesRepository(INotesRepository _notesRepository, IRedisCach
         return _notesRepository.GetAllAsync(pageSettingsRequestDto, cancellationToken);
     }
 
-    public Task<IList> GetByAsync(Func<Note, bool> func, CancellationToken cancellationToken)
+    public Task<IList<Note>> GetByAsync(Func<Note, bool> func, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        return _notesRepository.GetByAsync(func, cancellationToken);
     }
 
     public Task SaveChangesAsync(CancellationToken cancellationToken)
@@ -66,10 +67,5 @@ public class CashedNotesRepository(INotesRepository _notesRepository, IRedisCach
     public Task<bool> IsExistByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         return _notesRepository.IsExistByIdAsync(id, cancellationToken);
-    }
-
-    public Task<List<Note>> GetNotesByGroupIdAndBookIdAsync(Guid groupId, Guid bookId, CancellationToken cancellationToken)
-    {
-        return _notesRepository.GetNotesByGroupIdAndBookIdAsync(groupId, bookId, cancellationToken);
     }
 }

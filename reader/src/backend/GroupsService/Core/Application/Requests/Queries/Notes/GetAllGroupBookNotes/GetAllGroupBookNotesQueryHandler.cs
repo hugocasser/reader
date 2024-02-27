@@ -14,7 +14,12 @@ public class GetAllGroupBookNotesQueryHandler
 {
     public async Task<Result<IEnumerable<NoteViewDto>>> Handle(GetAllGroupBookNotesQuery request, CancellationToken cancellationToken)
     {
-        var notes = await _notesRepository.GetNotesByGroupIdAndBookIdAsync(request.GroupId, request.BookId, cancellationToken);
+        var notes = await _notesRepository
+            .GetByAsync(note => 
+              note.UserBookProgress.GroupId == request.GroupId 
+              && note.UserBookProgress.BookId == request.BookId,
+                cancellationToken);
+        
         var note = notes.First();
 
         return note.UserBookProgress.Group.Members.FirstOrDefault(user => user.Id == request.RequestingUserId) == null 

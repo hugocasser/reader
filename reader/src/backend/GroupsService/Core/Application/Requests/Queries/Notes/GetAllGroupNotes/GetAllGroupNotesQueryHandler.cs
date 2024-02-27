@@ -9,7 +9,7 @@ using MediatR;
 
 namespace Application.Requests.Queries.Notes.GetAllGroupNotes;
 
-public class GetAllGroupNotesQueryHandler(IGroupsRepository _groupsRepository, IMapper _mapper) : IRequestHandler<GetAllGroupNotesQuery, Result<IEnumerable<NoteViewDto>>>
+public class GetAllGroupNotesQueryHandler(IGroupsRepository _groupsRepository, INotesRepository _notesRepository, IMapper _mapper) : IRequestHandler<GetAllGroupNotesQuery, Result<IEnumerable<NoteViewDto>>>
 {
     public async Task<Result<IEnumerable<NoteViewDto>>> Handle(GetAllGroupNotesQuery query, CancellationToken cancellationToken)
     {
@@ -25,7 +25,7 @@ public class GetAllGroupNotesQueryHandler(IGroupsRepository _groupsRepository, I
             return new Result<IEnumerable<NoteViewDto>>(new BadRequestError("You aren't member of this group"));
         }
         
-        var usersNotes = await _groupsRepository.GetGroupNotesAsync(query.GroupId, query.PageSettingsRequestDto, cancellationToken);
+        var usersNotes = await _notesRepository.GetByAsync(note => note.UserBookProgress.GroupId == query.GroupId, cancellationToken);
         
         return new Result<IEnumerable<NoteViewDto>>(usersNotes.Select(_mapper.Map<NoteViewDto>));
     }

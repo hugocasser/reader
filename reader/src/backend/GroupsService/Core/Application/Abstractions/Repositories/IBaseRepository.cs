@@ -16,7 +16,7 @@ public interface IBaseRepository<TEntity, TView> where TEntity : Entity
     public Task<TEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
     public Task<IList<TView>> GetAllAsync(PageSettingsRequestDto pageSettingsRequestDto,
         CancellationToken cancellationToken);
-    public Task<IList> GetByAsync(Func<TEntity,bool> func, CancellationToken cancellationToken);
+    public Task<IList<TEntity>> GetByAsync(Func<TEntity, bool> func, CancellationToken cancellationToken);
     public Task SaveChangesAsync(CancellationToken cancellationToken);
     public Task<bool> IsExistByIdAsync(Guid id, CancellationToken cancellationToken);
 }

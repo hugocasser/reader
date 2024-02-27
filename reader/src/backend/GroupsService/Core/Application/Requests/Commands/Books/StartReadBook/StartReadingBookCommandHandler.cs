@@ -34,10 +34,10 @@ public class StartReadingBookCommandHandler(IGroupsRepository _groupsRepository,
             return new Result<string>(new BadRequestError("Book is not allowed in this group"));
         }
         
-        var progressByUserIdAndBookId = await _userBookProgressRepository
-            .GetProgressByUserIdBookIdAndGroupIdAsync(command.RequestingUserId ?? Guid.Empty, command.BookId, command.GroupId, cancellationToken);
-
-        if (progressByUserIdAndBookId is not null)
+        var progressesByUserIdAndBookId = await _userBookProgressRepository
+            .GetByAsync(progress => progress.BookId == command.BookId && command.GroupId == progress.GroupId, cancellationToken);
+        
+        if (progressesByUserIdAndBookId.Count != 0)
         {
             return new Result<string>(new BadRequestError("You have already started reading this book"));
         }

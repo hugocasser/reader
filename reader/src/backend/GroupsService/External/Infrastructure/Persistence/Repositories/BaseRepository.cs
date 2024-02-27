@@ -57,9 +57,9 @@ public class BaseRepository<TEntity, TView>(WriteDbContext _writeDbContext, Read
             .Take(pageSettingsRequestDto.PageSize).ProjectToType<TView>().ToListAsync(cancellationToken);
     }
 
-    public async Task<IList> GetByAsync(Func<TEntity, bool> func, CancellationToken cancellationToken)
+    public async Task<IList<TEntity>> GetByAsync(Func<TEntity, bool> func, CancellationToken cancellationToken)
     {
-        return _readDbContext.Set<TEntity>().Select(func).ToList();
+       return await _readDbContext.Set<TEntity>().Where(entity => func(entity) == true).ToListAsync(cancellationToken);
     }
 
     public async Task SaveChangesAsync(CancellationToken cancellationToken)

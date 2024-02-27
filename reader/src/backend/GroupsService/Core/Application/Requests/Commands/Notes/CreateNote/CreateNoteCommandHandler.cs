@@ -41,10 +41,12 @@ public class CreateNoteCommandHandler(IBooksRepository _booksRepository, INotesR
             return new Result<NoteViewDto>(new BadRequestError("Book is not allowed in this group"));
         }
         
-        var progress = await _userBookProgressRepository
-            .GetProgressByUserIdBookIdAndGroupIdAsync(command.RequestingUserId ?? Guid.Empty, command.BookId, command.GroupId, cancellationToken);
-
-
+        var progresses = await _userBookProgressRepository
+            .GetByAsync(pr => pr.UserId == command.RequestingUserId
+                && pr.BookId == command.BookId && pr.GroupId == command.GroupId, cancellationToken);
+        
+        var progress = progresses.FirstOrDefault();
+        
         if (progress is null)
         {
             return new Result<NoteViewDto>(new NotFoundError("Progress"));
