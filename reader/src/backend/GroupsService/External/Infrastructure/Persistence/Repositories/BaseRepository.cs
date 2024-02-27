@@ -51,7 +51,7 @@ public class BaseRepository<T>(WriteDbContext _writeDbContext, ReadDbContext _re
 
     public async Task<IEnumerable<T>> GetAllAsync(PageSettingsRequestDto pageSettingsRequestDto, CancellationToken cancellationToken)
     {
-        return await _readDbContext.Set<T>().Order().Skip(pageSettingsRequestDto.SkipCount())
+        return await _readDbContext.Set<T>().Skip(pageSettingsRequestDto.SkipCount())
             .Take(pageSettingsRequestDto.PageSize).ToListAsync(cancellationToken);
     }
 
