@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+option csharp_namespace = "Infrastructure";
+package userService;
+
+service UsersService{
+  rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
+  rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse);
+  rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse);
+}
+
+message CreateUserRequest{
+  string userId = 1;
+  string firstName = 2;
+  string lastName = 3;
+}
+
+message UpdateUserRequest{
+  string userId = 1;
+  string firstName = 2;
+  string lastName = 3;
+}
+
+message DeleteUserRequest{
+  string userId = 1;
+}
+
+message CreateUserResponse{
+  string userId = 1;
+}
+
+message UpdateUserResponse{
+  string userId = 1;
+}
+
+message DeleteUserResponse{
+  string userId = 1;
+}
