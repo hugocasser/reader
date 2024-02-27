@@ -4,10 +4,8 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace Domain.Models;
 
-public class Author : IEntity
+public class Author : Entity
 {
-    [BsonId, BsonElement("id")]
-    public Guid Id { get; set; }
     [BsonElement("first_name")]
     public string FirstName { get; set; } = string.Empty;
     [BsonElement("last_name")]

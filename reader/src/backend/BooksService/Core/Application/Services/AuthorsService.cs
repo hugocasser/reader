@@ -5,12 +5,16 @@ using Application.Dtos.Requests.Authors;
 using Application.Dtos.Views.Authors;
 using Application.Exceptions;
 using Domain.Models;
-using Mapster;
 using MapsterMapper;
+using MongoDB.Driver;
 
 namespace Application.Services;
 
-public class AuthorsService(IAuthorsRepository _authorsRepository, IMapper _mapper): IAuthorsService
+public class AuthorsService
+    (IAuthorsRepository _authorsRepository, 
+        IBooksRepository _booksRepository,
+        IMapper _mapper,
+        IMongoClient _client): IAuthorsService
 {
     public async Task<AuthorViewDto> CreateAuthorAsync(CreateAuthorRequestDto requestDto, CancellationToken cancellationToken)
     {
@@ -44,10 +48,17 @@ public class AuthorsService(IAuthorsRepository _authorsRepository, IMapper _mapp
     }
 
     public async Task DeleteByIdAuthorAsync(Guid id, CancellationToken cancellationToken)
-    {
+    { 
         if (!await _authorsRepository.IsExistsAsync(id, cancellationToken))
         {
             throw new NotFoundException("Author with this id not found");
+        }
+
+        var authorBooks = await _authorsRepository.GetBooksByAuthorAsync(id, cancellationToken); 
+        
+        if (authorBooks.Any())
+        {
+            throw new BadRequestException("Can't delete author with books");
         }
         
         await _authorsRepository.DeleteByIdAsync(id, cancellationToken);
@@ -55,7 +66,10 @@ public class AuthorsService(IAuthorsRepository _authorsRepository, IMapper _mapp
 
     public async Task<AuthorViewDto> UpdateAuthorAsync(UpdateAuthorRequestDto requestDto, CancellationToken cancellationToken)
     {
-        var author = await _authorsRepository.GetByIdAsync(requestDto.Id, cancellationToken);
+        using var session = await _client.StartSessionAsync(cancellationToken: cancellationToken);
+        session.StartTransaction();
+        
+        var author = await _authorsRepository.GetByIdAsync(requestDto.Id, cancellationToken) as Author;
 
         if (author is null)
         {
@@ -66,6 +80,16 @@ public class AuthorsService(IAuthorsRepository _authorsRepository, IMapper _mapp
         
         await _authorsRepository.UpdateAsync(authorToUpdate, cancellationToken);
 
+        var authorBooks = await _authorsRepository.GetBooksByAuthorAsync(requestDto.Id, cancellationToken);
+
+        foreach (var book in authorBooks)
+        {
+            book.UpdateBook(authorFirstName: author.FirstName, authorLastName: author.LastName);
+            await _booksRepository.UpdateAsync(book, cancellationToken);
+        }
+        
+        await session.CommitTransactionAsync(cancellationToken);
+        
         return _mapper.Map<AuthorViewDto>(authorToUpdate);
     }
 }
