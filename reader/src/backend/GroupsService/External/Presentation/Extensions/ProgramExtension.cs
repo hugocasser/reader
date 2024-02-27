@@ -135,8 +135,8 @@ public static class ProgramExtension
         
         return serviceCollection;
     }
-    
-    public static IServiceCollection AddRedisOptions(this IServiceCollection serviceCollection)
+
+    private static IServiceCollection AddRedisOptions(this IServiceCollection serviceCollection)
     {
         serviceCollection.AddOptions<RedisOptions>()
             .BindConfiguration(nameof(RedisOptions))

@@ -1,5 +1,4 @@
 using Application.Requests.Commands.Books.StartReadBook;
-using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Abstractions;
@@ -15,6 +14,4 @@ public class ReadingController(ISender sender) : ApiController(sender)
     {
         return Ok(await _sender.Send(command));
     }
-    
-    
 }
