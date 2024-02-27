@@ -20,26 +20,32 @@ public sealed class ConvertDomainEventsToOutboxMessagesInterceptor
 
         var messages = context.ChangeTracker
             .Entries<Entity>()
+            .ToList()
             .Select(entry => entry.Entity)
             .SelectMany(entity =>
             {
                 var domainEvents = entity
                     .GetDomainEvents();
-                
                 entity.ClearDomainEvents();
                 
                 return domainEvents;
             })
             .Select(
-                domainEvent => new OutboxMessage()
+                domainEvent =>
                 {
-                    Id = Guid.NewGuid(),
-                    ProcessedAt = null,
-                    Content = JsonConvert.SerializeObject(domainEvent,
-                        new JsonSerializerSettings()
-                        {
-                            TypeNameHandling = TypeNameHandling.All
-                        })
+                    var mess = new OutboxMessage()
+                    {
+                        Id = Guid.NewGuid(),
+                        ProcessedAt = null,
+                        Content = JsonConvert.SerializeObject(domainEvent,
+                            new JsonSerializerSettings()
+                            {
+                                TypeNameHandling = TypeNameHandling.All
+                            }),
+                        EventType = domainEvent.GetType().FullName ?? domainEvent.GetType().Namespace + '.'
+                            + domainEvent.GetType().Name +", Domain"
+                    };
+                    return mess;
                 });
         
         context.Set<OutboxMessage>().AddRange(messages);
