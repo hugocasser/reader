@@ -1,58 +1,65 @@
+using System.Collections;
 using Application.Abstractions.Repositories;
 using Application.Dtos.Views;
 using Domain.Abstractions;
+using Mapster;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence.Repositories;
 
-public class BaseRepository<T>(WriteDbContext _writeDbContext, ReadDbContext _readDbContext)
-    : IBaseRepository<T> where T : Entity
+public class BaseRepository<TEntity, TView>(WriteDbContext _writeDbContext, ReadDbContext _readDbContext)
+    : IBaseRepository<TEntity, TView> where TEntity : Entity 
 {
-    public async Task CreateAsync(T entity, CancellationToken cancellationToken)
+    public async Task CreateAsync(TEntity entity, CancellationToken cancellationToken)
     {
-        await _writeDbContext.Set<T>().AddAsync(entity, cancellationToken);
+        await _writeDbContext.Set<TEntity>().AddAsync(entity, cancellationToken);
     }
 
-    public Task UpdateAsync(T entity, CancellationToken cancellationToken)
+    public Task UpdateAsync(TEntity entity, CancellationToken cancellationToken)
     {
-        _writeDbContext.Set<T>().Update(entity);
+        _writeDbContext.Set<TEntity>().Update(entity);
 
         return Task.CompletedTask;
     }
 
     public async Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var entity = await _writeDbContext.Set<T>().FirstOrDefaultAsync(entity => entity.Id == id, cancellationToken);
-        _writeDbContext.Set<T>().Remove(entity);
+        var entity = await _writeDbContext.Set<TEntity>().FirstOrDefaultAsync(entity => entity.Id == id, cancellationToken);
+        _writeDbContext.Set<TEntity>().Remove(entity);
     }
 
-    public async Task CreateAsyncInReadDbContextAsync(T entity, CancellationToken cancellationToken)
+    public async Task CreateAsyncInReadDbContextAsync(TEntity entity, CancellationToken cancellationToken)
     {
-        await _readDbContext.Set<T>().AddAsync(entity, cancellationToken);
+        await _readDbContext.Set<TEntity>().AddAsync(entity, cancellationToken);
     }
 
-    public Task UpdateAsyncInReadDbContextAsync(T entity, CancellationToken cancellationToken)
+    public Task UpdateAsyncInReadDbContextAsync(TEntity entity, CancellationToken cancellationToken)
     {
-        _readDbContext.Set<T>().Update(entity);
+        _readDbContext.Set<TEntity>().Update(entity);
 
         return Task.CompletedTask;
     }
 
     public async Task DeleteByIdAsyncInReadDbContextAsync(Guid id, CancellationToken cancellationToken)
     {
-        var entity = await _readDbContext.Set<T>().FirstOrDefaultAsync(entity => entity.Id == id, cancellationToken);
-        _readDbContext.Set<T>().Remove(entity);
+        var entity = await _readDbContext.Set<TEntity>().FirstOrDefaultAsync(entity => entity.Id == id, cancellationToken);
+        _readDbContext.Set<TEntity>().Remove(entity);
     }
 
-    public async Task<T?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<TEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        return await _readDbContext.Set<T>().FirstOrDefaultAsync(entity => entity.Id == id, cancellationToken);
+        return await _readDbContext.Set<TEntity>().FirstOrDefaultAsync(entity => entity.Id == id, cancellationToken);
     }
 
-    public async Task<IEnumerable<T>> GetAllAsync(PageSettingsRequestDto pageSettingsRequestDto, CancellationToken cancellationToken)
+    public async Task<IList<TView>> GetAllAsync(PageSettingsRequestDto pageSettingsRequestDto, CancellationToken cancellationToken)
     {
-        return await _readDbContext.Set<T>().Skip(pageSettingsRequestDto.SkipCount())
-            .Take(pageSettingsRequestDto.PageSize).ToListAsync(cancellationToken);
+        return await _readDbContext.Set<TEntity>().Skip(pageSettingsRequestDto.SkipCount())
+            .Take(pageSettingsRequestDto.PageSize).ProjectToType<TView>().ToListAsync(cancellationToken);
+    }
+
+    public async Task<IList<TEntity>> GetByAsync(Func<TEntity, bool> func, CancellationToken cancellationToken)
+    {
+       return await _readDbContext.Set<TEntity>().Where(entity => func(entity) == true).ToListAsync(cancellationToken);
     }
 
     public async Task SaveChangesAsync(CancellationToken cancellationToken)
@@ -62,6 +69,6 @@ public class BaseRepository<T>(WriteDbContext _writeDbContext, ReadDbContext _re
 
     public async Task<bool> IsExistByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        return await _readDbContext.Set<T>().FirstOrDefaultAsync(entity => entity.Id == id, cancellationToken) != null;
+        return await _readDbContext.Set<TEntity>().FirstOrDefaultAsync(entity => entity.Id == id, cancellationToken) != null;
     }
 }

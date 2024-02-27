@@ -1,5 +1,8 @@
+using Application.Abstractions;
 using Application.Abstractions.Repositories;
 using Application.Common;
+using Application.Results;
+using Application.Results.Errors;
 using Domain.Models;
 using MediatR;
 
@@ -15,28 +18,28 @@ public class StartReadingBookCommandHandler(IGroupsRepository _groupsRepository,
 
         if (group is null)
         {
-            return new Result<string>(new Error("Group not found", 404));
+            return new Result<string>(new NotFoundError("Group"));
         }
 
         var user = group.Members.FirstOrDefault(searchingUser => searchingUser.Id == command.RequestingUserId);
         
         if (user is null)
         {
-            return new Result<string>(new Error("You are not a member of this group", 400));
+            return new Result<string>(new BadRequestError("You aren't member of this group"));
         }
 
         var book = group.AllowedBooks.FirstOrDefault(searchingBook => searchingBook.Id == command.BookId);
         if (book is null)
         {
-            return new Result<string>(new Error("Book isn't allowed in this group", 404));
+            return new Result<string>(new BadRequestError("Book is not allowed in this group"));
         }
         
-        var progressByUserIdAndBookId = await _userBookProgressRepository
-            .GetProgressByUserIdBookIdAndGroupIdAsync(command.RequestingUserId ?? Guid.Empty, command.BookId, command.GroupId, cancellationToken);
-
-        if (progressByUserIdAndBookId is not null)
+        var progressesByUserIdAndBookId = await _userBookProgressRepository
+            .GetByAsync(progress => progress.BookId == command.BookId && command.GroupId == progress.GroupId, cancellationToken);
+        
+        if (progressesByUserIdAndBookId.Count != 0)
         {
-            return new Result<string>(new Error("You have already started reading this book", 400));
+            return new Result<string>(new BadRequestError("You have already started reading this book"));
         }
 
         var progress = new UserBookProgress();

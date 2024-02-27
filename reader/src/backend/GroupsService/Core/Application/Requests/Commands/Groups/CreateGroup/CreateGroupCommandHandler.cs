@@ -1,6 +1,9 @@
+using Application.Abstractions;
 using Application.Abstractions.Repositories;
 using Application.Common;
 using Application.Dtos.Views;
+using Application.Results;
+using Application.Results.Errors;
 using Domain.Models;
 using MapsterMapper;
 using MediatR;
@@ -17,7 +20,7 @@ public class CreateGroupCommandHandler(IGroupsRepository groupsRepository,
         
         if (admin is null)
         {
-            return new Result<GroupViewDto>(new Error("User not found", 404));
+            return new Result<GroupViewDto>(new NotFoundError("User"));
         }
 
         var group = new Group();

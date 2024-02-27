@@ -1,5 +1,8 @@
+using Application.Abstractions;
 using Application.Abstractions.Repositories;
 using Application.Common;
+using Application.Results;
+using Application.Results.Errors;
 using Domain.DomainEvents.UserProgresses;
 using MediatR;
 
@@ -11,18 +14,24 @@ public class RemoveBookFromUserReadingListCommandHandler
 {
     public async Task<Result<string>> Handle(RemoveBookFromUserCommandListRequest request, CancellationToken cancellationToken)
     {
-        var userBookProgress = await _userBookProgressRepository
-            .GetProgressByUserIdBookIdAndGroupIdAsync(request.RequestingUserId ?? Guid.Empty, request.BookId, request.GroupId, cancellationToken);
+        var userBookProgresses = await _userBookProgressRepository
+            .GetByAsync(userBookProgress =>
+                    userBookProgress.BookId == request.BookId
+                    && userBookProgress.UserId == request.RequestingUserId
+                    && userBookProgress.GroupId == request.GroupId,
+                cancellationToken);
 
-        if (userBookProgress is null)
+        var progress = userBookProgresses.First();
+        
+        if (progress is null)
         {
-            return new Result<string>(new Error("User book progress not found", 404));
+            return new Result<string>(new NotFoundError("Progress"));
         }   
         
-        userBookProgress.Delete(new UserBookProgressDeletedEvent(userBookProgress.Id));
-        await _userBookProgressRepository.DeleteByIdAsync(userBookProgress.Id, cancellationToken);
+        progress.Delete(new UserBookProgressDeletedEvent(progress.Id));
+        await _userBookProgressRepository.DeleteByIdAsync(progress.Id, cancellationToken);
         await _userBookProgressRepository.SaveChangesAsync(cancellationToken);
         
-        return new Result<string>("Book removed from reading list");
+        return new Result<string>();
     }
 }

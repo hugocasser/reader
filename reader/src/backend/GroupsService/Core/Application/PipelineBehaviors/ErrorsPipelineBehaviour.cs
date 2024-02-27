@@ -1,7 +1,7 @@
 using Application.Common;
 using MediatR;
 using Microsoft.AspNetCore.Http;
-using IResult = Application.Common.IResult;
+using IResult = Application.Abstractions.IResult;
 
 namespace Application.PipelineBehaviors;
 

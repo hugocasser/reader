@@ -24,7 +24,5 @@ public class CreateAuthorValidator : AbstractValidator<CreateAuthorRequestDto>
             .GreaterThanOrEqualTo(author => author.BirthDate)
             .WithMessage("Author death date can't be less than birth date")
             .NotEmpty().WithMessage("Author death date can't be null");
-        
-        
     }
 }

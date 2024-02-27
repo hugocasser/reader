@@ -1,6 +1,9 @@
+using Application.Abstractions;
 using Application.Abstractions.Repositories;
 using Application.Common;
 using Application.Dtos.Views;
+using Application.Results;
+using Application.Results.Errors;
 using MapsterMapper;
 using MediatR;
 
@@ -17,7 +20,7 @@ public class GetAllUserNotesQueryHandler
 
         if (user is null)
         {
-            return new Result<IEnumerable<NoteViewDto>>(new Error("User not found", 404));
+            return new Result<IEnumerable<NoteViewDto>>(new NotFoundError("User"));
         }
 
         var userNotes = new List<NoteViewDto>();

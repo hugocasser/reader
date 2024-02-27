@@ -1,4 +1,6 @@
-namespace Application.Common;
+using Application.Common;
+
+namespace Application.Abstractions;
 
 public interface IResult
 {

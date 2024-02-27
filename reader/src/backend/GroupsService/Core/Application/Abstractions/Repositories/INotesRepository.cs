@@ -4,8 +4,4 @@ using Domain.Models;
 
 namespace Application.Abstractions.Repositories;
 
-public interface INotesRepository : IBaseRepository<Note>
-{
-    public Task<List<Note>> GetNotesByGroupIdAndBookIdAsync(Guid groupId, Guid bookId,
-        CancellationToken cancellationToken);
-}
+public interface INotesRepository : IBaseRepository<Note, NoteViewDto>;

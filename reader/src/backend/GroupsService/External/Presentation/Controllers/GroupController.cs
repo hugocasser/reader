@@ -55,8 +55,8 @@ public class GroupController(ISender sender) : ApiController(sender)
         return Ok(await _sender.Send(request));
     }
 
-    [HttpPut]
-    [Route("{groupId}/books/rm")]
+    [HttpDelete]
+    [Route("{groupId}/books")]
     [Authorize]
     public async Task<IActionResult> RemoveBookFromGroup([FromBody]RemoveBookFromGroupCommand request)
     {
@@ -71,8 +71,8 @@ public class GroupController(ISender sender) : ApiController(sender)
         return Ok(await _sender.Send(request));
     }
 
-    [HttpPut]
-    [Route("{groupId}/users/rm")]
+    [HttpDelete]
+    [Route("{groupId}/users")]
     [Authorize]
     public async Task<IActionResult> RemoveUserFromGroup([FromBody]RemoveUserFromGroupCommand request)
     {
