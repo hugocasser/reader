@@ -9,29 +9,18 @@ using MongoDB.Driver;
 namespace Infrastructure.Persistence.Repositories;
 
 public class DecoratedBooksRepository(IBooksRepository _booksRepository,
-    IEventsRepository<Book> _eventsRepository,
-    IMongoClient _client) : IBooksRepository
+    IEventsRepository<Book> _eventsRepository) : IBooksRepository
 {
     public async Task UpdateAsync(Book entity, CancellationToken cancellationToken)
     {
-        using var session = await _client.StartSessionAsync(cancellationToken: cancellationToken);
-        session.StartTransaction();
-        
         await _booksRepository.UpdateAsync(entity, cancellationToken);
         await _eventsRepository.AddEventAsync(new GenericDomainEvent<Book>(entity, EventType.Updated), cancellationToken);
-        
-        await session.CommitTransactionAsync(cancellationToken);
     }
 
     public async Task AddAsync(Book entity, CancellationToken cancellationToken)
     {
-        using var session = await _client.StartSessionAsync(cancellationToken: cancellationToken);
-        session.StartTransaction();
-        
         await _booksRepository.AddAsync(entity, cancellationToken);
         await _eventsRepository.AddEventAsync(new GenericDomainEvent<Book>(entity, EventType.Created), cancellationToken);
-        
-        await session.CommitTransactionAsync(cancellationToken);
     }
 
     public Task<IEnumerable<Book>> GetAllAsync(PageSettingRequestDto pageSettingRequestDto, CancellationToken cancellationToken)
@@ -41,14 +30,9 @@ public class DecoratedBooksRepository(IBooksRepository _booksRepository,
 
     public async Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        using var session = await _client.StartSessionAsync(cancellationToken: cancellationToken);
-        session.StartTransaction();
-        
         await _booksRepository.DeleteByIdAsync(id, cancellationToken);
         await _eventsRepository.AddEventAsync(new GenericDomainEvent<Book>
             (new Book {Id = id}, EventType.Deleted), cancellationToken);
-        
-        await session.CommitTransactionAsync(cancellationToken);
     }
 
     public Task<Entity?> GetByIdAsync(Guid id, CancellationToken cancellationToken)

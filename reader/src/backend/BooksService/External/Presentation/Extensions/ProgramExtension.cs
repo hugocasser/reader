@@ -19,6 +19,7 @@ public static class ProgramExtension
             .AddServices()
             .AddTokenOptions()
             .AddElasticOptions()
+            .AddKafkaProducer()
             .AddIdentity(builder.Configuration)
             .AddOptions()
             .AddBackgroundJobs()

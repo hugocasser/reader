@@ -1,9 +1,11 @@
 using Application.Abstractions.Repositories;
+using Application.Abstractions.Services;
 using Domain.Models;
 using Infrastructure.BackgroundJobs;
 using Infrastructure.Options;
 using Infrastructure.Persistence;
 using Infrastructure.Persistence.Repositories;
+using Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
 using Quartz;
@@ -20,6 +22,17 @@ public static class InfrastuctureInjection
         
         return services;
     }
+    
+    public static IServiceCollection AddKafkaProducer(this IServiceCollection services)
+    {
+        services.AddScoped<IKafkaProducerService<Book>, KafkaProducerService>();
+        services.AddOptions<KafkaProducerOptions>()
+            .BindConfiguration(nameof(KafkaProducerOptions))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+        
+        return services;
+    }
 
     public static IServiceCollection AddRepositories(this IServiceCollection services)
     {
@@ -28,16 +41,6 @@ public static class InfrastuctureInjection
         services.AddScoped<IAuthorsRepository, AuthorsRepository>();
         services.AddScoped<IEventsRepository<Book>, EventsRepository>();
         services.Decorate<IBooksRepository, DecoratedBooksRepository>();
-        
-        return services;
-    }
-
-    private static IServiceCollection AddOptions(this IServiceCollection services)
-    {
-        services.AddOptions<MongoOptions>()
-            .BindConfiguration(nameof(MongoOptions))
-            .ValidateDataAnnotations()
-            .ValidateOnStart();
         
         return services;
     }
@@ -52,11 +55,21 @@ public static class InfrastuctureInjection
                 .AddTrigger(trigger =>
                     trigger.ForJob(jobKey)
                         .WithSimpleSchedule(schedule =>
-                            schedule.WithIntervalInSeconds(10).RepeatForever())); 
+                            schedule.WithIntervalInSeconds(50).RepeatForever())); 
             configure.UseMicrosoftDependencyInjectionJobFactory();
         });
 
         services.AddQuartzHostedService();
+        
+        return services;
+    }
+    
+    private static IServiceCollection AddOptions(this IServiceCollection services)
+    {
+        services.AddOptions<MongoOptions>()
+            .BindConfiguration(nameof(MongoOptions))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
         
         return services;
     }
