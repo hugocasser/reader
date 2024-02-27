@@ -1,5 +1,8 @@
+using Application.Abstractions;
 using Application.Abstractions.Repositories;
 using Application.Common;
+using Application.Results;
+using Application.Results.Errors;
 using Domain.DomainEvents.Groups;
 using MediatR;
 
@@ -14,12 +17,12 @@ public class DeleteGroupCommandHandler(IGroupsRepository groupsRepository)
 
         if (group is null)
         {
-            return new Result<string>(new Error("Group not found", 404));
+            return new Result<string>(new NotFoundError("Group"));
         }
 
         if (command.RequestingUserId != group.AdminId)
         {
-            return new Result<string>(new Error("You are not admin of this group", 400));
+            return new Result<string>(new BadRequestError("You are not admin"));
         }
         
         group.Delete(new GroupDeletedEvent(group.Id));
@@ -27,6 +30,6 @@ public class DeleteGroupCommandHandler(IGroupsRepository groupsRepository)
         await groupsRepository.DeleteByIdAsync(command.GroupId, cancellationToken);
         await groupsRepository.SaveChangesAsync(cancellationToken);
         
-        return new Result<string>("Group deleted");
+        return new Result<string>();
     }
 }

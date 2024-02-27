@@ -1,4 +1,5 @@
 using Application.Abstractions.Repositories;
+using Application.Dtos.Views;
 using Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,7 +7,7 @@ namespace Infrastructure.Persistence.Repositories;
 
 public class UserBookProgressRepository
     (WriteDbContext _writeDbContext, ReadDbContext _readDbContext)
-    : BaseRepository<UserBookProgress>(_writeDbContext, _readDbContext), IUserBookProgressRepository
+    : BaseRepository<UserBookProgress, ProgressViewDto>(_writeDbContext, _readDbContext), IUserBookProgressRepository
 {
     public async Task<IEnumerable<UserBookProgress>> GetProgressesByGroupIdAsync
         (Guid groupId, CancellationToken cancellationToken)

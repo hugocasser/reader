@@ -1,12 +1,13 @@
 using Application.Abstractions.Repositories;
 using Application.Dtos.Requests;
+using Application.Dtos.Views;
 using Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence.Repositories;
 
 public class GroupsRepository(WriteDbContext _writeDbContext, ReadDbContext _readDbContext)
-    : BaseRepository<Group>(_writeDbContext, _readDbContext), IGroupsRepository
+    : BaseRepository<Group, GroupViewDto>(_writeDbContext, _readDbContext), IGroupsRepository
 {
     public async Task<IEnumerable<Tuple<Note, User>>> GetGroupNotesAsync
         (Guid groupId, ReadingPageSettingsRequestDto pageSettingsRequestDto, CancellationToken cancellationToken)

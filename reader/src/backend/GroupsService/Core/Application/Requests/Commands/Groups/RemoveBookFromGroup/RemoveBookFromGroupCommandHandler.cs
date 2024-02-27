@@ -1,5 +1,8 @@
+using Application.Abstractions;
 using Application.Abstractions.Repositories;
 using Application.Common;
+using Application.Results;
+using Application.Results.Errors;
 using MediatR;
 
 namespace Application.Requests.Commands.Groups.RemoveBookFromGroup;
@@ -14,19 +17,19 @@ public class RemoveBookFromGroupCommandHandler(IGroupsRepository _groupsReposito
         
         if (group is null)
         {
-            return new Result<string>(new Error("Group not found", 404));
+            return new Result<string>(new NotFoundError("Group"));
         }
 
         if (command.RequestingUserId != group.AdminId)
         {
-            return new Result<string>(new Error("You are not admin of this group", 400));
+            return new Result<string>(new BadRequestError("You are not admin"));
         }
 
         var book = group.AllowedBooks.FirstOrDefault(book => book.Id == command.BookId);
         
         if ( book is null)
         {
-            return new Result<string>(new Error("Book isn't allowed in this group", 404));
+            return new Result<string>(new BadRequestError("Book is not allowed in this group"));
         }
 
         group.RemoveBook(book);
@@ -34,6 +37,6 @@ public class RemoveBookFromGroupCommandHandler(IGroupsRepository _groupsReposito
         await _groupsRepository.UpdateAsync(group, cancellationToken);
         await _groupsRepository.SaveChangesAsync(cancellationToken);
         
-        return new Result<string>("Book removed from group");
+        return new Result<string>();
     }
 }

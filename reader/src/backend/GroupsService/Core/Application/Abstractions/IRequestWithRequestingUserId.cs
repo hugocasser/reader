@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Application.Common;
+namespace Application.Abstractions;
 
 public interface IRequestWithRequestingUserId
 {

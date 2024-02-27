@@ -1,7 +1,10 @@
+using Application.Abstractions;
 using Application.Abstractions.Repositories;
 using Application.Common;
 using Application.Dtos.Views;
 using Application.Requests.Queries.Notes.GetNoteById;
+using Application.Results;
+using Application.Results.Errors;
 using MapsterMapper;
 using MediatR;
 
@@ -15,12 +18,12 @@ public class GetNoteByIdQueryHandler(INotesRepository _notesRepository, IUsersRe
 
         if (note is null)
         {
-            return new Result<NoteViewDto>(new Error("Note not found", 404));
+            return new Result<NoteViewDto>(new NotFoundError("Note"));
         }
 
         if (note.UserBookProgress.User.Id != request.RequestingUserId)
         {
-            return new Result<NoteViewDto>(new Error("You are not the owner of this note", 400));
+            return new Result<NoteViewDto>(new BadRequestError("You are not owner of this note"));
         }
         
         var user = await _usersRepository.GetByIdAsync(request.RequestingUserId ??Guid.Empty, cancellationToken);

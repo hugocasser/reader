@@ -1,5 +1,8 @@
+using Application.Abstractions;
 using Application.Abstractions.Repositories;
 using Application.Common;
+using Application.Results;
+using Application.Results.Errors;
 using Domain.DomainEvents.UserProgresses;
 using MediatR;
 
@@ -16,13 +19,13 @@ public class RemoveBookFromUserReadingListCommandHandler
 
         if (userBookProgress is null)
         {
-            return new Result<string>(new Error("User book progress not found", 404));
+            return new Result<string>(new NotFoundError("Progress"));
         }   
         
         userBookProgress.Delete(new UserBookProgressDeletedEvent(userBookProgress.Id));
         await _userBookProgressRepository.DeleteByIdAsync(userBookProgress.Id, cancellationToken);
         await _userBookProgressRepository.SaveChangesAsync(cancellationToken);
         
-        return new Result<string>("Book removed from reading list");
+        return new Result<string>();
     }
 }

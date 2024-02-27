@@ -1,6 +1,9 @@
+using Application.Abstractions;
 using Application.Abstractions.Repositories;
 using Application.Common;
 using Application.Dtos.Views;
+using Application.Results;
+using Application.Results.Errors;
 using MapsterMapper;
 using MediatR;
 
@@ -15,12 +18,12 @@ public class GetProgressByIdQueryHandler
 
         if (progress is null)
         {
-            return new Result<ProgressViewDto>(new Error("Progress Not Found", 404));
+            return new Result<ProgressViewDto>(new NotFoundError("Progress"));
         }
 
         if (progress.UserId != query.RequestingUserId)
         {
-            return new Result<ProgressViewDto>(new Error("You are not owner of this progress", 400));
+            return new Result<ProgressViewDto>(new BadRequestError("You are not owner of this progress"));
         }
 
         return new Result<ProgressViewDto>(

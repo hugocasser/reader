@@ -1,5 +1,8 @@
+using Application.Abstractions;
 using Application.Abstractions.Repositories;
 using Application.Common;
+using Application.Results;
+using Application.Results.Errors;
 using MediatR;
 
 namespace Application.Requests.Commands.Groups.AddBookToGroup;
@@ -14,24 +17,24 @@ public class AddBookToGroupCommandHandler(IBooksRepository _booksRepository,
 
         if (bookToAdd is null)
         {
-            return new Result<string>(new Error("Book not found", 404));
+            return new Result<string>(new NotFoundError("Book"));
         }
         
         var group = await _groupsRepository.GetByIdAsync(command.GroupId, cancellationToken);
 
         if (group is null)
         {
-            return new Result<string>(new Error("Group not found", 404));
+            return new Result<string>(new NotFoundError("group"));
         }
 
         if (command.RequestingUserId != group.AdminId)
         {
-            return new Result<string>(new Error("Only admin can add books to group", 400));
+            return new Result<string>(new BadRequestError("Only admin can add books to group"));
         }
         
         if (group.AllowedBooks.Any(book => book.Id == command.BookId))
         {
-            return new Result<string>(new Error("Book is already allowed in this group", 400));
+            return new Result<string>(new BadRequestError("Book is already allowed in this group"));
         }
         
         group.AddBook(bookToAdd);
@@ -39,6 +42,6 @@ public class AddBookToGroupCommandHandler(IBooksRepository _booksRepository,
         await _groupsRepository.UpdateAsync(group, cancellationToken);
         await _groupsRepository.SaveChangesAsync(cancellationToken);
         
-        return new Result<string>("Book added to group");
+        return new Result<string>();
     }
 }

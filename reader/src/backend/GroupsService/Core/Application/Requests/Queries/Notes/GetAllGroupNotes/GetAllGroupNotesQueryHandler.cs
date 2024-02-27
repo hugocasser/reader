@@ -1,6 +1,9 @@
+using Application.Abstractions;
 using Application.Abstractions.Repositories;
 using Application.Common;
 using Application.Dtos.Views;
+using Application.Results;
+using Application.Results.Errors;
 using MapsterMapper;
 using MediatR;
 
@@ -14,12 +17,12 @@ public class GetAllGroupNotesQueryHandler(IGroupsRepository _groupsRepository, I
 
         if (group is null)
         {
-            return new Result<IEnumerable<NoteViewDto>>(new Error("Group not found", 404));
+            return new Result<IEnumerable<NoteViewDto>>(new NotFoundError("Group"));
         }
         
         if (group.Members.All(user => user.Id != query.RequestingUserId))
         {
-            return new Result<IEnumerable<NoteViewDto>>(new Error("You are not a member of this group", 400));
+            return new Result<IEnumerable<NoteViewDto>>(new BadRequestError("You aren't member of this group"));
         }
         
         var usersNotes = await _groupsRepository.GetGroupNotesAsync(query.GroupId, query.PageSettingsRequestDto, cancellationToken);

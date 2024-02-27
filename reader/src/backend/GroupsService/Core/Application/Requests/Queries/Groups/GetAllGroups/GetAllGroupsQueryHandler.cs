@@ -1,6 +1,9 @@
 using Application.Abstractions.Repositories;
 using Application.Common;
 using Application.Dtos.Views;
+using Application.Results;
+using Domain.Models;
+using Mapster;
 using MapsterMapper;
 using MediatR;
 

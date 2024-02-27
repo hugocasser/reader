@@ -1,6 +1,9 @@
+using Application.Abstractions;
 using Application.Abstractions.Repositories;
 using Application.Common;
 using Application.Dtos.Views;
+using Application.Results;
+using Application.Results.Errors;
 using MapsterMapper;
 using MediatR;
 
@@ -15,12 +18,12 @@ public class UpdateGroupNameCommandHandler(IGroupsRepository groupsRepository, I
 
         if (group is null)
         {
-            return new Result<GroupViewDto>(new Error("Group not found", 404));
+            return new Result<GroupViewDto>(new NotFoundError("Group"));
         }
         
         if (command.RequestingUserId != group.AdminId)
         {
-            return new Result<GroupViewDto>(new Error("You are not admin of this group", 400));
+            return new Result<GroupViewDto>(new BadRequestError("You are not a admin"));
         }
         
         group.UpdateGroupName(command.Name);

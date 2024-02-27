@@ -1,6 +1,8 @@
 using System.Text.Json;
+using Application.Abstractions;
+using Application.Common;
 
-namespace Application.Common;
+namespace Application.Results;
 
 public class Result<T> : IResult where T : class
 {
@@ -24,5 +26,11 @@ public class Result<T> : IResult where T : class
     {
         IsSuccess = true;
         Response = response;
+    }
+
+    public Result()
+    {
+        IsSuccess = true;
+        Response = null;
     }
 }

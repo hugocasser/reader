@@ -1,9 +1,11 @@
+using System.Collections;
 using Application.Abstractions.Repositories;
 using Application.Abstractions.Services;
 using Application.Abstractions.Services.Cache;
 using Application.Dtos.Views;
 using Domain.Models;
 using Infrastructure.Common;
+using Mapster;
 
 namespace Infrastructure.Persistence.Repositories;
 
@@ -45,9 +47,15 @@ public class CashedNotesRepository(INotesRepository _notesRepository, IRedisCach
             async () => await _notesRepository.GetByIdAsync(id, cancellationToken));
     }
 
-    public Task<IEnumerable<Note>> GetAllAsync(PageSettingsRequestDto pageSettingsRequestDto, CancellationToken cancellationToken)
+    public Task<IList<NoteViewDto>> GetAllAsync(PageSettingsRequestDto pageSettingsRequestDto,
+        CancellationToken cancellationToken)
     {
         return _notesRepository.GetAllAsync(pageSettingsRequestDto, cancellationToken);
+    }
+
+    public Task<IList> GetByAsync(Func<Note, bool> func, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
     }
 
     public Task SaveChangesAsync(CancellationToken cancellationToken)

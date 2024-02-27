@@ -18,6 +18,41 @@ namespace Infrastructure;
 
 public static class InfrastructureInjection
 {
+    public static IServiceCollection AddDbContext(this IServiceCollection services, DbOptions dbOptions)
+    {
+        services.AddSingleton<ConvertDomainEventsToOutboxMessagesInterceptor>();
+        services.AddReadDbContext(dbOptions);
+        services.AddWriteDbContext(dbOptions);
+        services.AddJobs();
+        
+        return services;
+    }
+    public static IServiceCollection AddRedisCache(this IServiceCollection services, IConfiguration configuration)
+    {
+        var redisOptions = new RedisOptions();
+        configuration.GetSection(nameof(RedisOptions)).Bind(redisOptions);
+        services.AddSingleton(MicrosoftOptions.Create(redisOptions));
+        
+        services.AddSingleton<IConnectionMultiplexer, ConnectionMultiplexer>(provider => 
+            provider.GetService<ConnectionMultiplexer>() 
+            ?? ConnectionMultiplexer.Connect(redisOptions.ConnectionString));
+        
+        services.AddSingleton<IRedisCacheService, RedisCacheService>();
+        
+        return services;
+    }
+
+    public static IServiceCollection AddRepositories(this IServiceCollection services)
+    {
+        services.AddScoped<IUsersRepository, UserRepository>();
+        services.AddScoped<IGroupsRepository, GroupsRepository>();
+        services.AddScoped<INotesRepository, NotesRepository>();
+        services.AddScoped<IBooksRepository, BooksRepository>();
+        services.AddScoped<IUserBookProgressRepository, UserBookProgressRepository>();
+        services.Decorate<INotesRepository, CashedNotesRepository>();
+        
+        return services;
+    }
     private static IServiceCollection AddReadDbContext(this IServiceCollection services, DbOptions dbOption)
     {
         services.AddDbOptions();
@@ -70,21 +105,6 @@ public static class InfrastructureInjection
             Cron.Minutely);
     }
     
-    public static IServiceCollection AddRedisCache(this IServiceCollection services, IConfiguration configuration)
-    {
-        var redisOptions = new RedisOptions();
-        configuration.GetSection(nameof(RedisOptions)).Bind(redisOptions);
-        services.AddSingleton(MicrosoftOptions.Create(redisOptions));
-        
-        services.AddSingleton<IConnectionMultiplexer, ConnectionMultiplexer>(provider => 
-            provider.GetService<ConnectionMultiplexer>() 
-            ?? ConnectionMultiplexer.Connect(redisOptions.ConnectionString));
-        
-        services.AddSingleton<IRedisCacheService, RedisCacheService>();
-        
-        return services;
-    }
-    
     private static IServiceCollection AddDbOptions(this IServiceCollection services)
     {
         services.AddOptions<DbOptions>()
@@ -94,27 +114,4 @@ public static class InfrastructureInjection
         
         return services;
     }
-    
-    public static IServiceCollection AddDbContext(this IServiceCollection services, DbOptions dbOptions)
-    {
-        services.AddSingleton<ConvertDomainEventsToOutboxMessagesInterceptor>();
-        services.AddReadDbContext(dbOptions);
-        services.AddWriteDbContext(dbOptions);
-        services.AddJobs();
-        
-        return services;
-    }
-
-    public static IServiceCollection AddRepositories(this IServiceCollection services)
-    {
-        services.AddScoped<IUsersRepository, UserRepository>();
-        services.AddScoped<IGroupsRepository, GroupsRepository>();
-        services.AddScoped<INotesRepository, NotesRepository>();
-        services.AddScoped<IBooksRepository, BooksRepository>();
-        services.AddScoped<IUserBookProgressRepository, UserBookProgressRepository>();
-        services.Decorate<INotesRepository, CashedNotesRepository>();
-        
-        return services;
-    }
-    
 }
