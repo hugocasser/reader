@@ -9,4 +9,9 @@ public class PageSettingRequestDto(int page, int size)
     {
         return (PageNumber - 1) * PageSize;
     }
+
+    public static PageSettingRequestDto DefaultSettings()
+    {
+        return new PageSettingRequestDto(100, 100);
+    }
 }

@@ -5,7 +5,7 @@ using MongoDB.Driver;
 
 namespace Infrastructure.Abstractions;
 
-public class BaseRepository<T>(IMongoCollection<T> _entities) : IBaseRepository<T> where T : IEntity
+public abstract class BaseRepository<T>(IMongoCollection<T> _entities) : IBaseRepository<T> where T : Entity
 {
     public async Task UpdateAsync(T entity, CancellationToken cancellationToken)
     {
@@ -29,7 +29,7 @@ public class BaseRepository<T>(IMongoCollection<T> _entities) : IBaseRepository<
         await _entities.DeleteOneAsync(entity => entity.Id == id, cancellationToken: cancellationToken);
     }
 
-    public async Task<IEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<Entity?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         return await _entities.Find(entity => entity.Id == id).FirstOrDefaultAsync(cancellationToken); 
     }
