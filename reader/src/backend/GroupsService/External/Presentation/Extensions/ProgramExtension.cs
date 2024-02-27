@@ -3,6 +3,7 @@ using FluentValidation.AspNetCore;
 using Infrastructure;
 using Infrastructure.Options;
 using Infrastructure.Persistence;
+using Infrastructure.Services;
 using Mapster;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.EntityFrameworkCore;
@@ -39,6 +40,8 @@ public static class ProgramExtension
 
         builder.Services.AddSignalR();
         builder.Services.AddMapster();
+        builder.Services.AddGrpc();
+        
         builder.AddLoggingServices();
         
         return builder;
@@ -83,6 +86,7 @@ public static class ProgramExtension
         app.UseCors("AllowAll");
         app.MapControllers();
         app.MapHub<NotesHub>("/notesHub");
+        app.MapGrpcService<GrpcUsersService>();
         
         return app;
     }
