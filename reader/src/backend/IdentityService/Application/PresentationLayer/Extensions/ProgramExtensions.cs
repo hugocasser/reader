@@ -2,6 +2,7 @@ using System.Reflection;
 using BusinessLogicLayer;
 using DataAccessLayer;
 using DataAccessLayer.Persistence;
+using Mapster;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -27,7 +28,9 @@ public static class ProgramExtensions
             .AddCors(options => options.ConfigureAllowAllCors())
             .AddEndpointsApiExplorer()
             .AddControllers();
-        
+
+        builder.Services.AddGrpc();
+        builder.Services.AddMapster();
         builder.AddLoggingServices();
         
         return builder;

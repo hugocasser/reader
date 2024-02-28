@@ -2,12 +2,16 @@ using BusinessLogicLayer.Abstractions.Dtos.RequestsDtos;
 using BusinessLogicLayer.Abstractions.Dtos.ViewDtos;
 using BusinessLogicLayer.Abstractions.Services.AuthServices;
 using BusinessLogicLayer.Abstractions.Services.DataServices;
+using BusinessLogicLayer.Abstractions.Services.Grpc;
 using BusinessLogicLayer.Common;
 using BusinessLogicLayer.Exceptions;
+using BusinessLogicLayer.Options;
 using DataAccessLayer.Abstractions.Repositories;
 using DataAccessLayer.Models;
+using Grpc.Net.Client;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace BusinessLogicLayer.Services.DataServices;
 
@@ -16,7 +20,8 @@ public class UsersService(
     IAuthTokenGeneratorService _authService,
     IRefreshTokenGeneratorService _refreshTokenService,
     IRefreshTokensRepository _refreshTokensRepository,
-    IEmailConfirmMessageService _emailConfirmMessageService)
+    IEmailConfirmMessageService _emailConfirmMessageService,
+    IGrpcUserService _grpcUserService)
     : IUsersService
 {
     public async Task RegisterUserAsync(RegisterUserRequestDto request, CancellationToken cancellationToken)
@@ -27,6 +32,7 @@ public class UsersService(
         Utilities.AggregateIdentityErrorsAndThrow(result);
         Utilities.AggregateIdentityErrorsAndThrow(await _usersManager.AddToRoleAsync(user, EnumRoles.User.ToString()));
         
+        await _grpcUserService.SendUserCreatedAsync(user);
         await _emailConfirmMessageService.SendEmailConfirmMessageAsync(user);
     }
 
@@ -39,7 +45,7 @@ public class UsersService(
         {
             viewUserDtos.Add(ViewUserDto.MapFromModel(user, await _usersManager.GetRolesAsync(user)));
         }
-
+        
         return viewUserDtos;
     }
 
@@ -66,6 +72,8 @@ public class UsersService(
         
         var result = await _usersManager.DeleteAsync(user);
         Utilities.AggregateIdentityErrorsAndThrow(result);
+        
+        await _grpcUserService.SendUserDeletedAsync(user);
     }
     public async Task UpdateUserAsync(UpdateUserRequestDto updateUserRequest, CancellationToken cancellationToken)
     {
@@ -86,6 +94,8 @@ public class UsersService(
         
         var result = await _usersManager.UpdateAsync(user);
         Utilities.AggregateIdentityErrorsAndThrow(result);
+        
+        await _grpcUserService.SendUserUpdatedAsync(user);
     }
 
     public async Task<AuthTokens> LoginUserAsync(LoginUserRequestDto loginUserRequestDto, CancellationToken cancellationToken)

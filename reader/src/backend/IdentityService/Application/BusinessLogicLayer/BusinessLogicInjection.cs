@@ -1,9 +1,11 @@
 using System.Reflection;
 using BusinessLogicLayer.Abstractions.Services.AuthServices;
 using BusinessLogicLayer.Abstractions.Services.DataServices;
+using BusinessLogicLayer.Abstractions.Services.Grpc;
 using BusinessLogicLayer.Options;
 using BusinessLogicLayer.Services.AuthServices;
 using BusinessLogicLayer.Services.DataServices;
+using BusinessLogicLayer.Services.Grpc;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -45,7 +47,8 @@ public static class BusinessLogicInjection
         serviceCollection.UseAuthenticationServices();
         serviceCollection.UseEmailServices();
         serviceCollection.UseValidation();
-
+        serviceCollection.AddScoped<IGrpcUserService, GrpcUsersService>();
+        
         return serviceCollection;
     }
 
@@ -75,13 +78,23 @@ public static class BusinessLogicInjection
         
         return serviceCollection;
     }
+
+    private static IServiceCollection AddGrpcOptions(this IServiceCollection services)
+    {
+        services.AddOptions<GrpcOptions>()
+            .BindConfiguration(nameof(GrpcOptions))
+            .ValidateOnStart();
+        
+        return services;
+    }
     
     private static IServiceCollection AddOptions
         (this IServiceCollection serviceCollection)
     {
         return serviceCollection
             .AddTokenGenerationOptions()
-            .AddEmailMessageSenderOptions();
+            .AddEmailMessageSenderOptions()
+            .AddGrpcOptions();
     }
 
 }

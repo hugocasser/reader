@@ -1,9 +1,9 @@
 syntax = "proto3";
 
-option csharp_namespace = "Infrastructure";
+option csharp_namespace = "BusinessLogicLayer";
 package userService;
 
-service UsersService{
+service GrpcUsers{
   rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
   rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse);
   rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse);
