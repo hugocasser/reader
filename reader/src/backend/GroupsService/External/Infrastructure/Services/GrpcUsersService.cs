@@ -10,6 +10,8 @@ public class GrpcUsersService(ILogger<GrpcUsersService> _logger, IUsersRepositor
 {
     public override async Task<CreateUserResponse> CreateUser(CreateUserRequest request, ServerCallContext context)
     {
+        _logger.LogInformation("--> Grpc request started: CreateUser()...");
+            
         var user = new User
         {
             Id = Guid.Parse(request.UserId)
@@ -19,15 +21,17 @@ public class GrpcUsersService(ILogger<GrpcUsersService> _logger, IUsersRepositor
         await _usersRepository.CreateAsync(user, context.CancellationToken);
         await _usersRepository.SaveChangesAsync(context.CancellationToken);
         
+        _logger.LogInformation("--> Grpc request finished: CreateUser()...");
+        
         return  new CreateUserResponse
         {
-            UserId = user.Id.ToString()
+            Success = true
         };
-        
     }
 
     public override async Task<UpdateUserResponse> UpdateUser(UpdateUserRequest request, ServerCallContext context)
     {
+        _logger.LogInformation("--> Grpc request started: UpdateUser()...");
         var user = new User
         {
             Id = Guid.Parse(request.UserId)
@@ -37,19 +41,26 @@ public class GrpcUsersService(ILogger<GrpcUsersService> _logger, IUsersRepositor
         await _usersRepository.UpdateAsync(user, context.CancellationToken);
         await _usersRepository.SaveChangesAsync(context.CancellationToken);
         
+        _logger.LogInformation("--> Grpc request finished: UpdateUser()...");
+        
         return new UpdateUserResponse
         {
-            UserId = user.Id.ToString()
+            Success = true
         };
     }
 
     public override async Task<DeleteUserResponse> DeleteUser(DeleteUserRequest request, ServerCallContext context)
     {
+        _logger.LogInformation("--> Grpc request started: DeleteUser()...");
+        
         await _usersRepository.DeleteByIdAsync(Guid.Parse(request.UserId), context.CancellationToken);
         await _usersRepository.SaveChangesAsync(context.CancellationToken);
+        
+        _logger.LogInformation("--> Grpc request finished: DeleteUser()...");
+        
         return new DeleteUserResponse
         {
-            UserId = request.UserId
+            Success = true
         };
     } 
 }
