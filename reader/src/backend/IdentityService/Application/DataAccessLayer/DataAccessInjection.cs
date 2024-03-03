@@ -6,6 +6,7 @@ using DataAccessLayer.Persistence;
 using DataAccessLayer.Persistence.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MicrosoftOptions = Microsoft.Extensions.Options.Options;
 
@@ -23,13 +24,10 @@ public static class DataAccessInjection
     }
 
     public static IServiceCollection AddDbContext
-    (this IServiceCollection serviceCollection)
+    (this IServiceCollection serviceCollection, IConfiguration configuration)
     {
         var databaseOptions = new DataBaseOption();
-        serviceCollection.AddOptions<DataBaseOption>()
-            .BindConfiguration(nameof(DataBaseOption));
-        
-        serviceCollection.AddSingleton(MicrosoftOptions.Create(databaseOptions));
+        configuration.GetSection(nameof(DataBaseOption)).Bind(databaseOptions);
         
         serviceCollection.AddSqlServerDatabase(databaseOptions.ConnectionString);
         

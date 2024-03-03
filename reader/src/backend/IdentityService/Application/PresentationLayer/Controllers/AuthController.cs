@@ -11,7 +11,7 @@ public class AuthController(IUsersService _usersService, IRefreshTokensService _
 {
     [HttpPost]
     [Route("login")]
-    public async Task<IActionResult> LoginAsync([FromBody]LoginUserRequestDto loginRequestDto,
+    public async Task<IActionResult> LoginUserAsync([FromBody]LoginUserRequestDto loginRequestDto,
         CancellationToken cancellationToken)
     {
         return Ok(await _usersService.LoginUserAsync(loginRequestDto, cancellationToken));
@@ -19,7 +19,7 @@ public class AuthController(IUsersService _usersService, IRefreshTokensService _
 
     [HttpPost]
     [Route("register")]
-    public async Task<IActionResult> RegisterAsync([FromBody]RegisterUserRequestDto registerUserRequestDto,
+    public async Task<IActionResult> RegisterUserAsync([FromBody]RegisterUserRequestDto registerUserRequestDto,
         CancellationToken cancellationToken)
     {
         await _usersService.RegisterUserAsync(registerUserRequestDto, cancellationToken);
