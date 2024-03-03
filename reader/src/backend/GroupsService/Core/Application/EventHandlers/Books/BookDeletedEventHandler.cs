@@ -2,7 +2,7 @@ using Application.Abstractions.Repositories;
 using Domain.DomainEvents.Books;
 using MediatR;
 
-namespace Application.Events.Books;
+namespace Application.EventHandlers.Books;
 
 public class BookDeletedEventHandler(IBooksRepository _booksRepository) : INotificationHandler<BookDeletedEvent>
 {

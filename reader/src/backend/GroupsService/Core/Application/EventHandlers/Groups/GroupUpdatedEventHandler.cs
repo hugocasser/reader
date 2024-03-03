@@ -2,7 +2,7 @@ using Application.Abstractions.Repositories;
 using Domain.DomainEvents.Groups;
 using MediatR;
 
-namespace Application.Events.Groups;
+namespace Application.EventHandlers.Groups;
 
 public class GroupUpdatedEventHandler(IGroupsRepository _groupsRepository) : INotificationHandler<GroupUpdatedEvent>
 {

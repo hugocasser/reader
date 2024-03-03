@@ -2,7 +2,7 @@ using Application.Abstractions.Repositories;
 using Domain.DomainEvents.Users;
 using MediatR;
 
-namespace Application.Events.Users;
+namespace Application.EventHandlers.Users;
 
 public class UserDeletedEventHandler(IUsersRepository _usersRepository) : INotificationHandler<UserDeletedEvent>
 {

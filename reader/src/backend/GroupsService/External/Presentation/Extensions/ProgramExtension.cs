@@ -46,20 +46,6 @@ public static class ProgramExtension
         
         return builder;
     }
-
-    private static IServiceCollection UseClaimsServices(this IServiceCollection services)
-    {
-        services.AddHttpContextAccessor();
-        
-        return services;
-    }
-    
-    private static IApplicationBuilder UseCustomExceptionHandler(this IApplicationBuilder webApplication)
-    {
-        webApplication.UseMiddleware<CustomExceptionHandlerMiddleware>();
-        
-        return webApplication;
-    }
     
     public static WebApplication ConfigureApplication(this WebApplication app)
     {
@@ -90,17 +76,6 @@ public static class ProgramExtension
         
         return app;
     }
-    private static CorsOptions ConfigureAllowAllCors(this CorsOptions options)
-    {
-        options.AddPolicy("AllowAll", policy =>
-        {
-            policy.AllowAnyHeader();
-            policy.AllowAnyMethod();
-            policy.AllowAnyOrigin();
-        });
-
-        return options;
-    }
     
     public static async Task<WebApplication> RunApplicationAsync(this WebApplication app)
     {
@@ -111,6 +86,7 @@ public static class ProgramExtension
         {
             var readDbContext = serviceProvider.GetRequiredService<ReadDbContext>();
             var writeDbContext = serviceProvider.GetRequiredService<WriteDbContext>();
+            
             await readDbContext.Database.MigrateAsync();
             await writeDbContext.Database.MigrateAsync();
             await app.RunAsync();
@@ -148,5 +124,31 @@ public static class ProgramExtension
             .ValidateOnStart();
         
         return serviceCollection;
+    }
+    
+    private static CorsOptions ConfigureAllowAllCors(this CorsOptions options)
+    {
+        options.AddPolicy("AllowAll", policy =>
+        {
+            policy.AllowAnyHeader();
+            policy.AllowAnyMethod();
+            policy.AllowAnyOrigin();
+        });
+
+        return options;
+    }
+    
+    private static IServiceCollection UseClaimsServices(this IServiceCollection services)
+    {
+        services.AddHttpContextAccessor();
+        
+        return services;
+    }
+    
+    private static IApplicationBuilder UseCustomExceptionHandler(this IApplicationBuilder webApplication)
+    {
+        webApplication.UseMiddleware<CustomExceptionHandlerMiddleware>();
+        
+        return webApplication;
     }
 }

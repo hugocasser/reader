@@ -1,4 +1,3 @@
-using System.Collections;
 using Application.Abstractions.Repositories;
 using Application.Dtos.Views;
 using Domain.Abstractions;

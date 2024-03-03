@@ -4,4 +4,8 @@ using Domain.Models;
 
 namespace Application.Abstractions.Repositories;
 
-public interface IGroupsRepository : IBaseRepository<Group, GroupViewDto>;
+public interface IGroupsRepository : IBaseRepository<Group, GroupViewDto>
+{
+    Task CreateGroupAsync(Group group, CancellationToken cancellationToken);
+    Task CreateGroupAsyncInReadDbContextAsync(Group notificationEntity, CancellationToken cancellationToken);
+}
