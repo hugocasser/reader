@@ -23,7 +23,6 @@ public static class ApplicationInjection
     }
     private static IServiceCollection AddPipelineBehaviors(this IServiceCollection services)
     {
-        services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ErrorsPipelineBehaviour<,>));
         services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ClaimsMapperPipelineBehavior<,>));
         services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingPipelineBehavior<,>));
         services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>));
