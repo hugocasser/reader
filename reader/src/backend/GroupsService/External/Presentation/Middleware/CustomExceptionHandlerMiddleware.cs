@@ -23,13 +23,16 @@ public class CustomExceptionHandlerMiddleware(RequestDelegate next)
                 }
                 case NotValidClaimsException claimsException:
                 {
+                    if (context.Response.HasStarted)
+                        break;
                     context.Response.StatusCode = claimsException.Code;
                     await context.Response.WriteAsync(claimsException.Message);
                     break;
                 }
                 default:
                 {
-                    context.Response.StatusCode = 500;
+                    if (!context.Response.HasStarted)
+                        context.Response.StatusCode = 500;
                     await context.Response.WriteAsync(exception.Message);
                     break;
                 }
