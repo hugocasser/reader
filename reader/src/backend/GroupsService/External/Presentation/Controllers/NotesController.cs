@@ -11,6 +11,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Abstractions;
+using Presentation.Common;
 
 namespace Presentation.Controllers;
 [Route("notes/")]
@@ -21,7 +22,9 @@ public class NotesController(ISender sender, IBooksRepository _booksRepository) 
     [Authorize]
     public async Task<IActionResult> GetAllUserNotes([FromQuery]GetAllUserNotesQuery request)
     {
-        return Ok(await _sender.Send(request));
+        var requestResult = await _sender.Send(request);
+        
+        return CustomObjectResult.FromResult(requestResult);
     }
     
     [HttpGet]
@@ -29,7 +32,9 @@ public class NotesController(ISender sender, IBooksRepository _booksRepository) 
     [Route("{groupId}/users/{userId}")]
     public async Task<IActionResult> GetAllUserNotesInGroup([FromQuery]GetAllUserNotesInGroupQuery request)
     {
-        return Ok(await _sender.Send(request));
+        var requestResult = await _sender.Send(request);
+        
+        return CustomObjectResult.FromResult(requestResult);
     }
     
     [HttpGet]
@@ -37,7 +42,9 @@ public class NotesController(ISender sender, IBooksRepository _booksRepository) 
     [Route("id/{noteId}")]
     public async Task<IActionResult> GetNoteById([FromRoute]GetNoteByIdQuery request)
     {
-        return Ok(await _sender.Send(request));
+        var requestResult = await _sender.Send(request);
+        
+        return CustomObjectResult.FromResult(requestResult);
     }
     
     [HttpGet]
@@ -45,7 +52,9 @@ public class NotesController(ISender sender, IBooksRepository _booksRepository) 
     [Route("{groupId}")]
     public async Task<IActionResult> GetAllGroupNotes([FromRoute]GetAllGroupNotesQuery request)
     {
-        return Ok(await _sender.Send(request));
+        var requestResult = await _sender.Send(request);
+        
+        return CustomObjectResult.FromResult(requestResult);
     }
     
     [Authorize]
@@ -53,22 +62,29 @@ public class NotesController(ISender sender, IBooksRepository _booksRepository) 
     [Route("{noteId}")]
     public async Task<IActionResult> CreateNote([FromBody]CreateNoteCommand command)
     {
-        return Ok(await _sender.Send(command));
+        var requestResult = await _sender.Send(command);
+        
+        return CustomObjectResult.FromResult(requestResult);
     }
     
     [HttpDelete]
     [Route("{noteId}")]
     public async Task<IActionResult> DeleteNote([FromBody]DeleteNoteCommand command)
     {
-        return Ok(await _sender.Send(command));
+        var requestResult = await _sender.Send(command);
+        
+        return CustomObjectResult.FromResult(requestResult);
     }
 
     [HttpGet]
     [Route("{groupId}/books/{bookId}")]
     [Authorize]
-    public async Task<IActionResult> GetNotesByGroupIdAndBookIdAsync(Guid groupId, Guid bookId,
+    public async Task<IActionResult> GetNotesByGroupIdAndBookIdAsync([FromRoute]Guid groupId, [FromRoute]Guid bookId,
         [FromRoute]ReadingPageSettingsRequestDto pageSettingsRequestDto)
     {
-        return Ok(await _sender.Send(new GetAllGroupBookNotesQuery(groupId, bookId, pageSettingsRequestDto)));
+        var request = new GetAllGroupBookNotesQuery(groupId, bookId, pageSettingsRequestDto);
+        var requestResult = await _sender.Send(request);
+        
+        return CustomObjectResult.FromResult(requestResult);
     }
 }
