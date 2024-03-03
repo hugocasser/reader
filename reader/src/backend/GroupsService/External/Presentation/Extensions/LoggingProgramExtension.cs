@@ -69,7 +69,7 @@ public static class LoggingProgramExtension
         return new ElasticsearchSinkOptions(connectionUri) 
         {
             AutoRegisterTemplate = true,
-            IndexFormat = $"{Assembly.GetExecutingAssembly().GetName().Name?.ToLower().Replace('.', '-')}-{DateTime.UtcNow:yyyy-MM}",
+            IndexFormat = $"groups-{Assembly.GetExecutingAssembly().GetName().Name?.ToLower().Replace('.', '-')}-{DateTime.UtcNow:yyyy-MM}",
             NumberOfReplicas = 1,
             NumberOfShards = 2,
         };

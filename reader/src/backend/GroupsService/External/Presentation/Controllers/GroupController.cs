@@ -11,6 +11,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Abstractions;
+using Presentation.Common;
 
 namespace Presentation.Controllers;
 
@@ -18,71 +19,88 @@ namespace Presentation.Controllers;
 public class GroupController(ISender sender) : ApiController(sender)
 {
     [HttpPost]
-    [Route("groups")]
     [Authorize]
-    public async Task<IActionResult> CreateGroup([FromBody]CreateGroupCommand request)
+    public async Task<IActionResult> CreateGroupAsync([FromBody]CreateGroupCommand request)
     {
-        return Ok(await sender.Send(request));
+        var groupResult = await _sender.Send(request);
+        
+        return CustomObjectResult.FromResult(groupResult);
     }
 
     [HttpGet]
     [Route("{groupId}")]
     [Authorize]
-    public async Task<IActionResult> GetGroup([FromQuery]GetGroupByIdQuery request)
+    public async Task<IActionResult> GetGroupByIdAsync([FromQuery]GetGroupByIdQuery request)
     {
-        return Ok(await _sender.Send(request));
+        var requestResult = await _sender.Send(request);
+
+        return CustomObjectResult.FromResult(requestResult);
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAllGroups([FromQuery]GetAllGroupsQuery request)
+    public async Task<IActionResult> GetAllGroupsAsync([FromRoute]GetAllGroupsQuery request)
     {
-        return Ok(await _sender.Send(request));
+        var requestResult = await _sender.Send(request);
+
+        return CustomObjectResult.FromResult(requestResult);
     }
 
     [HttpPut]
     [Route("{groupId}/name")]
     [Authorize]
-    public async Task<IActionResult> UpdateGroupName([FromBody]UpdateGroupNameCommand request)
+    public async Task<IActionResult> UpdateGroupNameAsync([FromBody]UpdateGroupNameCommand request)
     {
-        return Ok(await _sender.Send(request));
+        var requestResult = await _sender.Send(request);
+        
+        return CustomObjectResult.FromResult(requestResult);
     }
     
     [HttpPut]
     [Route("{groupId}/books")]
     [Authorize]
-    public async Task<IActionResult> AddBookToGroup([FromBody]AddBookToGroupCommand request)
+    public async Task<IActionResult> AddBookToGroupAsync([FromBody]AddBookToGroupCommand request)
     {
-        return Ok(await _sender.Send(request));
+        var requestResult = await _sender.Send(request);
+        
+        return CustomObjectResult.FromResult(requestResult);
     }
 
     [HttpDelete]
     [Route("{groupId}/books")]
     [Authorize]
-    public async Task<IActionResult> RemoveBookFromGroup([FromBody]RemoveBookFromGroupCommand request)
+    public async Task<IActionResult> RemoveBookFromGroupAsync([FromBody]RemoveBookFromGroupCommand request)
     {
-        return Ok(await _sender.Send(request));
+        var requestResult = await _sender.Send(request);
+        
+        return CustomObjectResult.FromResult(requestResult);
     }
 
     [HttpPut]
     [Route("{groupId}/users")]
     [Authorize]
-    public async Task<IActionResult> AddUserToGroup([FromBody]AddUserToGroupCommand request)
+    public async Task<IActionResult> AddUserToGroupAsync([FromBody]AddUserToGroupCommand request)
     {
-        return Ok(await _sender.Send(request));
+        var requestResult = await _sender.Send(request);
+        
+        return CustomObjectResult.FromResult(requestResult);
     }
 
     [HttpDelete]
     [Route("{groupId}/users")]
     [Authorize]
-    public async Task<IActionResult> RemoveUserFromGroup([FromBody]RemoveUserFromGroupCommand request)
+    public async Task<IActionResult> RemoveUserFromGroupAsync([FromBody]RemoveUserFromGroupCommand request)
     {
-        return Ok(await _sender.Send(request));
+        var requestResult = await _sender.Send(request);
+        
+        return CustomObjectResult.FromResult(requestResult);
     }
 
     [HttpDelete]
     [Route("{groupId}")]
-    public async Task<IActionResult> DeleteGroup([FromBody]DeleteGroupCommand request)
+    public async Task<IActionResult> DeleteGroupAsync([FromBody]DeleteGroupCommand request)
     {
-        return Ok(await _sender.Send(request));
+        var requestResult = await _sender.Send(request);
+        
+        return CustomObjectResult.FromResult(requestResult);
     }
 }
