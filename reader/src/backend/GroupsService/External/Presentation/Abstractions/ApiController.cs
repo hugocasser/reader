@@ -9,5 +9,5 @@ namespace Presentation.Abstractions;
 [Produces("application/json")]
 public abstract class ApiController(ISender sender) : ControllerBase
 {
-    protected readonly ISender _sender = sender;
-};
+    protected readonly ISender Sender = sender;
+}

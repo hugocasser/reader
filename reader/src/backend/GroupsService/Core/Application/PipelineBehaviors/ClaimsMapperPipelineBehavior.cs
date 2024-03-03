@@ -15,7 +15,8 @@ public class ClaimsMapperPipelineBehavior<TRequest, TResponse>(IHttpContextAcces
         {
             return await next();
         }
-        var stringId = _context.HttpContext.User.Identities.First().Claims.FirstOrDefault().Value; 
+        
+        var stringId = _context.HttpContext.User.Identities.First().Claims.FirstOrDefault()?.Value; 
         var id = Guid.Parse(stringId ?? "00000000-0000-0000-0000-000000000000");
         request.SetRequestingUserId(id);
 

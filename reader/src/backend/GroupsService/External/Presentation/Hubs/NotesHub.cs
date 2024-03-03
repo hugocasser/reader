@@ -12,7 +12,7 @@ using Presentation.Exceptions;
 
 namespace Presentation.Hubs;
 
-public class NotesHub(ISender _sender , IHttpContextAccessor _httpContextAccessor) : Hub, INotesHub
+public class NotesHub(ISender _sender) : Hub, INotesHub
 {
     [Authorize]
     public async Task SendNoteAsync(CreateNoteCommand command)
@@ -42,7 +42,6 @@ public class NotesHub(ISender _sender , IHttpContextAccessor _httpContextAccesso
                     .SendAsync("DeleteNote", result.Response);
             }
         }
-        
     }
 
     [Authorize]
@@ -60,12 +59,14 @@ public class NotesHub(ISender _sender , IHttpContextAccessor _httpContextAccesso
     [Authorize]
     public override async Task OnConnectedAsync()
     {
-        var userId = Guid.Parse(Context.User.FindFirst("User-Id").Value);
+        var stringId = Context.User.Identities.First().Claims.FirstOrDefault().Value; 
+        var userId = Guid.Parse(stringId ?? "00000000-0000-0000-0000-000000000000");
 
         if (userId == Guid.Empty)
         {
             throw new NotValidClaimsException("user is not valid");
         }
+        
         var user = await _sender.Send(new GetUserByIdQuery(userId));
             
         if (user.IsSuccess)
@@ -79,7 +80,8 @@ public class NotesHub(ISender _sender , IHttpContextAccessor _httpContextAccesso
     [Authorize]
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
-        var userId = Guid.Parse(Context.User.FindFirst("User-Id").Value);
+        var stringId = Context.User.Identities.First().Claims.FirstOrDefault().Value; 
+        var userId = Guid.Parse(stringId);
 
         if (userId == Guid.Empty)
         {
@@ -94,7 +96,5 @@ public class NotesHub(ISender _sender , IHttpContextAccessor _httpContextAccesso
         }
             
         await base.OnDisconnectedAsync(exception);
-
-        throw new NotValidClaimsException("user is not valid");
     }
 }

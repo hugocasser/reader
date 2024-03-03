@@ -1,5 +1,6 @@
 using Application.Abstractions.Repositories;
 using Application.Dtos.Requests;
+using Application.Dtos.Views;
 using Application.Requests.Commands.Notes.CreateNote;
 using Application.Requests.Commands.Notes.DeleteNote;
 using Application.Requests.Queries.Notes.GetAllGroupBookNotes;
@@ -18,11 +19,16 @@ namespace Presentation.Controllers;
 public class NotesController(ISender sender, IBooksRepository _booksRepository) : ApiController(sender)
 {
     [HttpGet]
-    [Route("{userId}/notes")]
+    [Route($"{{userId}}")]
     [Authorize]
-    public async Task<IActionResult> GetAllUserNotes([FromQuery]GetAllUserNotesQuery request)
+    public async Task<IActionResult> GetAllUserNotes([FromQuery]PageSettingsRequestDto request)
     {
-        var requestResult = await _sender.Send(request);
+        var command = new GetAllUserNotesQuery()
+        {
+            PageSettingsRequestDto = request
+        };
+        
+        var requestResult = await Sender.Send(command);
         
         return CustomObjectResult.FromResult(requestResult);
     }
@@ -32,17 +38,18 @@ public class NotesController(ISender sender, IBooksRepository _booksRepository) 
     [Route("{groupId}/users/{userId}")]
     public async Task<IActionResult> GetAllUserNotesInGroup([FromQuery]GetAllUserNotesInGroupQuery request)
     {
-        var requestResult = await _sender.Send(request);
+        var requestResult = await Sender.Send(request);
         
         return CustomObjectResult.FromResult(requestResult);
     }
     
     [HttpGet]
     [Authorize]
-    [Route("id/{noteId}")]
-    public async Task<IActionResult> GetNoteById([FromRoute]GetNoteByIdQuery request)
+    [Route($"{{noteId}}")]
+    public async Task<IActionResult> GetNoteById([FromRoute]Guid noteId)
     {
-        var requestResult = await _sender.Send(request);
+        var command = new GetNoteByIdQuery(noteId);
+        var requestResult = await Sender.Send(command);
         
         return CustomObjectResult.FromResult(requestResult);
     }
@@ -50,9 +57,9 @@ public class NotesController(ISender sender, IBooksRepository _booksRepository) 
     [HttpGet]
     [Authorize]
     [Route("{groupId}")]
-    public async Task<IActionResult> GetAllGroupNotes([FromRoute]GetAllGroupNotesQuery request)
+    public async Task<IActionResult> GetAllGroupNotes([FromQuery]GetAllGroupNotesQuery request)
     {
-        var requestResult = await _sender.Send(request);
+        var requestResult = await Sender.Send(request);
         
         return CustomObjectResult.FromResult(requestResult);
     }
@@ -62,7 +69,7 @@ public class NotesController(ISender sender, IBooksRepository _booksRepository) 
     [Route("{noteId}")]
     public async Task<IActionResult> CreateNote([FromBody]CreateNoteCommand command)
     {
-        var requestResult = await _sender.Send(command);
+        var requestResult = await Sender.Send(command);
         
         return CustomObjectResult.FromResult(requestResult);
     }
@@ -71,7 +78,7 @@ public class NotesController(ISender sender, IBooksRepository _booksRepository) 
     [Route("{noteId}")]
     public async Task<IActionResult> DeleteNote([FromBody]DeleteNoteCommand command)
     {
-        var requestResult = await _sender.Send(command);
+        var requestResult = await Sender.Send(command);
         
         return CustomObjectResult.FromResult(requestResult);
     }
@@ -80,10 +87,10 @@ public class NotesController(ISender sender, IBooksRepository _booksRepository) 
     [Route("{groupId}/books/{bookId}")]
     [Authorize]
     public async Task<IActionResult> GetNotesByGroupIdAndBookIdAsync([FromRoute]Guid groupId, [FromRoute]Guid bookId,
-        [FromRoute]ReadingPageSettingsRequestDto pageSettingsRequestDto)
+        [FromQuery]ReadingPageSettingsRequestDto pageSettingsRequestDto)
     {
         var request = new GetAllGroupBookNotesQuery(groupId, bookId, pageSettingsRequestDto);
-        var requestResult = await _sender.Send(request);
+        var requestResult = await Sender.Send(request);
         
         return CustomObjectResult.FromResult(requestResult);
     }

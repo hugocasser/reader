@@ -24,5 +24,7 @@ public class BackgroundCacheService(ILogger<BackgroundCacheService> _logger, IRe
         }
 
         await _notesRepository.SaveChangesAsync(default);
+        
+        _logger.LogInformation("--> End pushing notes...");
     }
 }
