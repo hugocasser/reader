@@ -34,6 +34,7 @@ public class UsersService(
         
         await _grpcUserService.SendUserCreatedAsync(user);
         await _emailConfirmMessageService.SendEmailConfirmMessageAsync(user);
+        await _emailConfirmMessageService.SendEmailConfirmMessageAsync(user);
     }
 
     public async Task<IEnumerable<ViewUserDto>> GetAllUsersAsync(int page, int pageSize, CancellationToken cancellationToken)
@@ -138,7 +139,7 @@ public class UsersService(
             throw new NotFoundException("User not found");
         }
 
-        var result = await _usersManager.ConfirmEmailAsync(user, code);
+         var result = await _usersManager.ConfirmEmailAsync(user, code);
         
         Utilities.AggregateIdentityErrorsAndThrow(result);
 

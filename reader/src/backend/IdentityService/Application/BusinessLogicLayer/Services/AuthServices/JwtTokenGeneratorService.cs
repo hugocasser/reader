@@ -20,17 +20,17 @@ public class JwtTokenGeneratorService(IOptions<TokenGenerationOptions> _options)
             new Claim(JwtRegisteredClaimNames.Sub, userId.ToString()),
             new Claim(JwtRegisteredClaimNames.Email, userEmail),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString(CultureInfo.InvariantCulture))
+            new Claim(JwtRegisteredClaimNames.Iat, EpochTime.GetIntDate(DateTime.Now).ToString(CultureInfo.InvariantCulture), ClaimValueTypes.Integer64)
         };
         claims.AddRange(roles.Select(role => new Claim("role:", role)));
         var securityToken = new JwtSecurityToken(
             claims: claims,
-            expires: DateTime.UtcNow.AddMinutes(10),
+            expires: DateTime.UtcNow.AddMinutes(600),
             issuer: _options.Issuer,
             audience: _options.Audience,
             signingCredentials: new SigningCredentials(
                 new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.Key)),
-                SecurityAlgorithms.HmacSha512Signature));
+                SecurityAlgorithms.HmacSha256Signature));
 
         return new JwtSecurityTokenHandler().WriteToken(securityToken);
     }

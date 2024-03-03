@@ -19,7 +19,7 @@ public static class ProgramExtensions
     {
         builder.Services
             .AddAdminSeeder()
-            .AddDbContext()
+            .AddDbContext(builder.Configuration)
             .AddRepositories()
             .AddUsersIdentity()
             .AddServices()
@@ -46,9 +46,6 @@ public static class ProgramExtensions
                 Name = "Authorization",
                 Type = SecuritySchemeType.ApiKey
             });
-            var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-            var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-            options.IncludeXmlComments(xmlPath);
         });
 
         return serviceCollection;
