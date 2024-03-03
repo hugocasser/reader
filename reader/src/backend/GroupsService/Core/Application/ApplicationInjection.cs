@@ -8,6 +8,16 @@ namespace Application;
 
 public static class ApplicationInjection
 {
+    
+    public static IServiceCollection AddApplication(this IServiceCollection services)
+    {
+        services.AddRequestHandlers();
+        services.AddValidators();
+        services.AddPipelineBehaviors();
+        
+        return services;
+    }
+    
     private static IServiceCollection AddRequestHandlers(this IServiceCollection services)
     {
         services.AddMediatR(configuration => configuration.RegisterServicesFromAssemblies(Assembly.GetExecutingAssembly()));
@@ -26,15 +36,6 @@ public static class ApplicationInjection
         services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ClaimsMapperPipelineBehavior<,>));
         services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingPipelineBehavior<,>));
         services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>));
-        
-        return services;
-    }
-
-    public static IServiceCollection AddApplication(this IServiceCollection services)
-    {
-        services.AddRequestHandlers();
-        services.AddValidators();
-        services.AddPipelineBehaviors();
         
         return services;
     }

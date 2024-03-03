@@ -22,7 +22,7 @@ public class GroupController(ISender sender) : ApiController(sender)
     [Authorize]
     public async Task<IActionResult> CreateGroupAsync([FromBody]CreateGroupCommand request)
     {
-        var groupResult = await _sender.Send(request);
+        var groupResult = await Sender.Send(request);
         
         return CustomObjectResult.FromResult(groupResult);
     }
@@ -32,7 +32,7 @@ public class GroupController(ISender sender) : ApiController(sender)
     [Authorize]
     public async Task<IActionResult> GetGroupByIdAsync([FromQuery]GetGroupByIdQuery request)
     {
-        var requestResult = await _sender.Send(request);
+        var requestResult = await Sender.Send(request);
 
         return CustomObjectResult.FromResult(requestResult);
     }
@@ -40,7 +40,7 @@ public class GroupController(ISender sender) : ApiController(sender)
     [HttpGet]
     public async Task<IActionResult> GetAllGroupsAsync([FromRoute]GetAllGroupsQuery request)
     {
-        var requestResult = await _sender.Send(request);
+        var requestResult = await Sender.Send(request);
 
         return CustomObjectResult.FromResult(requestResult);
     }
@@ -50,7 +50,7 @@ public class GroupController(ISender sender) : ApiController(sender)
     [Authorize]
     public async Task<IActionResult> UpdateGroupNameAsync([FromBody]UpdateGroupNameCommand request)
     {
-        var requestResult = await _sender.Send(request);
+        var requestResult = await Sender.Send(request);
         
         return CustomObjectResult.FromResult(requestResult);
     }
@@ -60,7 +60,7 @@ public class GroupController(ISender sender) : ApiController(sender)
     [Authorize]
     public async Task<IActionResult> AddBookToGroupAsync([FromBody]AddBookToGroupCommand request)
     {
-        var requestResult = await _sender.Send(request);
+        var requestResult = await Sender.Send(request);
         
         return CustomObjectResult.FromResult(requestResult);
     }
@@ -70,7 +70,7 @@ public class GroupController(ISender sender) : ApiController(sender)
     [Authorize]
     public async Task<IActionResult> RemoveBookFromGroupAsync([FromBody]RemoveBookFromGroupCommand request)
     {
-        var requestResult = await _sender.Send(request);
+        var requestResult = await Sender.Send(request);
         
         return CustomObjectResult.FromResult(requestResult);
     }
@@ -80,7 +80,7 @@ public class GroupController(ISender sender) : ApiController(sender)
     [Authorize]
     public async Task<IActionResult> AddUserToGroupAsync([FromBody]AddUserToGroupCommand request)
     {
-        var requestResult = await _sender.Send(request);
+        var requestResult = await Sender.Send(request);
         
         return CustomObjectResult.FromResult(requestResult);
     }
@@ -90,7 +90,7 @@ public class GroupController(ISender sender) : ApiController(sender)
     [Authorize]
     public async Task<IActionResult> RemoveUserFromGroupAsync([FromBody]RemoveUserFromGroupCommand request)
     {
-        var requestResult = await _sender.Send(request);
+        var requestResult = await Sender.Send(request);
         
         return CustomObjectResult.FromResult(requestResult);
     }
@@ -99,7 +99,7 @@ public class GroupController(ISender sender) : ApiController(sender)
     [Route("{groupId}")]
     public async Task<IActionResult> DeleteGroupAsync([FromBody]DeleteGroupCommand request)
     {
-        var requestResult = await _sender.Send(request);
+        var requestResult = await Sender.Send(request);
         
         return CustomObjectResult.FromResult(requestResult);
     }

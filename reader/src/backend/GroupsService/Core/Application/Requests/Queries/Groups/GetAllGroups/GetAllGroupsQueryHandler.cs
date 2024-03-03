@@ -9,9 +9,7 @@ using MediatR;
 
 namespace Application.Requests.Queries.Groups.GetAllGroups;
 
-public class GetAllGroupsQueryHandler
-    (IGroupsRepository _groupsRepository, 
-        IMapper _mapper)
+public class GetAllGroupsQueryHandler(IGroupsRepository _groupsRepository, IMapper _mapper)
     : IRequestHandler<GetAllGroupsQuery, Result<IEnumerable<GroupViewDto>>>
 {
     public async Task<Result<IEnumerable<GroupViewDto>>> Handle(GetAllGroupsQuery request, CancellationToken cancellationToken)

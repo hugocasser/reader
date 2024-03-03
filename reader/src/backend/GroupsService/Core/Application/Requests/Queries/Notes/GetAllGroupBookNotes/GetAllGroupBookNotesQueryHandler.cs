@@ -9,8 +9,8 @@ using MediatR;
 
 namespace Application.Requests.Queries.Notes.GetAllGroupBookNotes;
 
-public class GetAllGroupBookNotesQueryHandler
-    (INotesRepository _notesRepository, IMapper _mapper): IRequestHandler<GetAllGroupBookNotesQuery, Result<IEnumerable<NoteViewDto>>>
+public class GetAllGroupBookNotesQueryHandler(INotesRepository _notesRepository, IMapper _mapper)
+    : IRequestHandler<GetAllGroupBookNotesQuery, Result<IEnumerable<NoteViewDto>>>
 {
     public async Task<Result<IEnumerable<NoteViewDto>>> Handle(GetAllGroupBookNotesQuery request, CancellationToken cancellationToken)
     {

@@ -1,5 +1,3 @@
-using Application.Dtos.Requests;
-using Application.Dtos.Views;
 using Application.Requests.Commands.Books.EndReadSession;
 using Application.Requests.Commands.Notes.CreateNote;
 using Application.Requests.Commands.Notes.DeleteNote;
