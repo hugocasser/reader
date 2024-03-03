@@ -2,7 +2,7 @@ using Application.Abstractions.Repositories;
 using Domain.DomainEvents.Groups;
 using MediatR;
 
-namespace Application.Events.Groups;
+namespace Application.EventHandlers.Groups;
 
 public class GroupDeletedEventHandler(IGroupsRepository _groupsRepository) : INotificationHandler<GroupDeletedEvent>
 {

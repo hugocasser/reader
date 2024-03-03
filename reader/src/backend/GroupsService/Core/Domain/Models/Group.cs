@@ -8,16 +8,16 @@ public class Group : Entity
 {
     public Guid AdminId { get; set; }
     public User Admin { get; set; }
-    public ICollection<User?> Members { get; set; } = new List<User?>();
+    public ICollection<User> Members { get; set; } = new List<User>();
     public ICollection<UserBookProgress> GroupProgresses { get; private set; } = new List<UserBookProgress>();
-    public ICollection<Book?> AllowedBooks { get; set; } = new List<Book?>();
+    public ICollection<Book> AllowedBooks { get; set; } = new List<Book>();
     public string? GroupName { get; set; }
 
     public void CreateGroup(User admin, string? groupName)
     {
         Id = Guid.NewGuid();
-        Admin = admin;
         AdminId = admin.Id;
+        Admin = admin;
         Members.Add(admin);
         GroupName = groupName;
         RaiseDomainEvent(new GroupCreatedEvent(this));
