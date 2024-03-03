@@ -2,7 +2,7 @@ using Application.Abstractions.Repositories;
 using Domain.DomainEvents.Notes;
 using MediatR;
 
-namespace Application.Events.Notes;
+namespace Application.EventHandlers.Notes;
 
 public class NoteCreatedEventHandler(INotesRepository _notesRepository) : INotificationHandler<NoteCreatedEvent>
 {

@@ -6,8 +6,8 @@ namespace Domain.Models;
 
 public class User : Entity
 {
-    public string FirstName { get; set; } = string.Empty;
-    public string LastName { get; set; } = string.Empty;
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
     public Group? AdminGroup { get; set; }
     public ICollection<Group> Groups { get; private set; } = new List<Group>();
     public ICollection<UserBookProgress> UserBookProgresses { get; private set; } = new List<UserBookProgress>();

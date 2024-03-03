@@ -8,9 +8,6 @@ public class UserBookProgressesConfiguration : IEntityTypeConfiguration<UserBook
 {
     public void Configure(EntityTypeBuilder<UserBookProgress> builder)
     {
-        builder.HasMany(progress => progress.UserNotes)
-            .WithOne(note => note.UserBookProgress);
-        
         builder.HasOne(progress => progress.User)
             .WithMany(user => user.UserBookProgresses);
         

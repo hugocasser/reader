@@ -17,8 +17,6 @@ public class GroupsConfiguration : IEntityTypeConfiguration<Group>
 
         builder.HasMany(group => group.GroupProgresses)
             .WithOne(progress => progress.Group);
-
-        builder.HasOne(group => group.Admin)
-            .WithOne(user => user.AdminGroup);
+        
     }
 }

@@ -88,7 +88,7 @@ public static class InfrastructureInjection
                 .AddTrigger(trigger =>
                     trigger.ForJob(jobKey)
                         .WithSimpleSchedule(schedule =>
-                            schedule.WithIntervalInSeconds(10).RepeatForever())); 
+                            schedule.WithIntervalInSeconds(60).RepeatForever())); 
             configure.UseMicrosoftDependencyInjectionJobFactory();
         });
 

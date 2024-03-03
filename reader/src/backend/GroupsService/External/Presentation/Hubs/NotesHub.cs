@@ -45,6 +45,7 @@ public class NotesHub(ISender _sender , IHttpContextAccessor _httpContextAccesso
         
     }
 
+    [Authorize]
     public async Task SendUserProgressAsync(EndReadingSessionCommand command)
     {
         var result = await _sender.Send(command);

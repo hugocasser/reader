@@ -1,6 +1,8 @@
 using System.Text.Json;
 using Domain.Abstractions;
+using Domain.Models;
 using Infrastructure.OutboxMessages;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Newtonsoft.Json;
 using JsonSerializer = System.Text.Json.JsonSerializer;
@@ -10,11 +12,12 @@ namespace Infrastructure.Interceptor;
 public sealed class ConvertDomainEventsToOutboxMessagesInterceptor 
     : SaveChangesInterceptor
 {
-    public override ValueTask<InterceptionResult<int>> SavingChangesAsync(DbContextEventData eventData, InterceptionResult<int> result,
+    public override ValueTask<InterceptionResult<int>> SavingChangesAsync(DbContextEventData eventData,
+        InterceptionResult<int> result,
         CancellationToken cancellationToken = new CancellationToken())
     {
         var context = eventData.Context;
-        
+
         if (context is null)
         {
             return base.SavingChangesAsync(eventData, result, cancellationToken);
@@ -27,9 +30,9 @@ public sealed class ConvertDomainEventsToOutboxMessagesInterceptor
             {
                 var domainEvents = entity
                     .GetDomainEvents();
-                
+
                 entity.ClearDomainEvents();
-                
+
                 return domainEvents;
             })
             .Select(
@@ -40,9 +43,10 @@ public sealed class ConvertDomainEventsToOutboxMessagesInterceptor
                     Content = JsonConvert.SerializeObject(domainEvent,
                         new JsonSerializerSettings()
                         {
-                            TypeNameHandling = TypeNameHandling.All
+                            TypeNameHandling = TypeNameHandling.All,
+                            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
                         })
-                });
+                }).ToList();
         
         context.Set<OutboxMessage>().AddRange(messages);
 

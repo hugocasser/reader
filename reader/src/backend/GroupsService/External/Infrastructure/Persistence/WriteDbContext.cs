@@ -7,8 +7,7 @@ namespace Infrastructure.Persistence;
 
 public class WriteDbContext(DbContextOptions<WriteDbContext> options) : DbContext(options)
 {
-    private static readonly ConvertDomainEventsToOutboxMessagesInterceptor _messagesInterceptor
-        = new ConvertDomainEventsToOutboxMessagesInterceptor();
+    private static readonly ConvertDomainEventsToOutboxMessagesInterceptor _messagesInterceptor = new();
     
     public DbSet<User> Users { get; set; }
     public DbSet<Group> Groups { get; set; }
