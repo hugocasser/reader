@@ -2,7 +2,7 @@ using Application.Abstractions.Repositories;
 using Domain.DomainEvents.UserProgresses;
 using MediatR;
 
-namespace Application.Events.UserBookProgresses;
+namespace Application.EventHandlers.UserBookProgresses;
 
 public class UserBookProgressCreatedEventHandler(IUserBookProgressRepository _userBookProgressRepository) 
     : INotificationHandler<UserBookProgressCreatedEvent>

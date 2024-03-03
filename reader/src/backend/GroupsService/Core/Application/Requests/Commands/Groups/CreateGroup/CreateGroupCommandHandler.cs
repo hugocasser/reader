@@ -26,7 +26,7 @@ public class CreateGroupCommandHandler(IGroupsRepository groupsRepository,
         var group = new Group();
         group.CreateGroup(admin, command.GroupName);
         
-        await groupsRepository.CreateAsync(group, cancellationToken);
+        await groupsRepository.CreateGroupAsync(group, cancellationToken);
         await groupsRepository.SaveChangesAsync(cancellationToken);
         
         return new Result<GroupViewDto>(_mapper.Map<GroupViewDto>(group));

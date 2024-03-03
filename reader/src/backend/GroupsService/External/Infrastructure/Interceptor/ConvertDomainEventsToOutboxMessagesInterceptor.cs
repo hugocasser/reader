@@ -1,18 +1,23 @@
+using System.Text.Json;
 using Domain.Abstractions;
+using Domain.Models;
 using Infrastructure.OutboxMessages;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Newtonsoft.Json;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Infrastructure.Interceptor;
 
 public sealed class ConvertDomainEventsToOutboxMessagesInterceptor 
     : SaveChangesInterceptor
 {
-    public override ValueTask<InterceptionResult<int>> SavingChangesAsync(DbContextEventData eventData, InterceptionResult<int> result,
+    public override ValueTask<InterceptionResult<int>> SavingChangesAsync(DbContextEventData eventData,
+        InterceptionResult<int> result,
         CancellationToken cancellationToken = new CancellationToken())
     {
         var context = eventData.Context;
-        
+
         if (context is null)
         {
             return base.SavingChangesAsync(eventData, result, cancellationToken);
@@ -20,33 +25,28 @@ public sealed class ConvertDomainEventsToOutboxMessagesInterceptor
 
         var messages = context.ChangeTracker
             .Entries<Entity>()
-            .ToList()
             .Select(entry => entry.Entity)
             .SelectMany(entity =>
             {
                 var domainEvents = entity
                     .GetDomainEvents();
+
                 entity.ClearDomainEvents();
-                
+
                 return domainEvents;
             })
             .Select(
-                domainEvent =>
+                domainEvent => new OutboxMessage()
                 {
-                    var mess = new OutboxMessage()
-                    {
-                        Id = Guid.NewGuid(),
-                        ProcessedAt = null,
-                        Content = JsonConvert.SerializeObject(domainEvent,
-                            new JsonSerializerSettings()
-                            {
-                                TypeNameHandling = TypeNameHandling.All
-                            }),
-                        EventType = domainEvent.GetType().FullName ?? domainEvent.GetType().Namespace + '.'
-                            + domainEvent.GetType().Name +", Domain"
-                    };
-                    return mess;
-                });
+                    Id = Guid.NewGuid(),
+                    ProcessedAt = null,
+                    Content = JsonConvert.SerializeObject(domainEvent,
+                        new JsonSerializerSettings()
+                        {
+                            TypeNameHandling = TypeNameHandling.All,
+                            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                        })
+                }).ToList();
         
         context.Set<OutboxMessage>().AddRange(messages);
 

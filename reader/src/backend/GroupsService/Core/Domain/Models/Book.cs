@@ -12,7 +12,7 @@ public class Book : Entity
     public ICollection<UserBookProgress> UserBookProgress { get; set; } = new List<UserBookProgress>();
     public ICollection<Group> AllowedInGroups { get; set; } = new List<Group>();
     
-    public void CreateBook(string bookName, string authorFirstName, string authorLastName, string text, Guid id)
+    public void CreateBook(string bookName, string authorFirstName, string authorLastName, Guid id)
     {
         BookName = bookName;
         AuthorFirstName = authorFirstName;
