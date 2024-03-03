@@ -4,7 +4,4 @@ namespace Presentation.Abstractions;
 
 [ApiController]
 [Produces("application/json")]
-public abstract class ApiController : ControllerBase
-{
-    
-}
+public abstract class ApiController : ControllerBase;

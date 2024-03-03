@@ -1,4 +1,5 @@
 using Application.Abstractions.Repositories;
+using Application.Abstractions.Services;
 using Application.Abstractions.Services.Cache;
 using Hangfire;
 using MicrosoftOptions = Microsoft.Extensions.Options.Options;
@@ -61,6 +62,7 @@ public static class InfrastructureInjection
             options.UseNpgsql(dbOption.ReadConnectionString);
             options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
         });
+        services.AddKafkaConsumer();
         
         return services;
     }
@@ -109,6 +111,17 @@ public static class InfrastructureInjection
     {
         services.AddOptions<DbOptions>()
             .BindConfiguration(nameof(DbOptions))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+        
+        return services;
+    }
+
+    private static IServiceCollection AddKafkaConsumer(this IServiceCollection services)
+    {
+        services.AddScoped<IKafkaConsumerService, KafkaConsumerService>();
+        services.AddOptions<KafkaConsumerOptions>()
+            .BindConfiguration(nameof(KafkaConsumerOptions))
             .ValidateDataAnnotations()
             .ValidateOnStart();
         
