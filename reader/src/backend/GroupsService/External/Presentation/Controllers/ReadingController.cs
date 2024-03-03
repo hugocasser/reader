@@ -14,7 +14,7 @@ public class ReadingController(ISender sender) : ApiController(sender)
     [Route("{bookId}/start")]
     public async Task<IActionResult> StartReading([FromBody]StartReadingBookCommand command)
     {
-        var requestResult = await _sender.Send(command);
+        var requestResult = await Sender.Send(command);
         
         return CustomObjectResult.FromResult(requestResult);
     }

@@ -35,6 +35,10 @@ public class ProcessOutboxMessagesJob(WriteDbContext _writeDbContext, ReadDbCont
                 _logger.LogInformation($"event is null\n" +
                     $"Event name:{nameof(domainEvent)}\n" +
                     $"DateTime:{DateTime.Now}");
+                
+                message.ProcessedAt = DateTime.UtcNow;
+                _writeDbContext.OutboxMessages.Update(message);
+                
                 return;
             }
 

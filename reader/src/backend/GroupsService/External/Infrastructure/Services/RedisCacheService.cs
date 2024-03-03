@@ -12,6 +12,7 @@ public class RedisCacheService(IConnectionMultiplexer _connection) : IRedisCache
     public async Task<T?> CreateAsync<T>(string key, Func<Task<T?>> factory)
     {
         var value = await factory.Invoke();
+        
         if (value is null)
         {
             return value;

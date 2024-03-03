@@ -9,12 +9,6 @@ public class Result<T> : IResult where T : class
     public Error? Error { get; }
     public bool IsSuccess { get; }
     public T? Response { get; }
-    
-    public string SerializeResponse()
-    {
-        return IsSuccess ? JsonSerializer.Serialize(Response)
-            : JsonSerializer.Serialize(Error.Message);
-    }
 
     public Result(Error error)
     {

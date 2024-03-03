@@ -1,14 +1,11 @@
-using Application.Abstractions;
 using Application.Abstractions.Repositories;
-using Application.Common;
 using Application.Dtos.Views;
-using Application.Requests.Queries.Notes.GetNoteById;
 using Application.Results;
 using Application.Results.Errors;
 using MapsterMapper;
 using MediatR;
 
-namespace Application.Handlers.Queries.Notes.GetNoteById;
+namespace Application.Requests.Queries.Notes.GetNoteById;
 
 public class GetNoteByIdQueryHandler(INotesRepository _notesRepository, IUsersRepository _usersRepository, IMapper _mapper) : IRequestHandler<GetNoteByIdQuery, Result<NoteViewDto>>
 {
