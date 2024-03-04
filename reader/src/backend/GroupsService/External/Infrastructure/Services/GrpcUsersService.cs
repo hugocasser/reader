@@ -1,66 +1,95 @@
 using Application.Abstractions.Repositories;
+using Domain.DomainEvents.Users;
 using Domain.Models;
 using Grpc.Core;
+using GrpcUsers;
+using Infrastructure.Common;
+using MapsterMapper;
 using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Services;
 
-public class GrpcUsersService(ILogger<GrpcUsersService> _logger, IUsersRepository _usersRepository)
-    : UsersService.UsersServiceBase
+public class GrpcUsersService(ILogger<GrpcUsersService> _logger, IUsersRepository _usersRepository, IMapper _mapper)
+    : GrpcUsers.GrpcUsersService.GrpcUsersServiceBase
 {
-    public override async Task<CreateUserResponse> CreateUser(CreateUserRequest request, ServerCallContext context)
+    public override async Task<GrpcUsersResponse> PublishUserEvent(UserEventRequest request, ServerCallContext context)
     {
-        _logger.LogInformation("--> Grpc request started: CreateUser()...");
-            
-        var user = new User
-        {
-            Id = Guid.Parse(request.UserId)
-        };
-        user.CreateUser(request.FirstName, request.LastName);
+        _logger.LogInformation(" --- PublishUserEvent request started ---");
 
-        await _usersRepository.CreateAsync(user, context.CancellationToken);
-        await _usersRepository.SaveChangesAsync(context.CancellationToken);
-        
-        _logger.LogInformation("--> Grpc request finished: CreateUser()...");
-        
-        return  new CreateUserResponse
+        switch (request.EventType)
         {
-            Success = true
+            case nameof(UserEventType.Created):
+            {
+                var guidId = Guid.Parse(request.UserId);
+                var isUserExist = await _usersRepository.IsExistByIdAsync(guidId, context.CancellationToken);
+
+                if (isUserExist)
+                {
+                    _logger.LogError("User already exist");
+
+                    return new GrpcUsersResponse()
+                    {
+                        IsSuccess = false
+                    };
+                }
+
+                var user = new User()
+                {
+                    Id = guidId,
+                };
+
+                user.CreateUser(request.FirstName, request.LastName);
+                await _usersRepository.CreateAsync(user, context.CancellationToken);
+
+                break;
+            }
+            case nameof(UserEventType.Updated):
+            {
+                var guidId = Guid.Parse(request.UserId);
+                var user = await _usersRepository.GetByIdAsync(guidId, context.CancellationToken);
+
+                if (user is null)
+                {
+                    return new GrpcUsersResponse()
+                    {
+                        IsSuccess = false
+                    };
+                }
+                
+                user.UpdateUser(request.FirstName, request.LastName);
+                await _usersRepository.UpdateAsync(user, context.CancellationToken);
+                
+                break;
+            }
+            case nameof(UserEventType.Deleted):
+            {
+                var guidId = Guid.Parse(request.UserId);
+                var user = await _usersRepository.GetByIdAsync(guidId, context.CancellationToken);
+
+                if (user is null)
+                {
+                    _logger.LogError("User not found");
+
+                    return new GrpcUsersResponse
+                    {
+                        IsSuccess = false
+                    };
+                }
+
+                user.Delete(new UserDeletedEvent(user.Id));
+                await _usersRepository.DeleteByIdAsync(guidId, context.CancellationToken);
+
+                break;
+            }
+        }
+
+        await _usersRepository.SaveChangesAsync(context.CancellationToken);
+
+        _logger.LogInformation(" --- PublishUserEvent request ended ---");
+
+        return new GrpcUsersResponse()
+        {
+            IsSuccess = true
         };
     }
-
-    public override async Task<UpdateUserResponse> UpdateUser(UpdateUserRequest request, ServerCallContext context)
-    {
-        _logger.LogInformation("--> Grpc request started: UpdateUser()...");
-        var user = new User
-        {
-            Id = Guid.Parse(request.UserId)
-        };
-        user.UpdateUser(request.FirstName, request.LastName);
-        
-        await _usersRepository.UpdateAsync(user, context.CancellationToken);
-        await _usersRepository.SaveChangesAsync(context.CancellationToken);
-        
-        _logger.LogInformation("--> Grpc request finished: UpdateUser()...");
-        
-        return new UpdateUserResponse
-        {
-            Success = true
-        };
-    }
-
-    public override async Task<DeleteUserResponse> DeleteUser(DeleteUserRequest request, ServerCallContext context)
-    {
-        _logger.LogInformation("--> Grpc request started: DeleteUser()...");
-        
-        await _usersRepository.DeleteByIdAsync(Guid.Parse(request.UserId), context.CancellationToken);
-        await _usersRepository.SaveChangesAsync(context.CancellationToken);
-        
-        _logger.LogInformation("--> Grpc request finished: DeleteUser()...");
-        
-        return new DeleteUserResponse
-        {
-            Success = true
-        };
-    } 
 }

@@ -11,7 +11,7 @@
     </ItemGroup>
     
     <ItemGroup>
-        <Protobuf Include = "Protos/user.proto"/>
+        <Protobuf Include = "/Users/artem/projects/work/reader/reader/src/backend/GroupsService/External/Infrastructure/Protos/user.proto"/>
     </ItemGroup>
     
     <ItemGroup>
