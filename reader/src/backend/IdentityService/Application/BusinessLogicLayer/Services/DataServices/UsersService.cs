@@ -31,8 +31,8 @@ public class UsersService(
         
         Utilities.AggregateIdentityErrorsAndThrow(result);
         Utilities.AggregateIdentityErrorsAndThrow(await _usersManager.AddToRoleAsync(user, EnumRoles.User.ToString()));
-        
-        await _grpcUserService.SendUserCreatedAsync(user);
+
+        await _grpcUserService.SendUserEventAsync(user, UserEvenType.Created);
         await _emailConfirmMessageService.SendEmailConfirmMessageAsync(user);
         await _emailConfirmMessageService.SendEmailConfirmMessageAsync(user);
     }
@@ -73,8 +73,8 @@ public class UsersService(
         
         var result = await _usersManager.DeleteAsync(user);
         Utilities.AggregateIdentityErrorsAndThrow(result);
-        
-        await _grpcUserService.SendUserDeletedAsync(user);
+
+        await _grpcUserService.SendUserEventAsync(user, UserEvenType.Deleted);
     }
     public async Task UpdateUserAsync(UpdateUserRequestDto updateUserRequest, CancellationToken cancellationToken)
     {
@@ -95,8 +95,8 @@ public class UsersService(
         
         var result = await _usersManager.UpdateAsync(user);
         Utilities.AggregateIdentityErrorsAndThrow(result);
-        
-        await _grpcUserService.SendUserUpdatedAsync(user);
+
+        await _grpcUserService.SendUserEventAsync(user, UserEvenType.Updated);
     }
 
     public async Task<AuthTokens> LoginUserAsync(LoginUserRequestDto loginUserRequestDto, CancellationToken cancellationToken)
