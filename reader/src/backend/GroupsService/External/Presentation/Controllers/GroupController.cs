@@ -20,9 +20,9 @@ public class GroupController(ISender sender) : ApiController(sender)
 {
     [HttpPost]
     [Authorize]
-    public async Task<IActionResult> CreateGroupAsync([FromBody]CreateGroupCommand request)
+    public async Task<IActionResult> CreateGroupAsync([FromBody]CreateGroupCommand request, CancellationToken cancellationToken)
     {
-        var groupResult = await Sender.Send(request);
+        var groupResult = await Sender.Send(request, cancellationToken);
         
         return CustomObjectResult.FromResult(groupResult);
     }
@@ -30,27 +30,33 @@ public class GroupController(ISender sender) : ApiController(sender)
     [HttpGet]
     [Route("{groupId}")]
     [Authorize]
-    public async Task<IActionResult> GetGroupByIdAsync([FromQuery]GetGroupByIdQuery request)
+    public async Task<IActionResult> GetGroupByIdAsync([FromRoute]Guid groupId, CancellationToken cancellationToken)
     {
-        var requestResult = await Sender.Send(request);
+        var request = new GetGroupByIdQuery(groupId);
+        var requestResult = await Sender.Send(request, cancellationToken);
 
         return CustomObjectResult.FromResult(requestResult);
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAllGroupsAsync([FromRoute]GetAllGroupsQuery request)
+    public async Task<IActionResult> GetAllGroupsAsync([FromRoute]GetAllGroupsQuery request, CancellationToken cancellationToken)
     {
-        var requestResult = await Sender.Send(request);
+        var requestResult = await Sender.Send(request, cancellationToken);
 
         return CustomObjectResult.FromResult(requestResult);
     }
 
     [HttpPut]
-    [Route("{groupId}/name")]
+    [Route("{groupId}/name/{newName}")]
     [Authorize]
-    public async Task<IActionResult> UpdateGroupNameAsync([FromBody]UpdateGroupNameCommand request)
+    public async Task<IActionResult> UpdateGroupNameAsync([FromRoute] Guid groupId, [FromRoute] string newName, CancellationToken cancellationToken)
     {
-        var requestResult = await Sender.Send(request);
+        var request = new UpdateGroupNameCommand()
+        {
+            GroupId = groupId,
+            Name = newName
+        };
+        var requestResult = await Sender.Send(request, cancellationToken);
         
         return CustomObjectResult.FromResult(requestResult);
     }
@@ -58,19 +64,24 @@ public class GroupController(ISender sender) : ApiController(sender)
     [HttpPut]
     [Route("{groupId}/books")]
     [Authorize]
-    public async Task<IActionResult> AddBookToGroupAsync([FromBody]AddBookToGroupCommand request)
+    public async Task<IActionResult> AddBookToGroupAsync([FromBody]AddBookToGroupCommand request, CancellationToken cancellationToken)
     {
-        var requestResult = await Sender.Send(request);
+        var requestResult = await Sender.Send(request, cancellationToken);
         
         return CustomObjectResult.FromResult(requestResult);
     }
 
     [HttpDelete]
-    [Route("{groupId}/books")]
+    [Route("{groupId}/books/{bookId}")]
     [Authorize]
-    public async Task<IActionResult> RemoveBookFromGroupAsync([FromBody]RemoveBookFromGroupCommand request)
+    public async Task<IActionResult> RemoveBookFromGroupAsync([FromRoute] Guid groupId, [FromRoute]Guid bookId, CancellationToken cancellationToken)
     {
-        var requestResult = await Sender.Send(request);
+        var request = new RemoveBookFromGroupCommand()
+        {
+            GroupId = groupId,
+            BookId = bookId
+        };
+        var requestResult = await Sender.Send(request, cancellationToken);
         
         return CustomObjectResult.FromResult(requestResult);
     }
@@ -78,28 +89,37 @@ public class GroupController(ISender sender) : ApiController(sender)
     [HttpPut]
     [Route("{groupId}/users")]
     [Authorize]
-    public async Task<IActionResult> AddUserToGroupAsync([FromBody]AddUserToGroupCommand request)
+    public async Task<IActionResult> AddUserToGroupAsync([FromBody]AddUserToGroupCommand request, CancellationToken cancellationToken)
     {
-        var requestResult = await Sender.Send(request);
+        var requestResult = await Sender.Send(request, cancellationToken);
         
         return CustomObjectResult.FromResult(requestResult);
     }
 
     [HttpDelete]
-    [Route("{groupId}/users")]
+    [Route("{groupId}/users/{userId}")]
     [Authorize]
-    public async Task<IActionResult> RemoveUserFromGroupAsync([FromBody]RemoveUserFromGroupCommand request)
+    public async Task<IActionResult> RemoveUserFromGroupAsync([FromRoute] Guid groupId, [FromRoute]Guid userId, CancellationToken cancellationToken)
     {
-        var requestResult = await Sender.Send(request);
+        var request = new RemoveUserFromGroupCommand()
+        {
+            GroupId = groupId,
+            UserToRemoveId = userId
+        };
+        var requestResult = await Sender.Send(request, cancellationToken);
         
         return CustomObjectResult.FromResult(requestResult);
     }
 
     [HttpDelete]
     [Route("{groupId}")]
-    public async Task<IActionResult> DeleteGroupAsync([FromBody]DeleteGroupCommand request)
+    public async Task<IActionResult> DeleteGroupAsync([FromRoute]Guid groupId, CancellationToken cancellationToken)
     {
-        var requestResult = await Sender.Send(request);
+        var request = new DeleteGroupCommand()
+        {
+            GroupId = groupId
+        };
+        var requestResult = await Sender.Send(request, cancellationToken);
         
         return CustomObjectResult.FromResult(requestResult);
     }
