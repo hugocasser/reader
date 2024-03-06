@@ -1,12 +1,8 @@
-using System.Collections;
 using Application.Abstractions.Repositories;
-using Application.Abstractions.Services;
 using Application.Abstractions.Services.Cache;
 using Application.Dtos.Views;
-using Domain.Abstractions;
 using Domain.Models;
 using Infrastructure.Common;
-using Mapster;
 
 namespace Infrastructure.Persistence.Repositories;
 

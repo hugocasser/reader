@@ -17,4 +17,11 @@ public class Book : IEntity
     public Guid CategoryId { get; set; }
     [BsonElement("author_id")]
     public Guid AuthorId { get; set; }
+<<<<<<< Updated upstream
+=======
+    [BsonIgnore]
+    public string AuthorFirstName { get; set; } = string.Empty;
+    [BsonIgnore]
+    public string AuthorLastName { get; set; } = string.Empty;
+>>>>>>> Stashed changes
 }

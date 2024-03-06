@@ -31,6 +31,7 @@ public class BooksService(
             throw new BadRequestException("Category with this id not found");
         }
 
+<<<<<<< Updated upstream
         var bookModel = new Book
         {
             Id = Guid.NewGuid(),
@@ -40,6 +41,13 @@ public class BooksService(
             AuthorId = requestDto.AuthorId,
             CategoryId = requestDto.CategoryId
         };
+=======
+        var bookModel = new Book();
+
+        _mapper.Map(requestDto, bookModel);
+        bookModel.AuthorId = author.Id;
+        bookModel.CategoryId = category.Id;
+>>>>>>> Stashed changes
 
         await _booksRepository.AddAsync(bookModel, cancellationToken);
 

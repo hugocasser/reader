@@ -1,10 +1,9 @@
 using System.Text.Json;
-using Application.Abstractions.Services;
 using Application.Abstractions.Services.Cache;
-using Infrastructure.Configurations;
+using Application.Configurations;
 using StackExchange.Redis;
 
-namespace Infrastructure.Services;
+namespace Application.Services;
 
 public class RedisCacheService(IConnectionMultiplexer _connection) : IRedisCacheService
 {

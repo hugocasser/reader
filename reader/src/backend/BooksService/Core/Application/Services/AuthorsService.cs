@@ -66,6 +66,20 @@ public class AuthorsService(IAuthorsRepository _authorsRepository, IMapper _mapp
         
         await _authorsRepository.UpdateAsync(authorToUpdate, cancellationToken);
 
+<<<<<<< Updated upstream
+=======
+        var authorBooks = await _authorsRepository.GetBooksByAuthorAsync(requestDto.Id, cancellationToken);
+
+        foreach (var book in authorBooks)
+        {
+            book.AuthorFirstName = authorToUpdate.FirstName;
+            book.AuthorLastName = authorToUpdate.LastName;
+            await _booksRepository.UpdateAsync(book, cancellationToken);
+        }
+        
+        await session.CommitTransactionAsync(cancellationToken);
+        
+>>>>>>> Stashed changes
         return _mapper.Map<AuthorViewDto>(authorToUpdate);
     }
 }

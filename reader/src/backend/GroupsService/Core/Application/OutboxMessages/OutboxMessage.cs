@@ -1,4 +1,4 @@
-namespace Infrastructure.OutboxMessages;
+namespace Application.OutboxMessages;
 
 public class OutboxMessage
 {
