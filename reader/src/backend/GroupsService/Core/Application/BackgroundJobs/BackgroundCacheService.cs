@@ -1,18 +1,18 @@
 using Application.Abstractions.Repositories;
 using Application.Abstractions.Services.Cache;
+using Application.Common;
 using Domain.Models;
-using Infrastructure.Common;
 using Microsoft.Extensions.Logging;
 
 namespace Application.BackgroundJobs;
 
-public class BackgroundCacheService(ILogger<BackgroundCacheService> _logger, IRedisCacheService _redisCacheService,
+public class BackgroundCacheService(ILogger<BackgroundCacheService> _logger, ICashedNotesService _cashedNotesService,
     INotesRepository _notesRepository)
 {
     public async Task PushNotes()
     {
         _logger.LogInformation("--> Start pushing notes...");
-        var cachedNotes = _redisCacheService.GetSetAsync<Note>(CachingKeys.Notes).ToBlockingEnumerable();
+        var cachedNotes = await _cashedNotesService.GetNotesAsync(100, default);
 
         foreach (var cachedNote in cachedNotes)
         {
