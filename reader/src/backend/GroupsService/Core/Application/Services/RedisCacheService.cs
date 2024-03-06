@@ -1,6 +1,9 @@
 using System.Text.Json;
 using Application.Abstractions.Services.Cache;
+using Application.Common;
 using Application.Configurations;
+using Domain.Abstractions;
+using Domain.Models;
 using StackExchange.Redis;
 
 namespace Application.Services;
@@ -8,95 +11,36 @@ namespace Application.Services;
 public class RedisCacheService(IConnectionMultiplexer _connection) : IRedisCacheService
 {
     private readonly IDatabase _database = _connection.GetDatabase();
-    public async Task<T?> CreateAsync<T>(string key, Func<Task<T?>> factory)
+    public async Task CreateAsync(Entity entity)
     {
-        var value = await factory.Invoke();
-        
-        if (value is null)
-        {
-            return value;
-        }
-        
-        await _database.StringSetAsync(key, JsonSerializer.Serialize(value), DistributedCacheConfiguration.CacheExpiryTime);
-        
-        return value;
+        await _database.StringSetAsync(CachingKeys.NoteById(entity.Id), JsonSerializer.Serialize(entity));
     }
 
-    public async Task<T?> GetOrCreateAsync<T>(string key, Func<Task<T?>> factory)
+    public async Task<bool> RemoveAsync(Guid key)
     {
-        var cachedMember = await _database.StringGetAsync(key);
-        if (cachedMember.IsNullOrEmpty)
-        {
-            return await CreateAsync(key, factory);
-        }
-
-        return JsonSerializer.Deserialize<T>(cachedMember!);
+        return await _database.KeyDeleteAsync(CachingKeys.NoteById(key));
     }
 
-    public async Task SetAddRangeAsync<T>(string key, Func<IQueryable<T>> factory)
+    public async Task RemoveRangeAsync(IEnumerable<Guid> keys)
     {
-        var values = factory.Invoke();
-        
-        foreach (var value in values)
+        foreach (var key in keys)
         {
-            await _database.SetAddAsync(key, JsonSerializer.Serialize(value));
+            await _database.KeyDeleteAsync(CachingKeys.NoteById(key));   
         }
     }
 
-    public async IAsyncEnumerable<T> GetSetOrAddRangeAsync<T>(string key, Func<IQueryable<T>> factory)
+    public async Task<Note?> GetByIdAsync(Guid key)
     {
-        var length = _database.SetLength(key);
-        if (length <= 0)
-        {
-            var values = factory.Invoke();
-            foreach (var value in values)
-            {
-                await _database.SetAddAsync(key, JsonSerializer.Serialize(value));
-                
-                yield return value;
-            }
-        }
+        var note = await _database.StringGetAsync(CachingKeys.NoteById(key));
         
-        foreach (var member in await _database.SetMembersAsync(key))
-        {
-            yield return JsonSerializer.Deserialize<T>(member);
-        }
+        return note.IsNull ? null : JsonSerializer.Deserialize<Note?>(note);
     }
 
-    public async IAsyncEnumerable<T> GetSetAsync<T>(string key)
+    public async Task<IEnumerable<Note?>> GetRangeAsync(int count)
     {
-        foreach (var member in  await _database.SetMembersAsync(key))
-        {
-            yield return JsonSerializer.Deserialize<T>(member);
-        }
-    }
-
-    public void SetRemoveMember<T>(string key, T member) where T : IEquatable<T>
-    {
-        _database.SetRemove(key, JsonSerializer.Serialize(member));
-    }
-
-    public async Task SetAddAsync<T>(string key, Func<Task<T?>> factory)
-    {
-        var value = await factory.Invoke();
-        if (value is null)
-        {
-            return;
-        }
+        var lst = await _database.ListRangeAsync(CachingKeys.Notes, 0, long.Parse(count.ToString()));
+        var notes = lst.Select(note => JsonSerializer.Deserialize<Note?>(note.ToString()));
         
-        await _database.SetAddAsync(key, JsonSerializer.Serialize(value));
-    }
-
-    public async Task SetAddAsync<T>(string key, T obj)
-    {
-        await _database.SetAddAsync(key, JsonSerializer.Serialize(obj));
-    }
-
-    public IQueryable<T> GetSetOrAddRangeQueryableAsync<T>(string key, Func<IQueryable<T>> factory)
-    {
-        _database.KeyExpire(key, DistributedCacheConfiguration.CacheExpiryTime);
-        var collection = GetSetOrAddRangeAsync(key, factory);
-        
-        return collection.ToBlockingEnumerable().AsQueryable();
+        return notes;
     }
 }

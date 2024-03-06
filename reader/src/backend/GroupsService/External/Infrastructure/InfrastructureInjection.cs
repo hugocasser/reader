@@ -11,7 +11,6 @@ using Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Quartz;
 using StackExchange.Redis;
 
 namespace Infrastructure;
@@ -48,7 +47,6 @@ public static class InfrastructureInjection
         services.AddScoped<INotesRepository, NotesRepository>();
         services.AddScoped<IBooksRepository, BooksRepository>();
         services.AddScoped<IUserBookProgressRepository, UserBookProgressRepository>();
-        services.Decorate<INotesRepository, CashedNotesRepository>();
         
         return services;
     }

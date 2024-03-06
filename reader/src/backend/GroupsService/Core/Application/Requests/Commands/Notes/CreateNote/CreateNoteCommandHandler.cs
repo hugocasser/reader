@@ -1,6 +1,7 @@
 using Application.Abstractions;
 using Application.Abstractions.Repositories;
 using Application.Abstractions.Services;
+using Application.Abstractions.Services.Cache;
 using Application.Common;
 using Application.Dtos.Views;
 using Application.Results;
@@ -11,8 +12,9 @@ using MediatR;
 
 namespace Application.Requests.Commands.Notes.CreateNote;
 
-public class CreateNoteCommandHandler(IBooksRepository _booksRepository, INotesRepository _notesRepository,
-    IGroupsRepository _groupsRepository, IUserBookProgressRepository _userBookProgressRepository, IMapper _mapper)
+public class CreateNoteCommandHandler(IBooksRepository _booksRepository,
+    IGroupsRepository _groupsRepository, IUserBookProgressRepository _userBookProgressRepository,
+    ICashedNotesService _cashedNotesService, IMapper _mapper)
     : IRequestHandler<CreateNoteCommand, Result<NoteViewDto>>
 {
     public async Task<Result<NoteViewDto>> Handle(CreateNoteCommand command, CancellationToken cancellationToken)
@@ -55,8 +57,7 @@ public class CreateNoteCommandHandler(IBooksRepository _booksRepository, INotesR
         var note = new Note();
         note.CreateNote(command.NotePosition, progress, command.Text);
         
-        await _notesRepository.CreateAsync(note, cancellationToken);
-        await _notesRepository.SaveChangesAsync(cancellationToken);
+        await _cashedNotesService.CreateNoteAsync(note, cancellationToken);
         
         return new Result<NoteViewDto>(_mapper.Map<NoteViewDto>(note));
     }
