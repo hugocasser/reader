@@ -1,11 +1,10 @@
 using Application.Abstractions.Repositories;
-using Application.Abstractions.Services;
 using Application.Abstractions.Services.Cache;
 using Domain.Models;
 using Infrastructure.Common;
 using Microsoft.Extensions.Logging;
 
-namespace Infrastructure.BackgroundJobs;
+namespace Application.BackgroundJobs;
 
 public class BackgroundCacheService(ILogger<BackgroundCacheService> _logger, IRedisCacheService _redisCacheService,
     INotesRepository _notesRepository)
