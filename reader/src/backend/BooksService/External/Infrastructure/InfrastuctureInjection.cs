@@ -23,7 +23,7 @@ public static class InfrastuctureInjection
     
     public static IServiceCollection AddKafkaProducer(this IServiceCollection services)
     {
-        services.AddScoped<IKafkaProducerService<Book>, KafkaProducerService>();
+        services.AddScoped<IKafkaProducerService<Book>, KafkaProducerBooksService>();
         services.AddOptions<KafkaProducerOptions>()
             .BindConfiguration(nameof(KafkaProducerOptions))
             .ValidateDataAnnotations()

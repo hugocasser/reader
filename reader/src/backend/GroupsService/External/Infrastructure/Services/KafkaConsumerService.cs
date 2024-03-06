@@ -41,6 +41,7 @@ public class KafkaConsumerService
         {
             var result = _consumer.Consume(cancellationToken);
             await ProcessMessage(result.Message.Key,result.Message.Value, result.TopicPartition.Topic, cancellationToken);
+            _consumer.Commit();
         }
         
         _consumer.Close();

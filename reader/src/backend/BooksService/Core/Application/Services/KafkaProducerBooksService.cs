@@ -11,10 +11,10 @@ using Newtonsoft.Json;
 
 namespace Application.Services;
 
-public class KafkaProducerService(
+public class KafkaProducerBooksService(
     IOptions<KafkaProducerOptions> _kafkaOptions,
     IMapper _mapper,
-    ILogger<KafkaProducerService> _logger)
+    ILogger<KafkaProducerBooksService> _logger)
     : IKafkaProducerService<Book>, IDisposable
 {
     private readonly IProducer<string, string> _producer =  new ProducerBuilder<string, string>(new ProducerConfig()

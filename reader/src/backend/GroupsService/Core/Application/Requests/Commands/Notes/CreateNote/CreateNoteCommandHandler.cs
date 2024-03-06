@@ -57,7 +57,7 @@ public class CreateNoteCommandHandler(IBooksRepository _booksRepository,
         var note = new Note();
         note.CreateNote(command.NotePosition, progress, command.Text);
         
-        await _cashedNotesService.CreateNoteAsync(note, cancellationToken);
+        await _cashedNotesService.CreateNoteAsync(note);
         
         return new Result<NoteViewDto>(_mapper.Map<NoteViewDto>(note));
     }
