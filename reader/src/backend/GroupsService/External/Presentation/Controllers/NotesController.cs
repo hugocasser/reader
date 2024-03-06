@@ -1,4 +1,3 @@
-using Application.Abstractions.Repositories;
 using Application.Dtos.Requests;
 using Application.Dtos.Views;
 using Application.Requests.Commands.Notes.CreateNote;
@@ -16,29 +15,29 @@ using Presentation.Common;
 
 namespace Presentation.Controllers;
 [Route("notes/")]
-public class NotesController(ISender sender, IBooksRepository _booksRepository) : ApiController(sender)
+public class NotesController(ISender sender) : ApiController(sender)
 {
     [HttpGet]
-    [Route($"{{userId}}")]
     [Authorize]
-    public async Task<IActionResult> GetAllUserNotes([FromQuery]PageSettingsRequestDto request)
+    [Route("users/")]
+    [Authorize]
+    public async Task<IActionResult> GetAllUserNotes([FromRoute]PageSettingsRequestDto request, CancellationToken cancellationToken)
     {
         var command = new GetAllUserNotesQuery()
         {
             PageSettingsRequestDto = request
         };
-        
-        var requestResult = await Sender.Send(command);
+        var requestResult = await Sender.Send(command, cancellationToken);
         
         return CustomObjectResult.FromResult(requestResult);
     }
     
     [HttpGet]
     [Authorize]
-    [Route("{groupId}/users/{userId}")]
-    public async Task<IActionResult> GetAllUserNotesInGroup([FromQuery]GetAllUserNotesInGroupQuery request)
+    [Route("groups/{groupId}/users/{userId}")]
+    public async Task<IActionResult> GetAllUserNotesInGroup([FromQuery]GetAllUserNotesInGroupQuery request, CancellationToken cancellationToken)
     {
-        var requestResult = await Sender.Send(request);
+        var requestResult = await Sender.Send(request, cancellationToken);
         
         return CustomObjectResult.FromResult(requestResult);
     }
@@ -46,10 +45,10 @@ public class NotesController(ISender sender, IBooksRepository _booksRepository) 
     [HttpGet]
     [Authorize]
     [Route($"{{noteId}}")]
-    public async Task<IActionResult> GetNoteById([FromRoute]Guid noteId)
+    public async Task<IActionResult> GetNoteById([FromRoute]Guid noteId, CancellationToken cancellationToken)
     {
         var command = new GetNoteByIdQuery(noteId);
-        var requestResult = await Sender.Send(command);
+        var requestResult = await Sender.Send(command, cancellationToken);
         
         return CustomObjectResult.FromResult(requestResult);
     }
@@ -57,9 +56,15 @@ public class NotesController(ISender sender, IBooksRepository _booksRepository) 
     [HttpGet]
     [Authorize]
     [Route("{groupId}")]
-    public async Task<IActionResult> GetAllGroupNotes([FromQuery]GetAllGroupNotesQuery request)
+    public async Task<IActionResult> GetAllGroupNotes
+        ([FromRoute]Guid groupId, [FromQuery]ReadingPageSettingsRequestDto pageSettingsRequestDto, CancellationToken cancellationToken)
     {
-        var requestResult = await Sender.Send(request);
+        var request = new GetAllGroupNotesQuery()
+        {
+            GroupId = groupId,
+            PageSettingsRequestDto = pageSettingsRequestDto
+        };
+        var requestResult = await Sender.Send(request, cancellationToken);
         
         return CustomObjectResult.FromResult(requestResult);
     }
@@ -67,30 +72,35 @@ public class NotesController(ISender sender, IBooksRepository _booksRepository) 
     [Authorize]
     [HttpPost]
     [Route("{noteId}")]
-    public async Task<IActionResult> CreateNote([FromBody]CreateNoteCommand command)
+    public async Task<IActionResult> CreateNote([FromBody]CreateNoteCommand command, CancellationToken cancellationToken)
     {
-        var requestResult = await Sender.Send(command);
+        var requestResult = await Sender.Send(command, cancellationToken);
         
         return CustomObjectResult.FromResult(requestResult);
     }
     
     [HttpDelete]
-    [Route("{noteId}")]
-    public async Task<IActionResult> DeleteNote([FromBody]DeleteNoteCommand command)
+    [Route("groups/{groupId}/notes/{noteId}")]
+    public async Task<IActionResult> DeleteNote([FromRoute] Guid groupId, [FromRoute] Guid noteId, CancellationToken cancellationToken)
     {
-        var requestResult = await Sender.Send(command);
+        var request = new DeleteNoteCommand()
+        {
+            GroupId = groupId,
+            NoteId = noteId
+        };
+        var requestResult = await Sender.Send(request, cancellationToken);
         
         return CustomObjectResult.FromResult(requestResult);
     }
 
     [HttpGet]
-    [Route("{groupId}/books/{bookId}")]
+    [Route("groups/{groupId}/books/{bookId}")]
     [Authorize]
     public async Task<IActionResult> GetNotesByGroupIdAndBookIdAsync([FromRoute]Guid groupId, [FromRoute]Guid bookId,
-        [FromQuery]ReadingPageSettingsRequestDto pageSettingsRequestDto)
+        [FromQuery]ReadingPageSettingsRequestDto pageSettingsRequestDto, CancellationToken cancellationToken)
     {
         var request = new GetAllGroupBookNotesQuery(groupId, bookId, pageSettingsRequestDto);
-        var requestResult = await Sender.Send(request);
+        var requestResult = await Sender.Send(request, cancellationToken);
         
         return CustomObjectResult.FromResult(requestResult);
     }

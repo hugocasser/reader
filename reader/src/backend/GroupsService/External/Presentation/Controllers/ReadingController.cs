@@ -6,14 +6,19 @@ using Presentation.Common;
 
 namespace Presentation.Controllers;
 
-[Route("reading")]
+[Route("reading/")]
 public class ReadingController(ISender sender) : ApiController(sender)
 {
     [HttpPost]
-    [Route("{bookId}/start")]
-    public async Task<IActionResult> StartReading([FromBody]StartReadingBookCommand command)
+    [Route("groups/{groupId}/books/{bookId}")]
+    public async Task<IActionResult> StartReading([FromRoute]Guid groupId, [FromRoute]Guid bookId, CancellationToken cancellationToken)
     {
-        var requestResult = await Sender.Send(command);
+        var request = new StartReadingBookCommand()
+        {
+            GroupId = groupId,
+            BookId = bookId
+        };
+        var requestResult = await Sender.Send(request, cancellationToken);
         
         return CustomObjectResult.FromResult(requestResult);
     }

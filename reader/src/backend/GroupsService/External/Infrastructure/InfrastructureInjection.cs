@@ -1,9 +1,10 @@
 using Application.Abstractions.Repositories;
 using Application.Abstractions.Services;
 using Application.Abstractions.Services.Cache;
+using Application.BackgroundJobs;
+using Application.Services;
 using Hangfire;
 using MicrosoftOptions = Microsoft.Extensions.Options.Options;
-using Infrastructure.BackgroundJobs;
 using Infrastructure.Interceptor;
 using Infrastructure.Options;
 using Infrastructure.Persistence;
@@ -12,7 +13,6 @@ using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Quartz;
 using StackExchange.Redis;
 
 namespace Infrastructure;
@@ -24,7 +24,6 @@ public static class InfrastructureInjection
         services.AddSingleton<ConvertDomainEventsToOutboxMessagesInterceptor>();
         services.AddReadDbContext(dbOptions);
         services.AddWriteDbContext(dbOptions);
-        services.AddJobs();
         
         return services;
     }
@@ -50,7 +49,6 @@ public static class InfrastructureInjection
         services.AddScoped<INotesRepository, NotesRepository>();
         services.AddScoped<IBooksRepository, BooksRepository>();
         services.AddScoped<IUserBookProgressRepository, UserBookProgressRepository>();
-        services.Decorate<INotesRepository, CashedNotesRepository>();
         
         return services;
     }
@@ -78,25 +76,6 @@ public static class InfrastructureInjection
         });
         
         return services;
-    }
-    
-    private static IServiceCollection AddJobs(this IServiceCollection services)
-    {
-        services.AddQuartz(configure =>
-        {
-            var jobKey = new JobKey(nameof(ProcessOutboxMessagesJob));
-            configure
-                .AddJob<ProcessOutboxMessagesJob>(jobKey)
-                .AddTrigger(trigger =>
-                    trigger.ForJob(jobKey)
-                        .WithSimpleSchedule(schedule =>
-                            schedule.WithIntervalInSeconds(60).RepeatForever())); 
-            configure.UseMicrosoftDependencyInjectionJobFactory();
-        });
-
-        services.AddQuartzHostedService();
-        
-       return services;
     }
 
     private static void AddHangfireProcesses()

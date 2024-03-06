@@ -1,16 +1,15 @@
-using System.Text.Json;
 using Application.Abstractions.Services;
 using Application.Dtos.KafkaMessages;
+using Application.Options;
 using Confluent.Kafka;
 using Domain.Abstractions.Events;
 using Domain.Models;
-using Infrastructure.Options;
 using MapsterMapper;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
-namespace Infrastructure.Services;
+namespace Application.Services;
 
 public class KafkaProducerService(
     IOptions<KafkaProducerOptions> _kafkaOptions,

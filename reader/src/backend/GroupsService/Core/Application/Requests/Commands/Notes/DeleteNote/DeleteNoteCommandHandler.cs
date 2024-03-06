@@ -1,7 +1,4 @@
-using Application.Abstractions;
-using Application.Abstractions.Repositories;
-using Application.Abstractions.Services;
-using Application.Common;
+using Application.Abstractions.Services.Cache;
 using Application.Results;
 using Application.Results.Errors;
 using Domain.DomainEvents.Notes;
@@ -9,12 +6,12 @@ using MediatR;
 
 namespace Application.Requests.Commands.Notes.DeleteNote;
 
-public class DeleteNoteCommandHandler(INotesRepository notesRepository)
+public class DeleteNoteCommandHandler(ICashedNotesService _cashedNotesService)
     : IRequestHandler<DeleteNoteCommand, Result<string>>
 {
     public async Task<Result<string>> Handle(DeleteNoteCommand command, CancellationToken cancellationToken)
     {
-        var note = await notesRepository.GetByIdAsync(command.NoteId, cancellationToken);
+        var note = await _cashedNotesService.GetByIdAsync(command.NoteId, cancellationToken);
 
         if (note is null)
         {
@@ -28,8 +25,7 @@ public class DeleteNoteCommandHandler(INotesRepository notesRepository)
 
         note.Delete(new NoteDeletedEvent(note.Id));
         
-        await notesRepository.DeleteByIdAsync(command.NoteId, cancellationToken);
-        await notesRepository.SaveChangesAsync(cancellationToken);
+        await _cashedNotesService.DeleteByIdAsync(command.NoteId, cancellationToken);
 
         return new Result<string>();
     }
