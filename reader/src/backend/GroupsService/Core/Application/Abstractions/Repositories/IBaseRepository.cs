@@ -1,7 +1,5 @@
-using System.Collections;
 using Application.Dtos.Views;
 using Domain.Abstractions;
-using Mapster;
 
 namespace Application.Abstractions.Repositories;
 

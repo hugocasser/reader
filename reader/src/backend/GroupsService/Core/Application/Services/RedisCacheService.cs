@@ -1,7 +1,6 @@
 using System.Text.Json;
 using Application.Abstractions.Services.Cache;
 using Application.Common;
-using Application.Configurations;
 using Domain.Abstractions;
 using Domain.Models;
 using StackExchange.Redis;
@@ -38,8 +37,8 @@ public class RedisCacheService(IConnectionMultiplexer _connection) : IRedisCache
 
     public async Task<IEnumerable<Note?>> GetRangeAsync(int count)
     {
-        var lst = await _database.ListRangeAsync(CachingKeys.Notes, 0, long.Parse(count.ToString()));
-        var notes = lst.Select(note => JsonSerializer.Deserialize<Note?>(note.ToString()));
+        var cachedNoted = await _database.ListRangeAsync(CachingKeys.Notes, 0, long.Parse(count.ToString()));
+        var notes = cachedNoted.Select(note => JsonSerializer.Deserialize<Note?>(note.ToString()));
         
         return notes;
     }

@@ -1,6 +1,8 @@
 using System.Reflection;
+using Application.Abstractions.Services.Cache;
 using Application.BackgroundJobs;
 using Application.PipelineBehaviors;
+using Application.Services;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,6 +19,7 @@ public static class ApplicationInjection
         services.AddValidators();
         services.AddPipelineBehaviors();
         services.AddJobs();
+        services.AddCacheServices();
         
         return services;
     }
@@ -58,6 +61,14 @@ public static class ApplicationInjection
         services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ClaimsMapperPipelineBehavior<,>));
         services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingPipelineBehavior<,>));
         services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>));
+        
+        return services;
+    }
+
+    private static IServiceCollection AddCacheServices(this IServiceCollection services)
+    {
+        services.AddScoped<ICashedNotesService, CachedNotesService>();
+        services.AddScoped<IRedisCacheService, RedisCacheService>();
         
         return services;
     }

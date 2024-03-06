@@ -6,7 +6,7 @@ namespace Application.Services;
 
 public class CachedNotesService(INotesRepository _notesRepository, IRedisCacheService _redisCacheService) : ICashedNotesService
 {
-    public async Task CreateNoteAsync(Note note, CancellationToken cancellationToken)
+    public async Task CreateNoteAsync(Note note)
     {
         await _redisCacheService.CreateAsync(note);
     }
@@ -33,8 +33,13 @@ public class CachedNotesService(INotesRepository _notesRepository, IRedisCacheSe
         return cashedNote;
     }
 
-    public async Task<IEnumerable<Note?>> GetNotesAsync(int count, CancellationToken cancellationToken)
+    public async Task<IEnumerable<Note?>> GetNotesAsync(int count)
     {
         return await _redisCacheService.GetRangeAsync(count);
+    }
+
+    public async Task RemoveRangeAsync(IEnumerable<Guid> keys)
+    {
+        await _redisCacheService.RemoveRangeAsync(keys);
     }
 }
