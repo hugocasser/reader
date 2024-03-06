@@ -1,19 +1,19 @@
 using Application.Abstractions.Repositories;
-using Application.Abstractions.Services;
 using Application.Abstractions.Services.Cache;
+using Application.Common;
 using Domain.Models;
-using Infrastructure.Common;
+using MapsterMapper;
 using Microsoft.Extensions.Logging;
 
-namespace Infrastructure.BackgroundJobs;
+namespace Application.BackgroundJobs;
 
-public class BackgroundCacheService(ILogger<BackgroundCacheService> _logger, IRedisCacheService _redisCacheService,
-    INotesRepository _notesRepository)
+public class BackgroundCacheService(ILogger<BackgroundCacheService> _logger, ICashedNotesService _cashedNotesService,
+    INotesRepository _notesRepository, IMapper _mapper)
 {
     public async Task PushNotes()
     {
         _logger.LogInformation("--> Start pushing notes...");
-        var cachedNotes = _redisCacheService.GetSetAsync<Note>(CachingKeys.Notes).ToBlockingEnumerable();
+        var cachedNotes = await _cashedNotesService.GetNotesAsync(100);
 
         foreach (var cachedNote in cachedNotes)
         {
@@ -23,6 +23,8 @@ public class BackgroundCacheService(ILogger<BackgroundCacheService> _logger, IRe
             await _notesRepository.CreateAsync(cachedNote, default);
         }
 
+        var keys = _mapper.Map<IEnumerable<Guid>>(cachedNotes);
+        await _cashedNotesService.RemoveRangeAsync(keys);
         await _notesRepository.SaveChangesAsync(default);
         
         _logger.LogInformation("--> End pushing notes...");

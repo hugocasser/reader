@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Infrastructure.Options;
+namespace Application.Options;
 
 public sealed class MongoOptions
 {

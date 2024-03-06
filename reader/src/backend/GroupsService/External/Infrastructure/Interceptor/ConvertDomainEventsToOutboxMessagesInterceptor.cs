@@ -1,11 +1,8 @@
-using System.Text.Json;
+
+using Application.OutboxMessages;
 using Domain.Abstractions;
-using Domain.Models;
-using Infrastructure.OutboxMessages;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Newtonsoft.Json;
-using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Infrastructure.Interceptor;
 

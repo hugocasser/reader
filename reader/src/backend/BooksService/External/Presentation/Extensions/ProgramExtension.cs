@@ -22,7 +22,6 @@ public static class ProgramExtension
             .AddKafkaProducer()
             .AddIdentity(builder.Configuration)
             .AddOptions()
-            .AddBackgroundJobs()
             .AddFluentValidationAutoValidation()
             .AddSwagger()
             .AddCors(options => options.ConfigureAllowAllCors())

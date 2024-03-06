@@ -2,7 +2,7 @@ using Application.Abstractions.Services;
 using Microsoft.Extensions.Logging;
 using Quartz;
 
-namespace Infrastructure.BackgroundJobs;
+namespace Application.BackgroundJobs;
 
 public class ConsumeMessagesFromKafkaJob(ILogger<ConsumeMessagesFromKafkaJob> _logger,
     IKafkaConsumerService _kafkaConsumerService) : IJob

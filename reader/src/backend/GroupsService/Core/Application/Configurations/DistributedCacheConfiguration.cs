@@ -1,4 +1,4 @@
-namespace Infrastructure.Configurations;
+namespace Application.Configurations;
 
 public static class DistributedCacheConfiguration
 {

@@ -1,4 +1,4 @@
-using Infrastructure.Options;
+using Application.Options;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 

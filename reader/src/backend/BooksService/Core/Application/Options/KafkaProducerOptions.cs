@@ -1,7 +1,6 @@
 using System.ComponentModel.DataAnnotations;
-using Confluent.Kafka;
 
-namespace Infrastructure.Options;
+namespace Application.Options;
 
 public class KafkaProducerOptions
 {

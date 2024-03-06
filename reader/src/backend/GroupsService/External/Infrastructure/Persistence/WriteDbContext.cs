@@ -1,6 +1,6 @@
+using Application.OutboxMessages;
 using Domain.Models;
 using Infrastructure.Interceptor;
-using Infrastructure.OutboxMessages;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence;

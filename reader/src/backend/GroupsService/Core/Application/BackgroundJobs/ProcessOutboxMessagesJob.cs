@@ -1,25 +1,21 @@
+using Application.Abstractions.Repositories;
 using Domain.Abstractions.Events;
-using Infrastructure.Persistence;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Quartz;
 
-namespace Infrastructure.BackgroundJobs;
+namespace Application.BackgroundJobs;
 
 [DisallowConcurrentExecution]
-public class ProcessOutboxMessagesJob(WriteDbContext _writeDbContext, ReadDbContext _readDbContext,
+public class ProcessOutboxMessagesJob(IOutboxRepository _outboxRepository,
     ILogger<ProcessOutboxMessagesJob> _logger, IPublisher _publisher) : IJob
 {
     public async Task Execute(IJobExecutionContext context)
     {
         _logger.LogInformation($"--- Started syncing databases --- \n" +
             $"DateTime: {DateTime.Now}");
-        var messages = await _writeDbContext.OutboxMessages
-            .Where(message => message.ProcessedAt == null)
-            .Take(50)
-            .ToListAsync(context.CancellationToken);
+        var messages = await _outboxRepository.GetNotProcessedAsync(50, context.CancellationToken);
         
         foreach (var message in messages)
         {
@@ -37,7 +33,7 @@ public class ProcessOutboxMessagesJob(WriteDbContext _writeDbContext, ReadDbCont
                     $"DateTime:{DateTime.Now}");
                 
                 message.ProcessedAt = DateTime.UtcNow;
-                _writeDbContext.OutboxMessages.Update(message);
+                await _outboxRepository.UpdateAsync(message, context.CancellationToken);
                 
                 return;
             }
@@ -53,12 +49,11 @@ public class ProcessOutboxMessagesJob(WriteDbContext _writeDbContext, ReadDbCont
             }
             
             message.ProcessedAt = DateTime.UtcNow;
-            _writeDbContext.OutboxMessages.Update(message);
+            await _outboxRepository.UpdateAsync(message, context.CancellationToken);
             
             _logger.LogInformation($"Message {message.Id} processed at {DateTime.Now}");
         }
-        await _writeDbContext.SaveChangesAsync(context.CancellationToken);
-        await _readDbContext.SaveChangesAsync(context.CancellationToken);
+        await _outboxRepository.SaveChangesAsync(context.CancellationToken);
         
         _logger.LogInformation($"--- Finished syncing databases --- \n" +
             $"DateTime: {DateTime.Now}");
