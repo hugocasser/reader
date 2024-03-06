@@ -1,7 +1,6 @@
 using Application.Abstractions.Repositories;
 using Application.Abstractions.Services;
 using Application.Common;
-using Application.Dtos.KafkaMessages;
 using Confluent.Kafka;
 using Domain.Models;
 using Infrastructure.Options;

@@ -4,6 +4,8 @@ using Application.Dtos.Requests;
 using Application.Dtos.Requests.Books;
 using Application.Dtos.Views.Books;
 using Application.Exceptions;
+using Domain.Abstractions.Events;
+using Domain.Events;
 using Domain.Models;
 using MapsterMapper;
 
@@ -13,7 +15,8 @@ public class BooksService(
     IBooksRepository _booksRepository,
     IAuthorsRepository _authorsRepository,
     ICategoriesRepository _categoriesRepository,
-    IMapper _mapper) : IBooksService
+    IMapper _mapper,
+    IKafkaProducerService<Book> _producer) : IBooksService
 {
     public async Task<BookInfoViewDto> CreateBookAsync(CreateBookRequestDto requestDto, CancellationToken cancellationToken)
     {
@@ -32,17 +35,9 @@ public class BooksService(
         }
 
         var bookModel = new Book();
-        
-        bookModel.CreateBook
-            (requestDto.Description,
-                requestDto.Name,
-                requestDto.Text,
-                requestDto.AuthorId,
-                requestDto.CategoryId,
-                author.FirstName,
-                author.LastName);
 
         await _booksRepository.AddAsync(bookModel, cancellationToken);
+        await _producer.SendEventAsync(new GenericDomainEvent<Book>(bookModel, EventType.Created));
         
         return _mapper.Map<BookInfoViewDto>(bookModel);
     }
@@ -88,6 +83,7 @@ public class BooksService(
         }
         
         await _booksRepository.DeleteByIdAsync(id, cancellationToken);
+        await _producer.SendEventAsync(new GenericDomainEvent<Book>(book, EventType.Deleted));
     }
 
     public async Task<BookInfoViewDto> UpdateBookInfoAsync(UpdateBookInfoRequestDto infoRequestDto,
@@ -131,7 +127,7 @@ public class BooksService(
         book.Text = requestDto.Text;
         
         await _booksRepository.UpdateAsync(book, cancellationToken);
-
+        await _producer.SendEventAsync(new GenericDomainEvent<Book>(book, EventType.Updated));
         return _mapper.Map<BookViewDto>(book);
     }
 

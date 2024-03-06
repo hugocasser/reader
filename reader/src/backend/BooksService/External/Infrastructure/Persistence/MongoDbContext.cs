@@ -1,6 +1,6 @@
+using Application.Options;
 using Domain.Abstractions.Events;
 using Domain.Models;
-using Infrastructure.Options;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 

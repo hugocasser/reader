@@ -4,6 +4,8 @@ using Application.Dtos.Requests;
 using Application.Dtos.Requests.Authors;
 using Application.Dtos.Views.Authors;
 using Application.Exceptions;
+using Domain.Abstractions.Events;
+using Domain.Events;
 using Domain.Models;
 using MapsterMapper;
 using MongoDB.Driver;
@@ -14,7 +16,7 @@ public class AuthorsService
     (IAuthorsRepository _authorsRepository, 
         IBooksRepository _booksRepository,
         IMapper _mapper,
-        IMongoClient _client): IAuthorsService
+        IKafkaProducerService<Book> _producer): IAuthorsService
 {
     public async Task<AuthorViewDto> CreateAuthorAsync(CreateAuthorRequestDto requestDto, CancellationToken cancellationToken)
     {
@@ -66,9 +68,6 @@ public class AuthorsService
 
     public async Task<AuthorViewDto> UpdateAuthorAsync(UpdateAuthorRequestDto requestDto, CancellationToken cancellationToken)
     {
-        using var session = await _client.StartSessionAsync(cancellationToken: cancellationToken);
-        session.StartTransaction();
-        
         var author = await _authorsRepository.GetByIdAsync(requestDto.Id, cancellationToken) as Author;
 
         if (author is null)
@@ -84,11 +83,9 @@ public class AuthorsService
 
         foreach (var book in authorBooks)
         {
-            book.UpdateBook(authorFirstName: author.FirstName, authorLastName: author.LastName);
             await _booksRepository.UpdateAsync(book, cancellationToken);
+            await _producer.SendEventAsync(new GenericDomainEvent<Book>(book, EventType.Updated));
         }
-        
-        await session.CommitTransactionAsync(cancellationToken);
         
         return _mapper.Map<AuthorViewDto>(authorToUpdate);
     }
