@@ -8,6 +8,7 @@ using Mapster;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Presentation.Extensions;
 using Presentation.Hubs;
 using Presentation.Middleware;
 using MicrosoftOptions = Microsoft.Extensions.Options.Options;
