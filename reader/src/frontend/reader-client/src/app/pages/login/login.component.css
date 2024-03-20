@@ -1,0 +1,108 @@
+.login {
+  font-family: JetBrains mono;
+  z-index: 900;
+  background-color: rgb(0, 0, 0, 0.75);
+  height: 100%;
+  top: 0;
+  left: 0;
+  width: 100%;
+  color: rgb(255, 255, 255, 1);
+  font-size: 20px;
+  padding: 20px;
+  position:fixed; 
+  align-items: end;
+  columns: 1;
+  }
+
+  .login p{
+    margin-top: 9%;
+    vertical-align:middle;
+    margin-left: 43%;
+  }
+
+  .login-inputs{
+    margin-top: 1%;
+    align-items: end;
+    background-color: white;
+    width: 400px;
+    height: 410px;
+    margin-left: 35%;
+    border-radius: 5%;
+    position: absolute;
+  }
+
+  .login a{
+    background-color: rgb(0, 0, 0, 0.0);
+    border: 0;
+    color: rgb(0, 0, 0, 0.5);
+    font-family: JetBrains mono;
+    font-size: 12px;
+    cursor: pointer;
+    margin-left: 110px;
+    margin-top: 20px;
+  }
+
+  .login a:hover{
+    color: black;
+    text-decoration:underline;
+  }
+
+
+  .login-inputs input{
+    background-color: rgb(0, 0, 0, 0.5);
+    margin-left: 50px;
+    font-size: 15px;
+    width: 300px;
+    height: 40px;
+    margin-top: 0px;
+    border-radius: 3%;
+    border-color: black;
+    color: white;
+    border:10px
+  }
+
+  .login-inputs p{
+    margin-left: 15%;
+    font-family: JetBrains mono;
+    color: black;
+    font-size: 15px;
+  }
+
+  .login-inputs button{
+    margin-top: 40px;
+    background-color: black;
+    color: white;
+    border: 3px;
+    border-radius: 10%;
+    border-color: black;
+    width: 70px;
+    height: 30px;
+    margin-left: 160px;
+    font-family: JetBrains mono;
+    margin-bottom: 20px;
+  }
+
+  .login-inputs button:disabled{
+    background-color: whitesmoke;
+  }
+
+
+  .login-inputs button:enabled:hover{
+    color: rgb(0, 0, 0);
+    background-color: rgb(207, 207, 207);
+    border-color: black;
+  }
+
+  .error{
+    margin-top: 10px;
+    height: 10px;
+  }
+
+  .error label{
+    color: red;
+    font-size: 10px;
+    margin-left: 60px;
+  }
+
+  
+

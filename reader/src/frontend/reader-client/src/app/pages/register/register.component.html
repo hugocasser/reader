@@ -1,0 +1,37 @@
+<div class="register" *ngIf="isVisible">
+    <p>join us!</p>
+    <form [formGroup]="registerForm" (ngSubmit)="Register()">
+        <div class="register-inputs">
+            <p></p>
+            <p>email:</p>
+            <input type="email" formControlName="email">
+            <div class="register-label">
+                <label *ngIf="formControls['email'].errors?.['required']  && (formControls['email'].dirty || formControls['email'].touched)">Email is required.</label>
+                <label *ngIf="formControls['email'].errors?.['email']  && (formControls['email'].dirty || formControls['email'].touched)">Invalid email format.</label>
+            </div>
+            <p>password:</p>
+            <input type="password" formControlName="password">
+            <div class="register-label">
+                <label *ngIf="formControls['password'].errors?.['required'] && formControls['password'].invalid && (formControls['password'].dirty || formControls['password'].touched)">Password required.</label>
+                <label *ngIf="formControls['password'].errors?.['minlength'] && (formControls['password'].dirty || formControls['password'].touched)">Invalid password format.</label>
+            </div>
+            <p>firstName:</p>
+            <input type="text" formControlName="firstName">
+            <div class="register-label">
+                <label *ngIf="formControls['firstName'].invalid && (formControls['firstName'].dirty || formControls['firstName'].touched) && formControls['firstName'].errors?.['required']">First Name is required.</label>
+            </div>
+            <p>lastName:</p>
+            <input type="text" formControlName="lastName">
+            <div class="register-label">
+                <label *ngIf="formControls['lastName'].errors?.['required'] && (formControls['lastName'].dirty || formControls['lastName'].touched)">Last Name is required.</label>
+            </div>
+            <p>username:</p>
+            <input type="text" formControlName="userName">
+            <div class="register-label">
+                <label *ngIf="formControls['userName'].errors?.['required'] && (formControls['userName'].dirty || formControls['userName'].touched)">Username is required.</label>
+            </div>
+            <button type="submit" [disabled]="registerForm.invalid">submit</button>
+            <a (click)="RedirectToLogin()">already have an account? login!</a>
+        </div>
+    </form>
+</div>

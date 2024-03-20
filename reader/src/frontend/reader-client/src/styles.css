@@ -1,1 +1,8 @@
-/* You can add global styles to this file, and also import other style files */
+@font-face{
+    font-family: JetBrains Mono;
+    src: url(assets/JetBrainsMono-Bold.ttf) format(truetype);
+}
+.app-root-page{
+    background-color: whitesmoke;
+}
+
