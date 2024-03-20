@@ -1,0 +1,15 @@
+
+<div class="menu" (animationend)="toggleMenu()">
+<button (mouseenter)="toggleMenu()" [ngClass]="{ 'clicked': isClicked }">
+    <mat-icon>menu</mat-icon>
+</button>
+<div class="menu-items" *ngIf="isOpen" (mouseleave)="toggleMenu()">
+    <ul>
+      <li *ngFor="let item of menuItems" [ngStyle]="{ 'background-image': 'url('+item.path+')'}" (click)="redirect(item.link)" >
+       {{ item.name }}
+      </li>
+    </ul>
+  </div>
+</div>
+
+  
