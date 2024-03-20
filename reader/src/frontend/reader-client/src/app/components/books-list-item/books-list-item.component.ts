@@ -10,4 +10,5 @@ import { NgIf } from '@angular/common';
 })
 export class BooksListItemComponent {
   @Input() isVisible = false
+  @Input() book: any = {};
 }

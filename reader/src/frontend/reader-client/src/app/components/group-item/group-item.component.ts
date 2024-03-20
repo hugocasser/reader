@@ -25,7 +25,7 @@ export class GroupItemComponent implements OnInit{
   }
 
   openInfo(){
-    sessionStorage.setItem('groupId', 'idididid')
+    sessionStorage.setItem('groupId', this.groupId);
     this.router.navigateByUrl('/group/:id');
   }
 

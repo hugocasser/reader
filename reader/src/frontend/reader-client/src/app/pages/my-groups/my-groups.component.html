@@ -1,2 +1,12 @@
 <app-page-header [title]="title"></app-page-header>
 <app-menu></app-menu>
+<div class="groups">
+    <div *ngFor="let group of groups">
+    <app-group-item [name]="group.name" [admin] = "group.admin" [users] = "group.users" (mouseenter)="setId(group.id)"))></app-group-item>
+    </div>
+</div>
+<div class="groups-buttons-container">
+    <button (click)="prev()">prev</button>
+    <p>curentPage: {{curentPage}}</p>
+    <button (click)="next()">next</button>
+</div>

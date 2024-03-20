@@ -40,6 +40,7 @@ prev(){
 }
 
 private GetBooks(){
+  this.curentBooks = [];
   try {
     let books = this.booksService.GetAllBooks(this.curentPage, this.pageSize);
     this.curentBooks = books;

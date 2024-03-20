@@ -1,17 +1,8 @@
 <div class="books-list">
     <p (click)="BooksList()">Books:</p>
     <div class="scroll">
-        <app-books-list-item [isVisible]="isVisible" (click)="redirectToReading()"></app-books-list-item>
-        <app-books-list-item [isVisible]="isVisible"></app-books-list-item>
-        <app-books-list-item [isVisible]="isVisible"></app-books-list-item>
-        <app-books-list-item [isVisible]="isVisible"></app-books-list-item>
-        <app-books-list-item [isVisible]="isVisible"></app-books-list-item>
-        <app-books-list-item [isVisible]="isVisible"></app-books-list-item>
-        <app-books-list-item [isVisible]="isVisible"></app-books-list-item>
-        <app-books-list-item [isVisible]="isVisible"></app-books-list-item>
-        <app-books-list-item [isVisible]="isVisible"></app-books-list-item>
-        <app-books-list-item [isVisible]="isVisible"></app-books-list-item>
-        <app-books-list-item [isVisible]="isVisible"></app-books-list-item>
-        <app-books-list-item [isVisible]="isVisible"></app-books-list-item>
+        <ul *ngFor="let book of books">
+            <app-books-list-item [isVisible]="isVisible" (click)="redirectToReading(book.id)" [book] = "book"></app-books-list-item>
+        </ul>
     </div>
 </div>

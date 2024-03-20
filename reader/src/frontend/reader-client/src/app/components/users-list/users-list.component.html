@@ -1,19 +1,8 @@
 <div class="users-list">
     <p (click)="UsersList()">Users:</p>
     <div class="scroll">
-        <app-users-list-item [isVisible]="isVisible"></app-users-list-item>
-        <app-users-list-item [isVisible]="isVisible"></app-users-list-item>
-        <app-users-list-item [isVisible]="isVisible"></app-users-list-item>
-        <app-users-list-item [isVisible]="isVisible"></app-users-list-item>
-        <app-users-list-item [isVisible]="isVisible"></app-users-list-item>
-        <app-users-list-item [isVisible]="isVisible"></app-users-list-item>
-        <app-users-list-item [isVisible]="isVisible"></app-users-list-item>
-        <app-users-list-item [isVisible]="isVisible"></app-users-list-item>
-        <app-users-list-item [isVisible]="isVisible"></app-users-list-item>
-        <app-users-list-item [isVisible]="isVisible"></app-users-list-item>
-        <app-users-list-item [isVisible]="isVisible"></app-users-list-item>
-        <app-users-list-item [isVisible]="isVisible"></app-users-list-item>
-        <app-users-list-item [isVisible]="isVisible"></app-users-list-item>
-        <app-users-list-item [isVisible]="isVisible"></app-users-list-item>
+        <ul *ngFor="let user of users">
+            <app-users-list-item [isVisible]="isVisible" [user] = user></app-users-list-item>
+        </ul>
     </div>
 </div>

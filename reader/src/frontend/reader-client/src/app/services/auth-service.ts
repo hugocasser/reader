@@ -1,10 +1,11 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { catchError, map } from 'rxjs/operators';
 import { throwError } from 'rxjs';
 import { User } from '../models/user'; 
 import { enviroment } from './enviroment/enviroment'; // Import your User model if applicable
 import { AuthTokens } from '../models/auth-token';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +16,7 @@ export class AuthService {
   private userIdKey = 'userId';
   private JwtTokenKey = 'token';  
   private errors = '';
+  private router = inject(Router);
 
   constructor(private http: HttpClient) {}
 
@@ -89,6 +91,7 @@ export class AuthService {
     localStorage.removeItem('jwtToken');
     localStorage.removeItem('userId');
     localStorage.removeItem('refreshToken');
+    this.router.navigateByUrl('/login');
   }
 
   private storeTokens(tokens: { id: string, token: string, refreshToken: string }) {

@@ -10,4 +10,5 @@ import { NgIf } from '@angular/common';
 })
 export class UsersListItemComponent {
   @Input() isVisible = true
+  @Input() user:any = {}
 }

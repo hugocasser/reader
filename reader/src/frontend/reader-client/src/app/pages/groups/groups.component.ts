@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { GroupItemComponent } from '../../components/group-item/group-item.component';
 import { GroupService } from '../../services/groups-service';
 import { AuthService } from '../../services/auth-service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-groups',
@@ -26,16 +27,33 @@ export class GroupsComponent implements OnInit {
   }
 
   next(){
-
+    this.curentPage++;
+    this.getGroups();
   }
 
   prev(){
-
+    this.curentPage--;
+    this.getGroups();
   }
 
   getGroups(){
+    this.groups = [];
     try{
       let groups = this.groupsService.getAllGroups(this.curentPage, Number(this.pageSize));
+      groups.forEach(this.groups.push);
+    }
+    catch{
+      let result = this.auth.refreshToken();
+      if (result === true){
+        let groups = this.groupsService.getAllGroups(this.curentPage, Number(this.pageSize));
+        groups.forEach(this.groups.push);
+      }
+      else{
+        this.auth.logout();
+      }
+    }
+    finally{
+      
     }
   }
 }

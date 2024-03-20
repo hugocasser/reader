@@ -20,6 +20,13 @@ export class GroupService {
         );
     }
 
+    getGroupByUserId(pageSize: number, page: number): Observable<any[]> {
+        let userId = localStorage.getItem('userId');
+        return this.http.get<any[]>(`${this.apiUrl}/user/${userId}?page=${page}&pageSize=${pageSize}` ,  {headers: {Authorization: `Bearer ${this.auth.getJwtToken()}`}}).pipe(
+            catchError(this.handleError)
+        );
+    }
+
     updateGroup(groupId: string, groupData: any): Observable<any> {
         return this.http.put<any>(`${this.apiUrl}/${groupId}`, groupData,  {headers: {Authorization: `Bearer ${this.auth.getJwtToken()}`}}).pipe(
             catchError(this.handleError)
@@ -38,8 +45,8 @@ export class GroupService {
         );
     }
 
-    getAllGroups(pageSize: number, page: number): Observable<any> {
-        return this.http.get<any>(`${this.apiUrl}?page=${page}&pageSize=${pageSize}` ,  {headers: {Authorization: `Bearer ${this.auth.getJwtToken()}`}}).pipe(
+    getAllGroups(pageSize: number, page: number): Observable<any[]> {
+        return this.http.get<any[]>(`${this.apiUrl}?page=${page}&pageSize=${pageSize}` ,  {headers: {Authorization: `Bearer ${this.auth.getJwtToken()}`}}).pipe(
             catchError(this.handleError)
         );
     }
