@@ -1,0 +1,15 @@
+<app-page-header [title]="title"></app-page-header>
+<app-menu></app-menu>
+<div class="books">
+<div  *ngFor="let book of curentBooks">
+    <app-book-item [authorFirtstName]="book.authorFristName"
+     [authorLastName]="book.authorLastName" [bookName]="book.name" [description]="book.description" [bookId]="book.id"></app-book-item>
+</div>
+</div>
+<div class="books-buttons-container">
+    <button (click)="prev()">prev</button>
+    <p>curentPage: {{curentPage+1}}</p>
+    <button (click)="next()">next</button>
+</div>
+
+

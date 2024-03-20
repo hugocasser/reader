@@ -1,0 +1,8 @@
+<div class="book-info" *ngIf="isVisible" (click)="isVisible = !isVisible">
+    <div class="info">
+        <p>Book: {{name}}</p>
+        <p>Author: {{authorFirstName}} {{authorLastName}}</p>
+        <p>Description: {{description}}</p>
+    </div>
+</div>
+

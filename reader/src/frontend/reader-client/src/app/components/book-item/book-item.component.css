@@ -1,0 +1,66 @@
+
+.book-item{
+    font-family: JetBrains Mono;
+    border-radius: 5%;
+    background-color: rgb(255, 255, 255);
+    color: black;
+    height: 235px;
+    width: 250px; 
+    text-align: center;
+    align-self: center;
+    align-items:end;
+    display:grid;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    border-right: 5px solid#000;
+    border-bottom: 5px solid#000;
+    margin: 30px;
+}
+
+.book-item p{
+    color: rgb(0, 0, 0);
+    margin-top: 1px;
+    text-decoration: none;
+}
+.book-item button{
+    background-color: black;
+    font-family: JetBrains Mono;
+    color: white;
+    border-radius: 10px;
+    box-shadow: none;
+    border-color: white;
+    font-size: 20px;
+    width: 100px;
+    height: 40px;
+    cursor:pointer;
+    margin-left: 75px;
+    margin-right: 75px;
+    margin-bottom: 5px;
+    z-index: 0;
+    background-position: left center;
+    background-repeat: no-repeat;
+    background-size: 20px 20px;
+    position: relative;
+    padding-left: 30px; 
+    border: 2px solid white;
+}
+
+
+.book-item button:hover{
+    background-color: rgb(255, 255, 255);
+    color: black;
+    border: 2px solid #000;
+}
+.book-item picture{
+    margin-top: 10px;
+}
+
+.icon {
+    position: absolute;
+    left: 5px; /* Adjust the position of the icon */
+    top: 50%;
+    transform: translateY(-50%);
+    height: 18px;
+    width: 18px;
+  }

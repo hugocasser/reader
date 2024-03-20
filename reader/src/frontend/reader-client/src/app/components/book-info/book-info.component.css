@@ -1,0 +1,50 @@
+.book-info{
+    font-family: JetBrains mono;
+    z-index: 900;
+    background-color: rgb(0, 0, 0, 0.75);
+    height: 100%;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: whitesmoke;
+    font-size: 20px;
+    padding: 20px;
+    position: fixed; 
+}
+
+.info{
+    display: flex;
+    flex-wrap: wrap;
+    width: 500px;
+    min-height: 400px;
+    max-height: 600px;
+    align-self: center;
+    position: absolute;
+    z-index: 999;
+    background-color: rgb(0, 0, 0);
+    border-radius: 5%;
+    overflow-y: scroll;
+    scroll-margin-left: 20px;
+}
+
+.info ::-webkit-scrollbar{
+    color: white;
+    background-color: white;
+    margin-right: 20px;
+}
+
+.info p{
+    text-indent: 20px;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    margin-left: 25px;
+    margin-right: 25px;
+    width: 450px;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    font-size: 20px;
+}
+  
