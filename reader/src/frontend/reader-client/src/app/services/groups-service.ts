@@ -10,7 +10,7 @@ import { GroupItem } from "../models/groups";
     providedIn: 'root'
 })
 export class GroupService {
-    private apiUrl = enviroment.Group + '/api/groups';
+    private apiUrl = enviroment.Group + 'api/groups';
     private auth = inject(AuthService);
 
     constructor(private http: HttpClient) { }
@@ -38,8 +38,8 @@ export class GroupService {
         );
     }
 
-    getAllGroups(): Observable<any> {
-        return this.http.get<any>(this.apiUrl,  {headers: {Authorization: `Bearer ${this.auth.getJwtToken()}`}}).pipe(
+    getAllGroups(pageSize: number, page: number): Observable<any> {
+        return this.http.get<any>(`${this.apiUrl}?page=${page}&pageSize=${pageSize}` ,  {headers: {Authorization: `Bearer ${this.auth.getJwtToken()}`}}).pipe(
             catchError(this.handleError)
         );
     }

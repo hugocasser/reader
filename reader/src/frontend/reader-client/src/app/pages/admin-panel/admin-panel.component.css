@@ -1,0 +1,142 @@
+.admin-panel-switch{
+    display: flex;
+    align-items: center;
+    font-family: JetBrains Mono;
+    position: absolute;
+    background-color: whitesmoke;
+}
+
+.admin-panel-switch button{
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    background-color: rgb(234, 234, 234);
+    border-left: 2px solid black;
+    border-right: 2px solid black;
+    border-top: 4px solid black;
+    border-bottom: 4px solid rgb(0, 0, 0);
+    width: 371px;
+    height: 70px;
+    font-family: JetBrains Mono;
+    font-size: 20px;
+}
+
+.admin-panel-switch button:disabled{
+    border-bottom: 0px solid white;
+    background-color: rgb(255, 255, 255);
+    color: black;
+}
+
+.admin-panel{
+    background-color: white;
+    border-radius: 5%;
+    height: 800px;
+    width: 1110px;
+    overflow-y: scroll;
+    margin-top: 10%;
+    margin-left: 15%;
+    margin-right: 20%;
+    border-left: 4px solid black;
+    border-right: 4px solid black;
+    border-bottom: 4px solid black;
+}
+
+.panel-info{
+    background-color: white;
+    margin-top: 70px;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.panel-info ul li{
+    margin-left: 10px;
+}
+
+.panel-info-item{
+    border: 4px solid #000;
+    border-radius: 10px;
+    width: 200px;
+    align-items: center;
+    height: 230px;
+}
+.panel-info-item label{
+    margin-top: 20px;
+    color: black;
+    font-family: JetBrains Mono;
+    text-align: center;
+    font-size: 15px;
+    overflow-x: hidden;
+    width: 200px;
+    white-space: nowrap;
+    height: 20px;
+    cursor:pointer;
+}
+
+.search input{
+    border-radius: 10px;
+    border: 4px solid #000;
+    font-family: JetBrains Mono;
+    font-size: 15px;
+    text-align: center;
+    width: 800px;
+    height: 40px;
+    margin-left: 155px;
+    margin-top: 20px;
+}
+
+.search{
+    width: 1110px;
+    height: 200px;
+}
+
+.search ul{
+    overflow-y: scroll;
+}
+
+.panel-info-item p{
+    font-size: 18px;
+    font-family: JetBrains Mono;
+    white-space: nowrap;
+    cursor: pointer;
+    overflow-x: hidden;
+}
+
+.panel-info button{
+    font-family: JetBrains Mono;
+    height: 40px;
+    width: 120px;
+    border-radius: 10px;
+    border: 2px solid #000;
+    background-color: black;
+    color: white;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    font-size: 15px;
+    margin-left: 30px;
+}
+
+.panel-info :hover{
+    background-color: rgb(255, 255, 255);
+    color: black;
+}
+
+.tooltip {
+    background-color: rgb(0, 0, 0, 0.7);
+    color: white;
+    text-align: center;
+    padding: 5px;
+    border-radius: 6px;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    flex-wrap: wrap-;
+    position: absolute;
+    z-index: 100;
+  }
+
+  .tooltip-container {
+    position: relative;
+    z-index: 100;
+  }
+

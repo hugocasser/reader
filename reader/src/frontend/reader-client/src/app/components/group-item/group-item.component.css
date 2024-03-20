@@ -1,0 +1,68 @@
+.group-item{
+    font-family: JetBrains Mono;
+    border-radius: 5%;
+    background-color: rgb(255, 255, 255);
+    color: black;
+    height: fit-content;
+    width: fit-content; 
+    text-align: center;
+    align-self: center;
+    align-items:end;
+    display:grid;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    margin: 10px;
+    border-right: 5px solid #000;
+    border-bottom: 5px solid #000;
+    margin: 10px;
+}
+
+.group-item button{
+    font-size: 18px;
+    font-family: JetBrains mono;
+    margin-bottom: 15px;
+    background-color: black;
+    color: white;
+    border-radius: 10px;
+    border: 0px;
+    width: fit-content;
+    margin-left: 72px;
+    height: 30px;
+    background-position: left center;
+    background-repeat: no-repeat;
+    background-size: 20px 20px;
+    position: relative;
+    padding-left: 30px; 
+    margin-top: 20px;
+}
+
+.group-item label{
+    margin-left: 50px;
+    margin-right: 50px;
+    margin-top: 5px;
+}
+
+.group-item button:hover{
+    background-color: rgb(255, 255, 255);
+    color: black;
+    border: 2px solid #000;
+}
+
+.border{
+    border-radius: 5%;
+    background-color: black;
+    height: 240px;
+    height: fit-content;
+    width: fit-content; 
+    margin: 10px;
+}
+
+.icon {
+    position: absolute;
+    left: 5px; /* Adjust the position of the icon */
+    top: 50%;
+    transform: translateY(-50%);
+    height: 18px;
+    width: 18px;
+  }

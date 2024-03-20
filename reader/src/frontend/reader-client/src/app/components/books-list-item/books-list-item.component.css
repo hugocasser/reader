@@ -1,0 +1,18 @@
+.item{
+    background-color: white;
+    color: black;
+    font-family: JetBrains mono;
+    column-count: 2;
+    max-width: 500px;
+    border-top: 4px solid #000 ;
+    display: flex;
+    cursor:pointer;
+}
+
+.item:hover{
+    background-color: rgb(177, 177, 177);
+} 
+.item p{
+    column-count: 1;
+    margin-right: 10px;
+}

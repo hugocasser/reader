@@ -1,0 +1,12 @@
+<div class="group-item">
+    <picture>
+        <img src='assets/group.png' width="100" height="100">
+    </picture>
+    <label>Group: {{name}}</label>
+    <label>Admin: {{admin}}</label>
+    <label>Users: {{users}}</label>
+    <label>Books: {{books}}</label>
+    <button (click)='openInfo()' (mouseenter)="isHover = true" (mouseleave)="isHover = false">
+        <img class="icon" alt="Icon" src='{{infoLink()}}'>
+        about</button>
+</div>

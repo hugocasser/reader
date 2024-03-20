@@ -1,0 +1,31 @@
+<app-page-header [title]="title"></app-page-header>
+<app-menu></app-menu>
+<div class="admin-panel">
+    <div class="admin-panel-switch">
+        <button [disabled]="users" (click)="switchToUsers()">Users</button>
+        <button [disabled]="books" (click)="switchToBooks()">Books</button>
+        <button [disabled]="groups" (click)="switchToGroups()">Groups</button>
+    </div>
+    <div class="panel-info">
+        <ul *ngFor="let item of itemsCollection">
+            <div class="panel-info-item">
+                <li>
+                    <p>{{item.type}}</p>
+                    <p>name:{{item.name}}</p>
+                    <div class="tooltip-container">
+                        <span class="tooltip" *ngIf="item.isVisibleId">id: {{item.id}}</span>
+                    </div>
+                    <p (click)="copyFromP(item)" (mouseenter)="showTooltipId(item)" (mouseleave)="hideTooltipId(item)">
+                        id: {{item.id.slice(0, 10)}}...</p>
+                    <div class="tooltip-container">
+                        <span class="tooltip" *ngIf="item.isVisibleInfo">{{item.info}}</span>
+                    </div>
+                    <label (click)="copyFromLabel(item)" (mouseenter)="showTooltipInfo(item)"
+                        (mouseleave)="hideTooltipInfo(item)">{{item.info.slice(0, 18)}}...</label>
+                    <button (click)="delete(item)">delete</button>
+                </li>
+            </div>
+
+        </ul>
+    </div>
+</div>
