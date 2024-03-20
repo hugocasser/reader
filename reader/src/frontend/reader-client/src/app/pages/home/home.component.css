@@ -1,0 +1,22 @@
+.about{
+    font-family: JetBrains Mono;
+    margin-left: 130px;
+    margin-top: 10%;
+    display: flex;
+    flex-wrap: wrap;
+    width: fit-content;
+    text-align: center;
+    height: 100%;
+    align-self: flex-end;
+}
+.about b{
+    font-size: 250%;
+    margin-top: 15%;
+    margin-left: 200px;
+    text-decoration: dashed;
+}
+.about p{
+    font-size: 150%;
+    margin-left: 50px;
+    margin-right: 50px;
+}

@@ -1,0 +1,29 @@
+<app-page-header [title]="title"></app-page-header>
+<app-menu></app-menu>
+<div class="settings">
+    <div class="inputField">
+    <a>Page Size: </a>
+    <input type="number" (input)='onPageSizeInputChange($event)' (keypress)="onKeyPress($event)"
+     required min="0" required max="52" [(ngModel)]="pageSize" name="pageSize">
+     <p *ngIf ='isPageSizeWrong'>min size is 8, max size is 52</p>
+    </div>
+    <div class="inputField">
+        <a>Reading page size (in symbols count): </a>
+        <input type="number" (input)='onReadingPageSizeInputChange($event)' (keypress)="onKeyPress($event)"
+         required min="100" required max="10000" [(ngModel)]="readingPageSize" name ="readingPageSize">
+         <p *ngIf ='isReadingPageSizeWrong'>min size is 100, max size is 5000</p>
+    </div>
+    <div class="inputField">
+        <a>Text size in reading page: </a>
+        <input type="number" (input)='onSymbolsSizeInputChange($event)' (keypress)="onKeyPress($event)"
+         required min="7" required max="96" [(ngModel)]="symbolsSize" name ="sympolsSize">
+         <p *ngIf ='isSymbolsSizeWrong'>min size is 7, max size is 96</p>
+    </div>
+    <div class="inputField">
+        <a>Send notes to group automatic: </a>
+        <input type="checkbox" 
+          [(ngModel)]="sendNotesAutomatic"
+           name ="sendNotesAutomatic" width="30" height="100">
+    </div>
+    <button (click)='saveSettings($event)'>Save</button>
+</div>

@@ -1,0 +1,55 @@
+.settings{
+    border-radius: 7%;
+    background-color: white;
+    height: 500px;
+    width: 500px;
+    margin-top: 12%;
+    margin-left: 480px;
+    font-family: JetBrains mono;
+    flex-direction: column;
+    display: grid;
+}
+
+.settings button{
+    color: white;
+    background-color: black;
+    border-radius: 10px;
+    width: 100px;
+    height: 40px;
+    font-size: 15px;
+    margin-bottom: 10px;
+    margin-left: 200px;
+    font-family: JetBrains mono;
+    border-style:double;
+    border-color: white;
+}
+
+.settings button:hover{
+    background-color: white;
+    color: black;
+    border-color: black;
+}
+
+.settings input{
+    margin-top: 10%;
+    height: 30px;
+    width: 55px;
+    font-size: 15px;
+    align-self: start;
+    font-family: JetBrains mono;
+    text-align: center;
+    border-color: black;
+    border-style:double;
+    box-shadow: none;
+    border-radius: 10px;
+}
+
+.inputField{
+    display:inline;
+    margin-left: 50px;
+}
+
+.inputField p{
+    font-size: 11px;
+    color: red;
+}
