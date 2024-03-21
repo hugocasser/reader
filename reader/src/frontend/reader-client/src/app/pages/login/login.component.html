@@ -2,13 +2,13 @@
   <p>login please</p>
   <div class="login-inputs" [formGroup]="loginForm" (ngSubmit)="Login()">
     <p>email:</p>  
-    <input type="email" formControlName="email"> <!-- Add formControlName for email -->
+    <input type="email" formControlName="email">
     <div class="error">
       <label *ngIf="f['email'].errors?.['required'] && f['email'].invalid && (f['email'].dirty || f['email'].touched)">Email is required.</label>
       <label *ngIf="f['email'].errors?.['email'] && f['email'].invalid && (f['email'].dirty || f['email'].touched)">Invalid email format.</label>
     </div>
     <p>password:</p>
-    <input type="password" formControlName="password"> <!-- Add formControlName for password -->
+    <input type="password" formControlName="password">
     <div class="error">
       <label *ngIf="f['password'].errors?.['required'] && f['password'].invalid && (f['password'].dirty || f['password'].touched)">Password is required.</label>
       <label *ngIf="f['password'].errors?.['minlength'] && f['password'].invalid && (f['password'].dirty || f['password'].touched)">Password must be at least 8 characters.</label>

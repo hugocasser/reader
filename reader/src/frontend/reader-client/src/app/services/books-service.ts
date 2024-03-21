@@ -14,18 +14,20 @@ export class BooksService {
     readonly route = enviroment.Book;
     errors ='';
 
-    GetAllBooks(page: number, pageSize: number) : Book[] | any{
-
+    GetAllBooks(page: number, pageSize: number) : Book[]{
+        let resp: Book[] = [];
         this.http.get<Book[]>(`${this.route}books?page=${page}&pageSize=${pageSize}`, {headers: {Authorization: `Bearer ${this.auth.getJwtToken()}`}})
         .subscribe({
             next: (response) => {
-                return response;
+                resp = response;
             },
             error: (error) =>{
-                return this.handleError(error);
+                this.handleError(error);
             },
             complete:() =>{}
         });
+
+        return resp;
     }
 
     GetBooksByAuthor(authorId: string, page: number, pageSize: number): Book[] |any{

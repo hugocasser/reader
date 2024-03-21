@@ -14,7 +14,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
   styleUrl: './login.component.css'
 })
 
-export class LoginComponent implements OnInit {
+export class LoginComponent{
   loginForm: FormGroup; 
   isVisible: boolean = true; 
   authService = inject(AuthService); // Define FormGroup for the form
@@ -27,22 +27,19 @@ export class LoginComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {
-    this.loginForm = this.formBuilder.group({
-      email: ['', [Validators.required, Validators.email]], // Add validators for email
-      password: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(32)]] // Add validators for password
-    });
-  }
-
   // Convenience getter for easy access to form controls
   get f() { return this.loginForm.controls; }
 
   Login() {
     if (this.loginForm.invalid) {
-      return; // Do not proceed if form is invalid
+      return; 
     }
 
-    // Implement login logic
+    try {
+      this.authService.login(this.loginForm.value.email, this.loginForm.value.password);
+    } catch (error) {
+      this.isOk = false;
+    }
   }
 
   RedirectToRegister(){

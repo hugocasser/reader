@@ -45,10 +45,18 @@ export class GroupService {
         );
     }
 
-    getAllGroups(pageSize: number, page: number): Observable<any[]> {
-        return this.http.get<any[]>(`${this.apiUrl}?page=${page}&pageSize=${pageSize}` ,  {headers: {Authorization: `Bearer ${this.auth.getJwtToken()}`}}).pipe(
+    getAllGroups(pageSize: number, page: number): any[] {
+        let resp: any[] = [];
+        this.http.get<any[]>(`${this.apiUrl}?page=${page}&pageSize=${pageSize}` ,  {headers: {Authorization: `Bearer ${this.auth.getJwtToken()}`}}).pipe(
             catchError(this.handleError)
-        );
+        ).subscribe({
+            next: (data) => {
+                resp = data;
+            },
+            complete: () => {
+            }
+        });
+        return resp;
     }
 
     private handleError(error: HttpErrorResponse) {

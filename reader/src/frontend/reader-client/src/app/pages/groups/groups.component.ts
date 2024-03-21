@@ -15,7 +15,7 @@ import { Observable } from 'rxjs';
   styleUrl: './groups.component.css'
 })
 export class GroupsComponent implements OnInit {
-  curentPage: number = 1;
+  curentPage: number = 0;
   pageSize = localStorage.getItem("pageSize");
   groups: any[] = [];
   title = 'Groups';
@@ -29,9 +29,13 @@ export class GroupsComponent implements OnInit {
   next(){
     this.curentPage++;
     this.getGroups();
+
   }
 
   prev(){
+    if (this.curentPage = 1){
+      return;
+    }
     this.curentPage--;
     this.getGroups();
   }
@@ -53,7 +57,7 @@ export class GroupsComponent implements OnInit {
       }
     }
     finally{
-      
+
     }
   }
 }

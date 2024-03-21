@@ -21,7 +21,7 @@ export class BooksComponent implements OnInit{
 @Output() sizeChange = new EventEmitter<number>();  // Available page sizes
 @Input() selectedSize: number = this.availableSizes[0];
 title= 'Books';
-curentPage: number = 1;
+curentPage: number = 0;
 pageSize: number = localStorage.getItem('pageSize') ? Number(localStorage.getItem('pageSize')) : 12;
 curentBooks: any[] = [];
 booksService = inject(BooksService);

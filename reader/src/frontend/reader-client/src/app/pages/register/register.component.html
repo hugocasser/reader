@@ -30,8 +30,12 @@
             <div class="register-label">
                 <label *ngIf="formControls['userName'].errors?.['required'] && (formControls['userName'].dirty || formControls['userName'].touched)">Username is required.</label>
             </div>
+            <div class="register-label">
+                <label *ngIf="isOk">email or username already taken.</label>
+            </div>
             <button type="submit" [disabled]="registerForm.invalid">submit</button>
             <a (click)="RedirectToLogin()">already have an account? login!</a>
         </div>
     </form>
 </div>
+

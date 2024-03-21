@@ -17,6 +17,7 @@ export interface UserItem{
   userId?: string
   firstName?: string
   lastName?: string
+  roles: string[];
 }
 
 export class UserListItem implements AbstractItem{

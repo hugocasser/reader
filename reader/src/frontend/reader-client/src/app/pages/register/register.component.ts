@@ -6,6 +6,7 @@ import { AuthService } from '../../services/auth-service';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NgIf } from '@angular/common';
 
+
 @Component({
   selector: 'app-register',
   standalone: true,
@@ -17,6 +18,7 @@ export class RegisterComponent {
   registerForm: FormGroup;
   isVisible: boolean = true;
   authService = inject(AuthService);
+  isOk = true;
 
   constructor(private router: Router, private formBuilder: FormBuilder){
     this.registerForm = this.formBuilder.group({
@@ -33,10 +35,19 @@ export class RegisterComponent {
   }
 
   Register(){
+    if (this.registerForm.invalid){
+      return;
+    }
+    try {
+      this.authService.register(this.registerForm.value);
+    } catch (error) {
+      this.isOk = false;
+      return;
+    }
+    this.router.navigate(['/login']);
   }
 
   RedirectToLogin(){
     this.router.navigate(['/login']);
-    this.isVisible = true;
   }
 }
