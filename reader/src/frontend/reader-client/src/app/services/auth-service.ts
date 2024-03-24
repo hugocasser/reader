@@ -18,8 +18,6 @@ export class AuthService {
   private errors = '';
   private http = inject(HttpClient)
 
-
-
   register(user: User): string | boolean {
     let y = this.http.post(this.baseUrl + '/register', user)
       .pipe(catchError(this.handleError));
@@ -58,7 +56,10 @@ export class AuthService {
           this.storeTokens(response);
           return true;
         }),
-        catchError(this.handleError));
+        catchError((error: any) => {
+          return error;
+        }
+          ));
 
     return false;
   }

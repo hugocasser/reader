@@ -11,6 +11,9 @@ import { LoginComponent } from './pages/login/login.component';
 import { MyGroupsComponent } from './pages/my-groups/my-groups.component';
 import { LogoutComponent } from './components/logout/logout.component';
 import { AdminPanelComponent } from './pages/admin-panel/admin-panel.component';
+import { CategoryCreatePanelComponent } from './pages/category-create-panel/category-create-panel.component';
+import { BookCreatePanelComponent } from './pages/book-create-panel/book-create-panel.component';
+import { AuthorCreatePanelComponent } from './pages/author-create-panel/author-create-panel.component';
 
 export const routes: Routes = [
     {
@@ -65,5 +68,17 @@ export const routes: Routes = [
     {
         path: 'admin',
         component: AdminPanelComponent
+    },
+    {
+        path: 'categories/create',
+        component: CategoryCreatePanelComponent
+    },
+    {
+        path: 'books/create',
+        component: BookCreatePanelComponent
+    },
+    {
+        path: 'authots/create', 
+        component: AuthorCreatePanelComponent
     }
 ];

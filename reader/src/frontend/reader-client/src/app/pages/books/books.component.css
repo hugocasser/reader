@@ -59,7 +59,7 @@
   .books-buttons-container {
     font-family: JetBrains Mono;
     margin-left: 450px;
-    margin-top: 20px;
+    margin-top: 750px;
     display: flex;
     flex-wrap: wrap;
     width: fit-content;
@@ -68,6 +68,7 @@
   }
 
   .books-buttons-container button{
+    vertical-align:bottom;
     font-family: JetBrains Mono;
     background-color: rgb(255, 255, 255);
     color: rgb(0, 0, 0);

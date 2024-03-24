@@ -27,7 +27,6 @@ export class LoginComponent{
     });
   }
 
-  // Convenience getter for easy access to form controls
   get f() { return this.loginForm.controls; }
 
   Login() {

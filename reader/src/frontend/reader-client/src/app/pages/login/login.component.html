@@ -14,8 +14,8 @@
       <label *ngIf="f['password'].errors?.['minlength'] && f['password'].invalid && (f['password'].dirty || f['password'].touched)">Password must be at least 8 characters.</label>
       <label *ngIf="f['password'].errors?.['maxlength'] &&f['password'].invalid && (f['password'].dirty || f['password'].touched)">Password cannot exceed 32 characters.</label>
     </div>
-    <div class="error" *ngIf="!isOk">
-      <p>Password or email are incorrect.</p>
+    <div class="error" *ngIf="isOk">
+      <p>Password or email are incorrect :(</p>
     </div>
     <button type="submit" [disabled]="loginForm.invalid">login</button>
     <a></a>

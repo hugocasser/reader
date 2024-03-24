@@ -1,0 +1,43 @@
+<div class="author-create-panel">
+    <p>Create new author</p>
+    <form [formGroup]="authorForm" (ngSubmit)="submit()">
+        <div class="create-panel">
+            <label>first name:</label>
+            <input type="text" fromControlName="author">
+            <div class="error-label">
+                <label
+                    *ngIf="formControls['firstName'].invalid && (formControls['firstName'].touched || formControls['firstName'].dirty)">author
+                    is required.</label>
+            </div>
+            <label>last name:</label>
+            <input type="text" fromControlName="category">
+            <div class="error-label">
+                <label
+                    *ngIf="formControls['lastName'].invalid && (formControls['lastName'].touched || formControls['lastName'].dirty)">category
+                    is required.</label>
+            </div>
+            <label>birth date:</label>
+            <input type="date" fromControlName="name">
+            <div class="error-label">
+                <label
+                *ngIf="formControls['birthDate']?.invalid && (formControls['birthDate']?.touched || formControls['birthDate']?.dirty)">name is required.</label>
+            </div> 
+            <label>death date:</label>
+            <input type="date" fromControlName="name">
+            <div class="error-label">
+                <label
+                *ngIf="formControls['deathDate']?.invalid && (formControls['deathDate']?.touched || formControls['deathDate']?.dirty)">name is required.</label>
+            </div> 
+            <label>biography:</label>
+            <input type="text" fromControlName="description">
+            <div class="error-label">
+                <label
+                    *ngIf="formControls['biography'].invalid && (formControls['biography'].touched || formControls['biography'].dirty)">description
+                    is required.</label>
+            </div>
+            <button type="submit" [disabled]="authorForm.invalid">submit</button>
+            <a [routerLink]="['/books/create']" target="_blank">create book</a>
+            <a [routerLink]="['/categories/create']" target="_blank">create category</a>
+        </div>
+    </form>
+</div>

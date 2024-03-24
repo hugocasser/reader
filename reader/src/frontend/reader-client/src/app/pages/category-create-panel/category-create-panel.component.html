@@ -1,0 +1,17 @@
+<div class="category-create-panel">
+    <p>Create new author</p>
+    <form [formGroup]="categoryForm" (ngSubmit)="submit()">
+        <div class="create-panel">
+            <label>name:</label>
+            <input type="text" fromControlName="name">
+            <div class="error-label">
+                <label
+                    *ngIf="formControls['name'].invalid && (formControls['name'].touched || formControls['name'].dirty)">author
+                    is required.</label>
+            </div>
+            <button type="submit" [disabled]="categoryForm.invalid">submit</button>
+            <a [routerLink]="['/books/create']" target="_blank">create book</a>
+            <a [routerLink]="['/authors/create']" target="_blank">create author</a>
+        </div>
+    </form>
+</div>

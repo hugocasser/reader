@@ -1,0 +1,5 @@
+<div class="note" *ngIf="isVisible">
+    <p>Note: {{id.slice(0, 5)}}...</p>
+    <label>{{text}}...</label>
+    <button (click)="delete()">delete</button>
+</div>

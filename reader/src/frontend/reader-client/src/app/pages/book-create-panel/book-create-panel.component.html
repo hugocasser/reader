@@ -1,0 +1,47 @@
+<div class="books-create-panel">
+    <p>Create new book</p>
+    <form [formGroup]="bookForm" (ngSubmit)="submit()">
+        <div class="create-panel">
+            <label>name:</label>
+            <input type="text" fromControlName="name">
+            <div class="error-label">
+                <label
+                *ngIf="formControls[0]?.invalid && (formControls[0]?.touched || formControls[0]?.dirty)">name is required.</label>
+            </div> 
+            <label>author:</label>
+            <input type="text" fromControlName="author">
+            <div class="error-label">
+                <label
+                    *ngIf="formControls['authorId'].invalid && (formControls['authorId'].touched || formControls['authorId'].dirty)">author
+                    is required.</label>
+            </div>
+            <label>category:</label>
+            <input type="text" fromControlName="category">
+            <div class="error-label">
+                <label
+                    *ngIf="formControls['categoryId'].invalid && (formControls['categoryId'].touched || formControls['categoryId'].dirty)">category
+                    is required.</label>
+            </div>
+            <label>description:</label>
+            <input type="text" fromControlName="description">
+            <div class="error-label">
+                <label
+                    *ngIf="formControls['categoryId'].invalid && (formControls['categoryId'].touched || formControls['categoryId'].dirty)">description
+                    is required.</label>
+            </div>
+            <div
+            id="dropArea"
+            (drop)="onDrop($event)"
+            (dragover)="onDragOver($event)"
+            (dragenter)="onDragEnter($event)"
+            (dragleave)="onDragLeave($event)">
+            <p>Upload book.txt</p>
+            <input type="file" id="fileInput" (change)="onFileSelected($event)" style="display: none;">
+            <button (click)="selectFile()">Select File</button>
+            </div>
+            <button type="submit" [disabled]="bookForm.invalid">submit</button>
+            <a [routerLink]="['/authots/create']" target="_blank">create author</a>
+            <a [routerLink]="['/categories/create']" target="_blank">create category</a>
+        </div>
+    </form>
+</div>

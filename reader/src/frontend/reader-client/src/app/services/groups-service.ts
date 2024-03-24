@@ -10,7 +10,7 @@ import { GroupItem } from "../models/groups";
     providedIn: 'root'
 })
 export class GroupService {
-    private apiUrl = enviroment.Group + 'api/groups';
+    private apiUrl = enviroment.Group;
     private auth = inject(AuthService);
 
     constructor(private http: HttpClient) { }

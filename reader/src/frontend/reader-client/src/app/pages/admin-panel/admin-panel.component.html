@@ -2,10 +2,17 @@
 <app-menu></app-menu>
 <div class="admin-panel">
     <div class="admin-panel-switch">
-        <button [disabled]="users" (click)="switchToUsers()">Users</button>
-        <button [disabled]="books" (click)="switchToBooks()">Books</button>
-        <button [disabled]="groups" (click)="switchToGroups()">Groups</button>
+        <div class="button-switch" (click)="switchToUsers()">
+
+        <button [disabled]="!users" >Users</button>
     </div>
+        <div class="button-switch" (click)="switchToBooks()">
+        <button [disabled]="!books">Books</button>        </div>
+        <div  class="button-switch" (click)="switchToGroups($event)" >
+        
+            <button [disabled]="!groups" id="disabledButton">Groups</button>
+        </div>
+        </div>
     <div class="panel-info">
         <ul *ngFor="let item of itemsCollection">
             <div class="panel-info-item">

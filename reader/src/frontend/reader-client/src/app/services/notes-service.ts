@@ -42,8 +42,8 @@ export class NotesService {
       );
   }
 
-  deleteNote(groupId: string, noteId: string): Observable<any> {
-    return this.http.delete<any>(`${this.baseUrl}/groups/${groupId}/notes/${noteId}`,  {headers: {Authorization: `Bearer ${this.auth.getJwtToken()}`}})
+  deleteNote( noteId: string): Observable<any> {
+    return this.http.delete<any>(`${this.baseUrl}/notes/${noteId}`,  {headers: {Authorization: `Bearer ${this.auth.getJwtToken()}`}})
       .pipe(
         catchError(this.handleError)
       );

@@ -26,9 +26,24 @@ export class AdminPanelComponent implements OnInit {
   userService = inject(AuthService);
   searchText: string = '';
   groupsService = inject(GroupService);
-  booksCollection: BookListItem[] = [{ name: 'ada', info: 'ada2', type: 'book', id: 'dasdasdas', toInfo() { }, author: 'ada', elementId: 1 }];
-  groupsCollection: GroupListItem[] = [{ name: 'ada', info: 'ada3', type: 'group', id: 'dasdasdas', users: 0, books: 0, toInfo() { }, admin: 'ada5465475456', elementId: 1 }];
-  usersCollection: UserListItem[] = [{ name: 'ada', info: 'ada4', type: 'user', id: 'dasdasdas', toInfo() { }, roles: ['ada'], elementId: 1 }];
+  booksCollection: BookListItem[] = 
+  [
+    { name: 'book1', info: 'book 1 info', type: 'book', id: '12312312312', toInfo() { }, author: 'ada', elementId: 1 },
+    { name: 'book2', info: 'book 2 info', type: 'book', id: '1231243243212312', toInfo() { }, author: 'ada', elementId: 1 },
+    { name: 'book3', info: 'book 3 info', type: 'book', id: '126678967312312', toInfo() { }, author: 'ada', elementId: 1 },
+    { name: 'book4', info: 'book 4 info', type: 'book', id: '12332423512', toInfo() { }, author: 'ada', elementId: 1 }
+  ];
+  groupsCollection: GroupListItem[] =
+   [
+    { name: 'Group23', info: 'group 23 info', type: 'group', id: '6456489797', users: 0, books: 0, toInfo() { }, admin: 'ada5465475456', elementId: 1 },
+    { name: 'Group24', info: 'group 24 info', type: 'group', id: '6554459909056456', users: 0, books: 0, toInfo() { }, admin: 'ada5465475456', elementId: 1 },
+    { name: 'Group25', info: 'group 25 info', type: 'group', id: '60010231203456456456', users: 0, books: 0, toInfo() { }, admin: 'ada5465475456', elementId: 1 },
+    { name: 'Group26', info: 'group 25 info', type: 'group', id: '6454324236456456', users: 0, books: 0, toInfo() { }, admin: 'ada5465475456', elementId: 1 }
+  ];
+  usersCollection: UserListItem[] = 
+  [
+    { name: 'UserName', info: 'ada4', type: 'user', id: '564765', toInfo() { }, roles: ['user'], elementId: 1 }
+  ];
   itemsCollection: any[] = this.usersCollection;
   count = 1;
   title = 'Admin panel'
@@ -135,24 +150,32 @@ export class AdminPanelComponent implements OnInit {
   }
 
   switchToUsers() {
-    this.getUsers();
+    //this.getUsers();
     this.users = true;
     this.books = false;
     this.groups = false;
+    this.itemsCollection = this.usersCollection;
   }
 
   switchToBooks() {
-    this.getBooks();
+    if (this.books === true){
+      this.router.navigateByUrl('/books/create');
+      return;
+    }
+    //this.getBooks();
     this.users = false;
     this.books = true;
     this.groups = false;
+    this.itemsCollection = this.booksCollection;
   }
 
-  switchToGroups() {
-    this.getGroups();
+  switchToGroups(event: MouseEvent) {
+          //this.getGroups();
     this.users = false;
     this.books = false;
     this.groups = true;
+    this.itemsCollection = this.groupsCollection;
+      console.log('Disabled button tapped');
   }
 
   private getUsers() {

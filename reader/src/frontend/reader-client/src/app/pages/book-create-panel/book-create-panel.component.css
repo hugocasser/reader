@@ -1,0 +1,161 @@
+.books-create-panel {
+    background-color: rgba(255, 255, 255, 0.2);
+    z-index: 900;
+    height: 100%;
+    top: 0;
+    left: 0;
+    width: 100%;
+    position: fixed;
+    align-items: center;
+    overflow-y: scroll;
+}
+.books-create-panel p{
+    margin-top: 7%;
+    font-family: JetBrains mono;
+    color: black;
+    align-self :self-start;
+    position:relative;
+    margin-left: 47%;
+    margin-bottom: 30px;
+}
+
+.books-create-panel label{
+    padding-top: 10px;
+    font-family: JetBrains mono;
+    color: black;
+    align-self: self-start;
+    margin-left: 22%;
+    position:relative;
+    margin-bottom: 30px;
+}
+.create-panel{
+    border-radius: 20px;
+    background-color: rgba(255, 255, 255);
+    height: fit-content;
+    width: 500px;
+    margin-left: 540px;
+    align-items: self-start;
+    display: flex;
+    flex-direction: column;
+    overflow-y: scroll;
+    margin-bottom: 150px;
+}
+
+.create-panel p{
+    margin-left: 30px;
+    color: black;
+    font-size: 15px;
+}
+
+.create-panel a{
+    color: gray;
+    text-decoration: none;
+    font-family: JetBrains mono;
+    font-size: 12px;
+    margin-left: 220px;
+    margin-bottom: 10px;
+}
+
+.create-panel a:hover{
+    color: black;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.create-panel input{
+    background-color: rgba(192, 192, 192, 0.5);
+    border-radius: 5px;
+    border: 0px;
+    font-family: JetBrains mono;
+    width: 340px;
+    height: 30px;
+    font-size: 15px;
+    color: rgb(0, 0, 0);
+    margin-left: 95px;
+}
+
+.create-panel input:focus{
+    outline: none;
+}
+
+.create-panel label{
+    font-family: JetBrains mono;
+    color: black;
+}
+
+.error-label{
+    height: 15px;
+}
+.error-label label{
+    color: red;
+    font-family: JetBrains mono;
+    font-size: 10px;
+}
+
+.create-panel button{
+    margin-top: 40px;
+    background-color: black;
+    color: white;
+    border: 3px;
+    border-radius: 10px;
+    border-color: black;
+    width: 70px;
+    height: 30px;
+    margin-left: 230px;
+    font-family: JetBrains mono;
+    margin-bottom: 20px;
+}
+
+.create-panel button:disabled{
+    background-color: whitesmoke;
+}
+
+.create-panel button:enabled:hover{
+    color: rgb(0, 0, 0);
+    background-color: rgb(207, 207, 207);
+    border-color: black;
+}
+
+#dropArea {
+    width: 330px;
+    height: 200px;
+    border: 2px dashed #959595;
+    text-align: center;
+    padding: 10px;
+    cursor: pointer;
+    margin-left: 90px;
+    border-radius: 10px;
+    margin-top: 20px;
+  }
+
+#dropArea:hover {
+    border: 2px dashed #000000;
+  }
+
+#dropArea button{
+    font-family: JetBrains mono;
+    background-color: black;
+    color: white;
+    border: 3px;
+    border-radius: 10px;
+    border-color: black;
+    width: 70px;
+    height: 30px;
+    margin-left: 1px;
+  }
+
+#dropArea button:hover{
+    background-color: rgb(166, 166, 166);
+    color: black;
+    cursor: pointer;
+}
+
+#dropArea button p{
+    font-family: JetBrains mono;
+    color: white;
+    font-size: 15px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+

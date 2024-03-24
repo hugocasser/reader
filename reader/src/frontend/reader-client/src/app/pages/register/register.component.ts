@@ -1,10 +1,8 @@
 import { Component, inject } from '@angular/core';
 import { RouterLink, Router } from '@angular/router';
-import { FormBuilder, FormGroup, Validators} from '@angular/forms';
-import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { CommonModule, NgIf  } from '@angular/common';
 import { AuthService } from '../../services/auth-service';
-import { ReactiveFormsModule } from '@angular/forms';
-import { NgIf } from '@angular/common';
 
 
 @Component({

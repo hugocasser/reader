@@ -18,7 +18,7 @@ export class MenuComponent implements OnInit {
     {name: 'All Books', link: '/books', path: 'assets/books-icon.png'},
     {name: 'Groups', link: '/groups', path: 'assets/groups-icon.png'},
     {name: 'My Groups', link: '/my-groups', path: 'assets/myGroups-icon.png'},
-    {name: 'Reading', link: '/reading', path: 'assets/reading-icon.png'},
+    {name: 'Reading', link: '/reading-page', path: 'assets/reading-icon.png'},
     {name: 'Settings', link: '/settings', path: 'assets/settings-icon.png'}
   ];
 

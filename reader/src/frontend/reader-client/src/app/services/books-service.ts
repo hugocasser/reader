@@ -98,6 +98,34 @@ export class BooksService {
         return false;
     }
 
+    createAuthor(firstName: string, lastName: string, birthDate: string, deathDate: string, biography: string): any{
+        this.http.post(`${this.route}authors`, {firstName, lastName, birthDate, deathDate, biography}, {headers: {Authorization: `Bearer ${this.auth.getJwtToken()}`}})
+        .subscribe({
+            next: (response) => {
+                return response;
+            },
+            error: (error) =>{
+                return this.handleError(error);
+            },
+            complete:() =>{}
+        })
+        return false;
+    }
+
+    createCategory(name: string) : any{
+        this.http.post(`${this.route}categories`, {name: name}, {headers: {Authorization: `Bearer ${this.auth.getJwtToken()}`}})
+        .subscribe({
+            next: (response) => {
+                return response;
+            },
+            error: (error) =>{
+                return this.handleError(error);
+            },
+            complete:() =>{}
+        });
+        return false;
+    }
+
     private handleError(error: any): any{
 
     if (error instanceof HttpErrorResponse) {
