@@ -36,7 +36,7 @@ export class NotesService {
   }
 
   createNote(note: any): Observable<any> {
-    return this.http.post<any>(`${this.baseUrl}/${note.noteId}`, note,  {headers: {Authorization: `Bearer ${this.auth.getJwtToken()}`}})
+    return this.http.post<any>(`${this.baseUrl}/`, note,  {headers: {Authorization: `Bearer ${this.auth.getJwtToken()}`}})
       .pipe(
         catchError(this.handleError)
       );

@@ -1,0 +1,23 @@
+<app-page-header [title]="title"></app-page-header>
+<app-menu></app-menu>
+<p>{{book.name}}</p>
+<div class="reading-page">
+<div class="book-reading-page" (click)="getClickedCharacter($event)"   id="ids" #container>
+{{book.text}}
+</div>
+<div class="notes">
+    <ul *ngFor="let note of notes">
+    <app-note-item [text]="note.text" [id]="note.id"></app-note-item>
+    </ul>
+</div>
+<div class="note">
+    <label>note text:</label>
+    <textarea rows="4" cols="50" type="text" [(ngModel)]="text" maxlength="500" required="maxlength"></textarea>
+    <a> click to text for choosing position of note, and then send</a>
+    <button (click)="createNote()" [disabled]="text === ''">send</button>
+</div>
+</div>
+<div class="buttonsContainer">
+<button (click)="prevPage()">prev</button>
+<button (click)="nextPage()">next</button>
+</div>
