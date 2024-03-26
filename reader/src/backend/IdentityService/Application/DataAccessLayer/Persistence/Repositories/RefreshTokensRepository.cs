@@ -22,11 +22,9 @@ public class RefreshTokensRepository(UsersDbContext _usersDbContext) : IRefreshT
     }
     
 
-    public async Task<RefreshToken> FindUserTokenAsync(Guid userId, string token, CancellationToken cancellationToken)
+    public async Task<RefreshToken> FindUserTokenAsync(Guid userId, CancellationToken cancellationToken)
     {
-        return await _usersDbContext.RefreshTokens.AsNoTracking()
-            .SingleAsync(refreshToken => refreshToken.UserId == userId 
-                                         && refreshToken.Token == token, cancellationToken);
+        return await _usersDbContext.RefreshTokens.AsNoTracking().SingleAsync(token => token.UserId == userId, cancellationToken);
     }
 
     public async Task SaveChangesAsync(CancellationToken cancellationToken)

@@ -9,8 +9,8 @@ using Microsoft.Extensions.Options;
 
 namespace BusinessLogicLayer.Services.Grpc;
 
-public class GrpcUsersService(ILogger<GrpcUsersService> _logger,
-    IOptions<GrpcOptions> grpcOptions) : IGrpcUserService
+public class GrpcUsersesService(ILogger<GrpcUsersesService> _logger,
+    IOptions<GrpcOptions> grpcOptions) : IGrpcUsersService
 {
     private readonly GrpcChannel _channel = GrpcChannel.ForAddress(grpcOptions.Value.Url);
     

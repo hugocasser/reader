@@ -10,7 +10,7 @@ namespace BusinessLogicLayer.Services.Cache;
 
 public class RefreshTokensCacheService(IOptions<GarnetOptions> options, ILogger<RefreshTokensCacheService> _logger) : IRefreshTokensCacheService
 {
-    private readonly GarnetClient _cacheService = new(options.Value.Adress, options.Value.Port, timeoutMilliseconds: options.Value.TimeoutMilliseconds);
+    private readonly GarnetClient _cacheService = new(options.Value.Address, options.Value.Port, timeoutMilliseconds: options.Value.TimeoutMilliseconds);
     
     public async Task SetAsync(RefreshToken token, CancellationToken cancellationToken)
     {

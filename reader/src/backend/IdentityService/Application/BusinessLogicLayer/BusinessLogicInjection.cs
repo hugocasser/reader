@@ -1,9 +1,11 @@
 using System.Reflection;
 using BusinessLogicLayer.Abstractions.Services.AuthServices;
+using BusinessLogicLayer.Abstractions.Services.Cache;
 using BusinessLogicLayer.Abstractions.Services.DataServices;
 using BusinessLogicLayer.Abstractions.Services.Grpc;
 using BusinessLogicLayer.Options;
 using BusinessLogicLayer.Services.AuthServices;
+using BusinessLogicLayer.Services.Cache;
 using BusinessLogicLayer.Services.DataServices;
 using BusinessLogicLayer.Services.Grpc;
 using FluentValidation;
@@ -13,6 +15,20 @@ namespace BusinessLogicLayer;
 
 public static class BusinessLogicInjection
 {
+    public static IServiceCollection AddServices
+        (this IServiceCollection serviceCollection)
+    {
+        serviceCollection
+            .UseDataServices()
+            .UseAuthenticationServices()
+            .UseEmailServices()
+            .UseValidation()
+            .AddGarnetRefreshTokensCache()
+            .AddGrpcServices()
+            .AddOptions();
+        
+        return serviceCollection;
+    }
     private static IServiceCollection UseDataServices(this IServiceCollection serviceCollection)
     {
         serviceCollection
@@ -23,11 +39,24 @@ public static class BusinessLogicInjection
         return serviceCollection;
     }
 
+    private static IServiceCollection AddGarnetRefreshTokensCache(this IServiceCollection serviceCollection)
+    {
+        serviceCollection.AddScoped<IRefreshTokensCacheService, RefreshTokensCacheService>();
+        
+        return serviceCollection;
+    }
+
     private static IServiceCollection UseEmailServices(this IServiceCollection serviceCollection)
     {
-        serviceCollection.AddOptions();
         serviceCollection.AddTransient<IEmailConfirmMessageService, SendConfirmMessageEmailService>();
         serviceCollection.AddTransient<IEmailSenderService, EmailSenderService>();
+        
+        return serviceCollection;
+    }
+    
+    private static IServiceCollection AddGrpcServices(this IServiceCollection serviceCollection)
+    {
+        serviceCollection.AddScoped<IGrpcUsersService, GrpcUsersesService>();
         
         return serviceCollection;
     }
@@ -37,18 +66,6 @@ public static class BusinessLogicInjection
         serviceCollection.AddScoped<IAuthTokenGeneratorService, JwtTokenGeneratorService>();
         serviceCollection.AddScoped<IRefreshTokenGeneratorService, RefreshTokenGeneratorService>();
 
-        return serviceCollection;
-    }
-
-    public static IServiceCollection AddServices
-        (this IServiceCollection serviceCollection)
-    {
-        serviceCollection.UseDataServices();
-        serviceCollection.UseAuthenticationServices();
-        serviceCollection.UseEmailServices();
-        serviceCollection.UseValidation();
-        serviceCollection.AddScoped<IGrpcUserService, GrpcUsersService>();
-        
         return serviceCollection;
     }
 
@@ -68,7 +85,15 @@ public static class BusinessLogicInjection
         
         return serviceCollection;
     }
-    
+
+    private static IServiceCollection AddGarnetCacheOptions(this IServiceCollection serviceCollection)
+    {
+        serviceCollection.AddOptions<GarnetOptions>()
+            .BindConfiguration(nameof(GarnetOptions))
+            .ValidateOnStart();
+        
+        return serviceCollection;
+    }
     private static IServiceCollection AddEmailMessageSenderOptions
         (this IServiceCollection serviceCollection)
     {
@@ -94,7 +119,8 @@ public static class BusinessLogicInjection
         return serviceCollection
             .AddTokenGenerationOptions()
             .AddEmailMessageSenderOptions()
-            .AddGrpcOptions();
+            .AddGrpcOptions()
+            .AddGarnetCacheOptions();
     }
 
 }

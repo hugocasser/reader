@@ -21,7 +21,7 @@ public class UsersService(
     IRefreshTokenGeneratorService _refreshTokenService,
     IRefreshTokensRepository _refreshTokensRepository,
     IEmailConfirmMessageService _emailConfirmMessageService,
-    IGrpcUserService _grpcUserService)
+    IGrpcUsersService grpcUsersService)
     : IUsersService
 {
     public async Task RegisterUserAsync(RegisterUserRequestDto request, CancellationToken cancellationToken)
@@ -32,7 +32,7 @@ public class UsersService(
         Utilities.AggregateIdentityErrorsAndThrow(result);
         Utilities.AggregateIdentityErrorsAndThrow(await _usersManager.AddToRoleAsync(user, EnumRoles.User.ToString()));
 
-        await _grpcUserService.SendUserEventAsync(user, UserEvenType.Created);
+        await grpcUsersService.SendUserEventAsync(user, UserEvenType.Created);
         await _emailConfirmMessageService.SendEmailConfirmMessageAsync(user);
         await _emailConfirmMessageService.SendEmailConfirmMessageAsync(user);
     }
@@ -74,7 +74,7 @@ public class UsersService(
         var result = await _usersManager.DeleteAsync(user);
         Utilities.AggregateIdentityErrorsAndThrow(result);
 
-        await _grpcUserService.SendUserEventAsync(user, UserEvenType.Deleted);
+        await grpcUsersService.SendUserEventAsync(user, UserEvenType.Deleted);
     }
     public async Task UpdateUserAsync(UpdateUserRequestDto updateUserRequest, CancellationToken cancellationToken)
     {
@@ -96,7 +96,7 @@ public class UsersService(
         var result = await _usersManager.UpdateAsync(user);
         Utilities.AggregateIdentityErrorsAndThrow(result);
 
-        await _grpcUserService.SendUserEventAsync(user, UserEvenType.Updated);
+        await grpcUsersService.SendUserEventAsync(user, UserEvenType.Updated);
     }
 
     public async Task<AuthTokens> LoginUserAsync(LoginUserRequestDto loginUserRequestDto, CancellationToken cancellationToken)

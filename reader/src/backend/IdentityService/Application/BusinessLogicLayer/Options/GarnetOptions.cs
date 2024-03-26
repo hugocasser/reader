@@ -6,10 +6,9 @@ namespace BusinessLogicLayer.Options;
 public class GarnetOptions
 {
     [Required(AllowEmptyStrings = false)]
-    public string Adress { get; set; }
+    public required string Address { get; set; }
     [Required]
     [Range(1, 65535)]
     public int Port { get; set; }
-    public bool UseTLS { get; set; } = false;
     public int TimeoutMilliseconds { get; set; } = 0;
 }
