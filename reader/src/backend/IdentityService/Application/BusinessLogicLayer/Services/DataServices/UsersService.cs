@@ -1,6 +1,7 @@
 using BusinessLogicLayer.Abstractions.Dtos.RequestsDtos;
 using BusinessLogicLayer.Abstractions.Dtos.ViewDtos;
 using BusinessLogicLayer.Abstractions.Services.AuthServices;
+using BusinessLogicLayer.Abstractions.Services.Cache;
 using BusinessLogicLayer.Abstractions.Services.DataServices;
 using BusinessLogicLayer.Abstractions.Services.Grpc;
 using BusinessLogicLayer.Common;
@@ -21,7 +22,8 @@ public class UsersService(
     IRefreshTokenGeneratorService _refreshTokenService,
     IRefreshTokensRepository _refreshTokensRepository,
     IEmailConfirmMessageService _emailConfirmMessageService,
-    IGrpcUsersService grpcUsersService)
+    IGrpcUsersService grpcUsersService,
+    IRefreshTokensCacheService _cacheService)
     : IUsersService
 {
     public async Task RegisterUserAsync(RegisterUserRequestDto request, CancellationToken cancellationToken)
@@ -109,6 +111,7 @@ public class UsersService(
         
         await _refreshTokensRepository.AddAsync(refreshToken, cancellationToken);
         await _refreshTokensRepository.SaveChangesAsync(cancellationToken);
+        await _cacheService.SetAsync(refreshToken, cancellationToken);
 
         return new AuthTokens(user.Id, userToken, refreshToken.Token);
     }
