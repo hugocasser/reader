@@ -21,9 +21,9 @@ public class UsersService(
     IAuthTokenGeneratorService _authService,
     IRefreshTokenGeneratorService _refreshTokenService,
     IRefreshTokensRepository _refreshTokensRepository,
+    IRefreshTokensCacheService _cacheService,
     IEmailConfirmMessageService _emailConfirmMessageService,
-    IGrpcUsersService grpcUsersService,
-    IRefreshTokensCacheService _cacheService)
+    IGrpcUsersService grpcUsersService)
     : IUsersService
 {
     public async Task RegisterUserAsync(RegisterUserRequestDto request, CancellationToken cancellationToken)
@@ -142,7 +142,7 @@ public class UsersService(
             throw new NotFoundException("User not found");
         }
 
-         var result = await _usersManager.ConfirmEmailAsync(user, code);
+        var result = await _usersManager.ConfirmEmailAsync(user, code);
         
         Utilities.AggregateIdentityErrorsAndThrow(result);
 
@@ -173,7 +173,7 @@ public class UsersService(
         
         if (user is null || !await _usersManager.CheckPasswordAsync(user, request.Password))
         {
-            throw new IncorrectEmailOrPasswordException();
+           throw new IncorrectEmailOrPasswordException();
         }
         
         if (!user.EmailConfirmed)
