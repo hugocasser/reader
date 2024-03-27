@@ -8,12 +8,14 @@ using Microsoft.Extensions.Options;
 
 namespace BusinessLogicLayer.Services.Cache;
 
-public class RefreshTokensCacheService(IOptions<GarnetOptions> options, ILogger<RefreshTokensCacheService> _logger) : IRefreshTokensCacheService
+public class RefreshTokensCacheService(IOptions<GarnetOptions> options, ILogger<RefreshTokensCacheService> _logger)
+    : IRefreshTokensCacheService
 {
     private readonly GarnetClient _cacheService = new(options.Value.Address, options.Value.Port, timeoutMilliseconds: options.Value.TimeoutMilliseconds);
-    
+
     public async Task SetAsync(RefreshToken token, CancellationToken cancellationToken)
     {
+        await _cacheService.ConnectAsync(cancellationToken);
         var pong =await _cacheService.PingAsync(cancellationToken);
         
         if (pong != "PONG")
@@ -31,6 +33,7 @@ public class RefreshTokensCacheService(IOptions<GarnetOptions> options, ILogger<
 
     public async Task<RefreshToken?> GetAsync(Guid id, CancellationToken cancellationToken)
     {
+        await _cacheService.ConnectAsync(cancellationToken);
         var pong =await _cacheService.PingAsync(cancellationToken);
         
         if (pong != "PONG")
@@ -48,6 +51,7 @@ public class RefreshTokensCacheService(IOptions<GarnetOptions> options, ILogger<
 
     public async Task RemoveAsync(Guid id, CancellationToken cancellationToken)
     {
+        await _cacheService.ConnectAsync(cancellationToken);
         var pong =await _cacheService.PingAsync(cancellationToken);
         
         if (pong != "PONG")
